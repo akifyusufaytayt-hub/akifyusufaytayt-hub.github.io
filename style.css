@@ -57,7 +57,7 @@ header {
 }
 
 header .logo-img img {
-    height: 100px; /* Veya istediğiniz bir yükseklik */
+    height: 70px; /* Veya istediğiniz bir yükseklik */
     width: auto;
     float: left;
 }
@@ -166,5 +166,6 @@ footer {
     padding: 20px 0;
 
 }
+
 
 
