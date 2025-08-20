@@ -56,14 +56,11 @@ header {
     z-index: 1000;
 }
 
-header .logo {
-    font-size: 24px;
-    font-weight: bold;
-    text-decoration: none;
-    color: #008000;
+header .logo-img img {
+    height: 50px; /* Veya istediğiniz bir yükseklik */
+    width: auto;
     float: left;
 }
-
 header nav {
     float: right;
 }
@@ -167,4 +164,5 @@ footer {
     color: #fff;
     text-align: center;
     padding: 20px 0;
+
 }
