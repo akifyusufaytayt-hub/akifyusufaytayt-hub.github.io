@@ -113,6 +113,12 @@ nav ul li a:hover {
     background: #f1fdf1;
 }
 
+/* Section Logo */
+.section-logo {
+    height: 80px;
+    margin-bottom: 20px;
+}
+
 /* Services */
 .services {
     display: flex;
@@ -188,7 +194,15 @@ footer {
     padding: 20px 0;
 }
 
-footer .footer-logo {
+.footer-logo {
     height: 40px;
-    margin-top: 10px;
+    margin-bottom: 10px;
 }
+
+.map-container {
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+.map-container iframe {
+    width: 100%;
