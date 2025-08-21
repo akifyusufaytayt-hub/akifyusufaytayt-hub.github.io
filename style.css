@@ -57,10 +57,11 @@ header {
 }
 
 header .logo-img img {
-    height: 60px; /* Veya istediğiniz bir yükseklik */
+    height: 80px; /* Logo yüksekliği */
     width: auto;
     float: left;
 }
+
 header nav {
     float: right;
 }
@@ -167,11 +168,4 @@ footer {
     color: #fff;
     text-align: center;
     padding: 20px 0;
-
 }
-
-
-
-
-
-
