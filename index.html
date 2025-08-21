@@ -74,6 +74,7 @@
 
     <section id="about" class="section light-bg">
         <div class="container">
+            <img src="logo.png" alt="Melbourne Lawn Care Logo" class="section-logo">
             <h2>About Us</h2>
             <p>We are a Melbourne-based lawn mowing business. Right now, we provide only mowing services — but soon we’ll expand our range to cover full lawn and garden care. Stay tuned!</p>
         </div>
@@ -157,6 +158,7 @@
     <section id="contact" class="section light-bg">
         <div class="container">
             <h2>Contact Us</h2>
+            <p>We are committed to providing you with the best lawn care service. There are several ways to get in touch with us: You can fill out the form above to request a free quote, send us an email, or give us a call. Our team members will get in touch with you as soon as possible to schedule an appointment.</p>
             <p><strong>Phone:</strong> +61 478 733 900</p>
             <p><strong>Email:</strong> <a href="mailto:melbournelawncareau@gmail.com">melbournelawncareau@gmail.com</a></p>
             <p><strong>Address:</strong> Melrose Street, North Melbourne VIC 3051</p>
@@ -168,6 +170,7 @@
 
     <footer>
         <div class="container">
+            <img src="logo.png" alt="Melbourne Lawn Care Logo" class="footer-logo">
             <p>© 2025 Melbourne Lawn Care. All rights reserved.</p>
         </div>
     </footer>
@@ -177,7 +180,7 @@
         const successMessage = document.getElementById('success-message');
 
         form.addEventListener('submit', async function(event) {
-            event.preventDefault(); // Formun varsayılan gönderme işlemini durdurur.
+            event.preventDefault();
 
             const response = await fetch(form.action, {
                 method: 'POST',
@@ -188,11 +191,10 @@
             });
 
             if (response.ok) {
-                successMessage.style.display = 'block'; // Başarılı olursa mesajı göster.
-                form.reset(); // Form alanlarını temizle.
+                successMessage.style.display = 'block';
+                form.reset();
             } else {
-                // Hata durumunda ne yapılacağını buraya ekleyebilirsiniz.
-                alert('Form gönderilirken bir hata oluştu. Lütfen tekrar deneyin.');
+                alert('Form submission failed. Please try again.');
             }
         });
     </script>
