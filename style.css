@@ -29,6 +29,7 @@ h1, h2, h3 {
 
 p {
     margin-bottom: 20px;
+    text-align: center; /* Bu satırı ekliyoruz */
 }
 
 .btn {
@@ -220,5 +221,6 @@ footer {
     text-align: center;
     padding: 20px 0;
 }
+
 
 
