@@ -110,4 +110,171 @@ nav ul li a:hover {
 /* Bölüm Tasarımları */
 .hero {
     padding: 80px 0;
-    background: linear-gradient(rgba(255, 255, 255,
+    background: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('hero-bg.jpg') no-repeat center center/cover;
+    border-bottom: 1px solid #e9ecef;
+    text-align: center;
+}
+
+.special-offer {
+    text-align: center;
+}
+
+.services {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.service {
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.service:hover {
+    transform: translateY(-10px);
+}
+
+.service i {
+    font-size: 3rem;
+    color: var(--accent-color);
+    margin-bottom: 15px;
+}
+
+#about.section.light-bg {
+    background: var(--light-bg);
+}
+
+.section-logo {
+    max-width: 150px;
+    margin: 0 auto 20px;
+}
+
+/* Form Tasarımı (Güncellenmiş Bölüm) */
+#quote-form {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+#quote-form .form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+#quote-form label {
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: var(--dark-bg);
+}
+
+#quote-form input,
+#quote-form select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#quote-form input:focus,
+#quote-form select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+#quote-form button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 50px;
+    transition: background-color 0.3s ease;
+}
+
+/* Harita ve İletişim */
+.map-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 30px auto;
+}
+
+.map-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* Footer */
+footer {
+    background: var(--dark-bg);
+    color: #fff;
+    padding: 40px 0;
+    text-align: center;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.social-links {
+    margin-bottom: 15px;
+}
+
+.social-links a {
+    font-size: 1.8rem;
+    color: #fff;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: var(--primary-color);
+}
+
+.footer-logo {
+    max-width: 120px;
+    height: auto;
+    margin-bottom: 15px;
+}
+
+/* Mobil Cihazlar İçin (768px'den küçük ekranlar) */
+@media (max-width: 768px) {
+    .header-container {
+        padding: 15px;
+    }
+
+    .hero {
+        padding: 60px 0;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    nav ul li a {
+        display: block;
+        padding: 10px;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+}
