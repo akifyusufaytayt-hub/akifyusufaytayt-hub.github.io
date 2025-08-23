@@ -60,12 +60,12 @@ header {
     align-items: center;
 }
 
-/* GÜNCELLENEN LOGO BOYUTLARI */
+/* GÜNCELLENEN LOGO BOYUTLARI - HEPSİ AYNI BOYUT */
 .logo {
-    max-width: 30px !important;
-    width: 30px !important;
+    max-width: 60px !important;
+    width: 60px !important;
     height: auto !important;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 nav {
@@ -170,7 +170,7 @@ nav ul li a:hover {
     margin: 20px;
 }
 
-/* GÜNCELLENEN ABOUT SECTION LOGO */
+/* GÜNCELLENEN ABOUT SECTION LOGO - AYNI BOYUT */
 .section-logo {
     max-width: 60px !important;
     width: 60px !important;
