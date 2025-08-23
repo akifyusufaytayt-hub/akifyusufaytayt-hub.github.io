@@ -1,282 +1,304 @@
 /* Genel Ayarlar ve Duyarlı Tasarım */
 :root {
-    --primary-color: #007bff; /* Mavi */
-    --secondary-color: #6c757d; /* Gri */
-    --accent-color: #28a745; /* Yeşil */
-    --light-bg: #f8f9fa; /* Açık gri arka plan */
-    --dark-bg: #343a40; /* Koyu gri arka plan */
-    --text-color: #343a40; /* Koyu metin rengi */
+    --primary-color: #007bff; /* Mavi */
+    --secondary-color: #6c757d; /* Gri */
+    --accent-color: #28a745; /* Yeşil */
+    --light-bg: #f8f9fa; /* Açık gri arka plan */
+    --dark-bg: #343a40; /* Koyu gri arka plan */
+    --text-color: #343a40; /* Koyu metin rengi */
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
-    color: var(--text-color);
-    background-color: var(--light-bg);
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    color: var(--text-color);
+    background-color: var(--light-bg);
 }
 
 .container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 0 15px;
+    max-width: 1200px;
+    margin: auto;
+    padding: 0 15px;
 }
 
 .section {
-    padding: 60px 0;
-    text-align: center;
+    padding: 60px 0;
+    text-align: center;
 }
 
 h1, h2, h3 {
-    margin-bottom: 20px;
-    color: var(--dark-bg);
+    margin-bottom: 20px;
+    color: var(--dark-bg);
 }
 
 p {
-    margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 /* Header ve Navigasyon */
 header {
-    background-color: var(--primary-color);
-    color: #fff;
-    padding: 20px 0;
-    text-align: center;
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .header-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
+/* GÜNCELLENEN LOGO BOYUTLARI */
 .logo {
     max-width: 30px !important;
-    width: 30px;
-    height: auto;
+    width: 30px !important;
+    height: auto !important;
     margin-bottom: 8px;
 }
+
 nav {
-    background-color: var(--dark-bg);
-    padding: 10px 0;
+    background-color: var(--dark-bg);
+    padding: 10px 0;
 }
 
 nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
 }
 
 nav ul li a {
-    color: #fff;
-    text-decoration: none;
-    font-weight: bold;
-    padding: 5px 10px;
-    transition: color 0.3s ease, background-color 0.3s ease;
-    border-radius: 5px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 5px 10px;
+    transition: color 0.3s ease, background-color 0.3s ease;
+    border-radius: 5px;
 }
 
 nav ul li a:hover {
-    color: var(--primary-color);
-    background-color: #fff;
+    color: var(--primary-color);
+    background-color: #fff;
 }
 
 /* Buton */
 .btn {
-    display: inline-block;
-    background: var(--accent-color);
-    color: #fff;
-    padding: 12px 25px;
-    border-radius: 50px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    background: var(--accent-color);
+    color: #fff;
+    padding: 12px 25px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .btn:hover {
-    background: #218838;
-    transform: translateY(-2px);
+    background: #218838;
+    transform: translateY(-2px);
 }
 
 /* Bölüm Tasarımları */
 .hero {
-    padding: 80px 0;
-    background: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('hero-bg.jpg') no-repeat center center/cover;
-    border-bottom: 1px solid #e9ecef;
-    text-align: center;
+    padding: 80px 0;
+    background: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('hero-bg.jpg') no-repeat center center/cover;
+    border-bottom: 1px solid #e9ecef;
+    text-align: center;
 }
 
 .special-offer {
-    text-align: center;
+    text-align: center;
 }
 
 .services {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
-    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
 }
 
 .service {
-    background: #fff;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
 }
 
 .service:hover {
-    transform: translateY(-10px);
+    transform: translateY(-10px);
 }
 
 .service i {
-    font-size: 3rem;
-    color: var(--accent-color);
-    margin-bottom: 15px;
+    font-size: 3rem;
+    color: var(--accent-color);
+    margin-bottom: 15px;
 }
 
 #about.section.light-bg {
-    background: var(--light-bg);
+    background: var(--light-bg);
 }
 
+/* GÜNCELLENEN ABOUT SECTION LOGO */
 .section-logo {
-    max-width: 150px;
-    margin: 0 auto 20px;
+    max-width: 60px !important;
+    width: 60px !important;
+    height: auto !important;
+    margin: 0 auto 20px auto;
+    display: block;
 }
 
 /* Form Tasarımı (Güncellenmiş Bölüm) */
 #quote-form {
-    max-width: 600px;
-    margin: 0 auto;
-    background-color: #fff;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: left;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
 }
 
 #quote-form .form-group {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 #quote-form label {
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: var(--dark-bg);
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: var(--dark-bg);
 }
 
 #quote-form input,
 #quote-form select {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-sizing: border-box;
-    font-size: 1rem;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 #quote-form input:focus,
 #quote-form select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    outline: none;
 }
 
 #quote-form button {
-    width: 100%;
-    margin-top: 20px;
-    padding: 15px;
-    border: none;
-    cursor: pointer;
-    font-size: 1.1rem;
-    font-weight: bold;
-    border-radius: 50px;
-    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 20px;
+    padding: 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 50px;
+    transition: background-color 0.3s ease;
 }
 
 /* Harita ve İletişim */
 .map-container {
-    position: relative;
-    padding-bottom: 56.25%;
-    height: 0;
-    overflow: hidden;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin: 30px auto;
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 30px auto;
 }
 
 .map-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
 }
 
 /* Footer */
 footer {
-    background: var(--dark-bg);
-    color: #fff;
-    padding: 40px 0;
-    text-align: center;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
+    background: var(--dark-bg);
+    color: #fff;
+    padding: 40px 0;
+    text-align: center;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
 }
 
 .social-links {
-    margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 .social-links a {
-    font-size: 1.8rem;
-    color: #fff;
-    margin: 0 10px;
-    transition: color 0.3s ease;
+    font-size: 1.8rem;
+    color: #fff;
+    margin: 0 10px;
+    transition: color 0.3s ease;
 }
 
 .social-links a:hover {
-    color: var(--primary-color);
+    color: var(--primary-color);
 }
 
+/* GÜNCELLENEN FOOTER LOGO */
 .footer-logo {
-    max-width: 120px;
-    height: auto;
-    margin-bottom: 15px;
+    max-width: 50px !important;
+    width: 50px !important;
+    height: auto !important;
+    margin-bottom: 15px;
 }
 
 /* Mobil Cihazlar İçin (768px'den küçük ekranlar) */
 @media (max-width: 768px) {
-    .header-container {
-        padding: 15px;
-    }
+    .header-container {
+        padding: 15px;
+    }
 
-    .hero {
-        padding: 60px 0;
-    }
+    .hero {
+        padding: 60px 0;
+    }
 
-    nav ul {
-        flex-direction: column;
-        gap: 10px;
-    }
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
 
-    nav ul li a {
-        display: block;
-        padding: 10px;
-        background-color: rgba(255, 255, 255, 0.1);
-    }
+    nav ul li a {
+        display: block;
+        padding: 10px;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Mobilde logoları daha da küçült */
+    .logo {
+        max-width: 25px !important;
+        width: 25px !important;
+    }
+    
+    .section-logo {
+        max-width: 45px !important;
+        width: 45px !important;
+    }
+    
+    .footer-logo {
+        max-width: 40px !important;
+        width: 40px !important;
+    }
 }
-
-
