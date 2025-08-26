@@ -178,14 +178,15 @@ nav ul li a:hover {
 }
 
 .price {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--accent-color);
+    font-size: 1.4rem; /* Daha büyük font boyutu */
+    font-weight: 700; /* Daha kalın font ağırlığı */
+    color: var(--accent-color); /* Vurgu rengi */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Hafif gölge ekleyin */
 }
 
 .price-detail {
-    font-weight: bold;
-    color: var(--dark-bg);
+    font-weight: 700; /* Daha kalın font */
+    color: var(--dark-bg); /* Koyu yeşil renk */
 }
 
 .size-list, .extra-services {
@@ -263,7 +264,7 @@ nav ul li a:hover {
 #quote-form textarea {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ddd;
+    border: 1px solid #ccc; /* Daha yumuşak bir kenar çizgisi */
     border-radius: 8px;
     box-sizing: border-box;
     font-size: 1rem;
@@ -272,8 +273,8 @@ nav ul li a:hover {
 
 #quote-form input:focus,
 #quote-form textarea:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    border-color: var(--accent-color); /* Vurgu rengi */
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.25); /* Yeşil gölge */
     outline: none;
 }
 
@@ -287,6 +288,7 @@ nav ul li a:hover {
     font-weight: bold;
     border-radius: 50px;
     transition: background-color 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Hafif gölge ekleyin */
 }
 
 /* Harita ve İletişim */
@@ -341,6 +343,33 @@ footer {
     margin-bottom: 15px;
 }
 
+/* İçerik ve Görseli Yan Yana Hizalama */
+.content-with-image {
+    display: flex;
+    flex-direction: row; /* Varsayılan olarak yan yana */
+    align-items: center; /* Dikeyde ortala */
+    gap: 30px; /* İçerik ve görsel arasında boşluk */
+    text-align: left; /* İçerik solda hizalı olsun */
+}
+
+.content-with-image .text-content {
+    flex: 1; /* Metin içeriği esnek bir şekilde yer kaplasın */
+}
+
+.content-with-image .image-content {
+    flex-shrink: 0; /* Görsel içeriği küçülmesin */
+    width: 400px; /* Sabit genişlik veya istediğiniz genişlik */
+    max-width: 100%; /* Mobil uyumluluk için */
+}
+
+.content-with-image .image-content img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 10px; /* Hafif yuvarlatılmış köşeler */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Hafif gölge */
+}
+
 /* Mobil Cihazlar İçin (768px'den küçük ekranlar) */
 @media (max-width: 768px) {
     .header-container {
@@ -370,5 +399,15 @@ footer {
     /* Fiyat menüsü mobil görünüm */
     .menu-item.highlight {
         transform: scale(1);
+    }
+    
+    .content-with-image {
+        flex-direction: column; /* Mobil cihazlarda alt alta yığılsın */
+        text-align: center; /* Metin ortada hizalı olsun */
+    }
+
+    .content-with-image .image-content {
+        width: 100%; /* Görsel tam genişlikte olsun */
+        margin-top: 20px; /* Metin ile görsel arasında boşluk */
     }
 }
