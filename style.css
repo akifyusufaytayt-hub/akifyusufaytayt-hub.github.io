@@ -411,3 +411,38 @@ footer {
         margin-top: 20px; /* Metin ile görsel arasında boşluk */
     }
 }
+/* Sabit Telefon Numarası Butonu */
+.fixed-phone-btn {
+    position: fixed; /* Ekranın belirli bir noktasına sabitler */
+    top: 20px; /* Ekranın üst kenarından 20 piksel aşağıda */
+    right: 20px; /* Ekranın sağ kenarından 20 piksel solda */
+    background-color: var(--accent-color); /* Vurgu rengiyle arka plan */
+    color: #fff; /* Beyaz metin rengi */
+    padding: 15px 25px;
+    border-radius: 50px; /* Yuvarlak hatlı bir buton görünümü */
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Hafif gölge */
+    z-index: 1000; /* Diğer tüm içeriklerin üzerinde görünmesini sağlar */
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.fixed-phone-btn:hover {
+    background-color: #218838; /* Üzerine gelindiğinde rengi koyulaştırır */
+    transform: scale(1.05); /* Üzerine gelindiğinde hafifçe büyütür */
+}
+
+/* Mobil cihazlar için daha küçük buton boyutu */
+@media (max-width: 768px) {
+    .fixed-phone-btn {
+        font-size: 1rem;
+        padding: 12px 20px;
+        right: 10px;
+        top: 10px;
+    }
+}
+
