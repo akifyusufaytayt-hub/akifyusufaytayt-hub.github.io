@@ -25,13 +25,14 @@
             padding: 0 20px;
         }
 
-        /* Header Styles - Matching your website */
+        /* Header Styles */
         header {
             background-color: #2e7d32;
             color: white;
             text-align: center;
             padding: 20px 0;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
         }
 
         .header-container {
@@ -39,6 +40,7 @@
             align-items: center;
             justify-content: center;
             gap: 15px;
+            position: relative;
         }
 
         .logo {
@@ -56,6 +58,52 @@
             font-size: 1rem;
             opacity: 0.9;
             margin-top: 5px;
+        }
+
+        /* User Info and Logout Button */
+        .user-section {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-info i {
+            color: #a5d6a7;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #d32f2f, #c62828);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
         }
 
         /* Navigation */
@@ -215,7 +263,7 @@
 
         .customer-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
         }
@@ -391,6 +439,12 @@
                 gap: 10px;
             }
 
+            .user-section {
+                position: static;
+                transform: none;
+                margin-top: 15px;
+            }
+
             .nav-tabs ul {
                 flex-direction: column;
             }
@@ -416,11 +470,23 @@
 </head>
 <body>
     <header>
-        <div class="container header-container">
-            <img src="logo.png" alt="Melbourne Lawn Care Logo" class="logo">
-            <div>
-                <h1>Melbourne Lawn Care</h1>
-                <p class="tagline">Admin Panel - Customer Management</p>
+        <div class="container">
+            <div class="header-container">
+                <img src="logo.png" alt="Melbourne Lawn Care Logo" class="logo">
+                <div>
+                    <h1>Melbourne Lawn Care</h1>
+                    <p class="tagline">Admin Panel - Customer Management</p>
+                </div>
+                <div class="user-section">
+                    <div class="user-info">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="current-user-display">Admin</span>
+                    </div>
+                    <button onclick="logout()" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Çıkış Yap
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -630,9 +696,14 @@
         let customers = JSON.parse(localStorage.getItem('lawn-care-customers') || '[]');
         let services = JSON.parse(localStorage.getItem('lawn-care-services') || '[]');
         let currentEditingId = null;
+        let currentUser = null;
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            checkAuth();
+            
+            // Load data
             loadCustomers();
             loadServices();
             updateDashboard();
@@ -651,103 +722,36 @@
             });
         });
 
-        // Authentication functions
+        // Authentication check
         function checkAuth() {
             const isLoggedIn = sessionStorage.getItem('lawn-care-logged-in');
-            if (!isLoggedIn) {
-                showLogin();
-            } else {
-                hideLogin();
+            const userData = sessionStorage.getItem('current-user');
+            
+            if (!isLoggedIn || isLoggedIn !== 'true') {
+                alert('Lütfen önce giriş yapın!');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            if (userData) {
+                currentUser = JSON.parse(userData);
+                const userDisplay = document.getElementById('current-user-display');
+                if (userDisplay && currentUser.name) {
+                    userDisplay.textContent = currentUser.name;
+                }
             }
         }
 
-        function showLogin() {
-            document.getElementById('login-screen').style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function hideLogin() {
-            document.getElementById('login-screen').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        function handleLogin(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('login-error');
-            
-            if (username === adminCredentials.username && password === adminCredentials.password) {
-                sessionStorage.setItem('lawn-care-logged-in', 'true');
-                hideLogin();
-                errorDiv.style.display = 'none';
-                showMessage('Login successful! Welcome to Melbourne Lawn Care Admin Panel.', 'success');
-            } else {
-                errorDiv.textContent = 'Invalid username or password. Please try again.';
-                errorDiv.style.display = 'block';
-                
-                // Clear password field
-                document.getElementById('password').value = '';
-            }
-        }
-
+        // Logout function
         function logout() {
-            if (confirm('Are you sure you want to logout?')) {
+            if (confirm('Çıkmak istediğinizden emin misiniz?')) {
+                // Clear session
                 sessionStorage.removeItem('lawn-care-logged-in');
-                showLogin();
+                sessionStorage.removeItem('current-user');
                 
-                // Clear form fields
-                document.getElementById('username').value = '';
-                document.getElementById('password').value = '';
+                // Redirect to main page
+                window.location.href = 'index.html';
             }
-        }
-
-        function showChangePassword() {
-            document.getElementById('change-password-modal').style.display = 'block';
-        }
-
-        function closeChangePassword() {
-            document.getElementById('change-password-modal').style.display = 'none';
-            document.getElementById('change-password-form').reset();
-            document.getElementById('password-error').style.display = 'none';
-        }
-
-        function handlePasswordChange(e) {
-            e.preventDefault();
-            
-            const currentPassword = document.getElementById('current-password').value;
-            const newPassword = document.getElementById('new-password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-            const errorDiv = document.getElementById('password-error');
-            
-            // Validate current password
-            if (currentPassword !== adminCredentials.password) {
-                errorDiv.textContent = 'Current password is incorrect.';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            // Validate new password confirmation
-            if (newPassword !== confirmPassword) {
-                errorDiv.textContent = 'New passwords do not match.';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            // Validate password length
-            if (newPassword.length < 6) {
-                errorDiv.textContent = 'Password must be at least 6 characters long.';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            // Update password
-            adminCredentials.password = newPassword;
-            localStorage.setItem('admin-credentials', JSON.stringify(adminCredentials));
-            
-            closeChangePassword();
-            showMessage('Password updated successfully!', 'success');
         }
 
         // Navigation functions
@@ -772,15 +776,21 @@
             }
         }
 
+        // Show message function
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+
         // Customer management functions
         function saveCustomer(e) {
             e.preventDefault();
-            
-            // Check permissions
-            if (currentUser?.role === 'viewer') {
-                showMessage('You do not have permission to add/edit customers.', 'error');
-                return;
-            }
             
             const formData = new FormData(e.target);
             const customerData = {
@@ -794,9 +804,7 @@
                 frequency: formData.get('frequency'),
                 notes: formData.get('notes'),
                 createdAt: currentEditingId ? customers.find(c => c.id === currentEditingId).createdAt : new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                createdBy: currentEditingId ? customers.find(c => c.id === currentEditingId).createdBy : currentUser?.username,
-                updatedBy: currentUser?.username
+                updatedAt: new Date().toISOString()
             };
 
             if (currentEditingId) {
@@ -880,77 +888,4 @@
                     </div>
                     <div class="info-item">
                         <i class="fas fa-dollar-sign"></i>
-                        <span>$${totalRevenue.toFixed(2)} total</span>
-                    </div>
-                </div>
-                
-                ${lastService ? `
-                <div class="service-history">
-                    <strong>Last Service:</strong>
-                    <div class="service-item">
-                        <div class="service-date">${formatDate(lastService.date)}</div>
-                        <div>${lastService.type} - $${lastService.amount}</div>
-                    </div>
-                </div>
-                ` : ''}
-            `;
-
-            return card;
-        }
-
-        function editCustomer(id) {
-            const customer = customers.find(c => c.id === id);
-            if (!customer) return;
-
-            currentEditingId = id;
-            
-            // Fill the form
-            document.getElementById('customer-name').value = customer.name;
-            document.getElementById('customer-email').value = customer.email;
-            document.getElementById('customer-phone').value = customer.phone;
-            document.getElementById('customer-address').value = customer.address;
-            document.getElementById('customer-postcode').value = customer.postcode || '';
-            document.getElementById('lawn-size').value = customer.lawnSize || '';
-            document.getElementById('service-frequency').value = customer.frequency || '';
-            document.getElementById('customer-notes').value = customer.notes || '';
-            
-            // Switch to add customer section
-            showSection('add-customer');
-            
-            // Update the header
-            document.querySelector('#add-customer h2').innerHTML = '<i class="fas fa-user-edit"></i> Edit Customer';
-        }
-
-        function deleteCustomer(id) {
-            if (confirm('Are you sure you want to delete this customer? This will also remove all their service history.')) {
-                customers = customers.filter(c => c.id !== id);
-                services = services.filter(s => s.customerId !== id);
-                
-                localStorage.setItem('lawn-care-customers', JSON.stringify(customers));
-                localStorage.setItem('lawn-care-services', JSON.stringify(services));
-                
-                loadCustomers();
-                updateDashboard();
-                showMessage('Customer deleted successfully!', 'success');
-            }
-        }
-
-        function viewCustomer(id) {
-            const customer = customers.find(c => c.id === id);
-            if (!customer) return;
-
-            const customerServices = services.filter(s => s.customerId === id).sort((a, b) => new Date(b.date) - new Date(a.date));
-            const totalRevenue = customerServices.reduce((sum, s) => sum + parseFloat(s.amount), 0);
-
-            document.getElementById('modal-customer-name').textContent = customer.name;
-            document.getElementById('modal-customer-details').innerHTML = `
-                <div style="margin-bottom: 20px;">
-                    <h4 style="color: #2e7d32; margin-bottom: 10px;">Contact Information</h4>
-                    <p><strong>Email:</strong> ${customer.email}</p>
-                    <p><strong>Phone:</strong> ${customer.phone}</p>
-                    <p><strong>Address:</strong> ${customer.address}</p>
-                    ${customer.postcode ? `<p><strong>Postcode:</strong> ${customer.postcode}</p>` : ''}
-                </div>
-                
-                <div style="margin-bottom: 20px;">
-                    <h4 style="color: #2e7d32
+                        <span>$${totalRevenue.toFixed(2
