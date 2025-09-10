@@ -803,7 +803,7 @@
                 lawnSize: formData.get('lawnSize'),
                 frequency: formData.get('frequency'),
                 notes: formData.get('notes'),
-                createdAt: currentEditingId ? customers.find(c => c.id === currentEditingId).createdAt : new Date().toISOString(),
+                createdAt: currentEditingId ? customers.find(c => c.id === currentEditingId)?.createdAt : new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             };
 
@@ -812,6 +812,7 @@
                 const index = customers.findIndex(c => c.id === currentEditingId);
                 customers[index] = customerData;
                 showMessage('Customer updated successfully!', 'success');
+                document.querySelector('#add-customer h2').innerHTML = '<i class="fas fa-user-plus"></i> Add New Customer';
             } else {
                 // Add new customer
                 customers.push(customerData);
@@ -827,6 +828,8 @@
 
         function loadCustomers() {
             const customersList = document.getElementById('customers-list');
+            if (!customersList) return;
+            
             customersList.innerHTML = '';
 
             if (customers.length === 0) {
@@ -846,7 +849,7 @@
             
             const customerServices = services.filter(s => s.customerId === customer.id);
             const totalServices = customerServices.length;
-            const totalRevenue = customerServices.reduce((sum, s) => sum + parseFloat(s.amount), 0);
+            const totalRevenue = customerServices.reduce((sum, s) => sum + parseFloat(s.amount || 0), 0);
             const lastService = customerServices.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
 
             card.innerHTML = `
@@ -888,4 +891,10 @@
                     </div>
                     <div class="info-item">
                         <i class="fas fa-dollar-sign"></i>
-                        <span>$${totalRevenue.toFixed(2
+                        <span>$${totalRevenue.toFixed(2)} total</span>
+                    </div>
+                </div>
+                
+                ${lastService ? `
+                <div class="service-history">
+                    <strong>Last Service:</strong>
