@@ -34,11 +34,156 @@
     }
     </script>
 
+    <style>
+        /* CRM Modal Styles */
+        .crm-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .crm-modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .crm-modal-header {
+            background: linear-gradient(135deg, #2e7d32, #4caf50);
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            position: relative;
+        }
+
+        .crm-modal-header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .crm-close {
+            color: white;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .crm-close:hover {
+            transform: rotate(90deg);
+        }
+
+        .crm-modal-body {
+            padding: 30px;
+        }
+
+        .crm-form-group {
+            margin-bottom: 20px;
+        }
+
+        .crm-form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .crm-form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .crm-form-group input:focus {
+            outline: none;
+            border-color: #4caf50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
+        }
+
+        .crm-login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #2e7d32, #4caf50);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .crm-login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
+        }
+
+        .crm-error {
+            display: none;
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
     <a href="tel:+61478733900" class="fixed-phone-btn">
-    <i class="fas fa-phone"></i> +61 478 733 900
-</a>
+        <i class="fas fa-phone"></i> +61 478 733 900
+    </a>
+
+    <!-- CRM Login Modal -->
+    <div id="crm-login-modal" class="crm-modal">
+        <div class="crm-modal-content">
+            <div class="crm-modal-header">
+                <span class="crm-close" onclick="closeCRMLogin()">&times;</span>
+                <h2><i class="fas fa-lock"></i> CRM Login</h2>
+            </div>
+            <div class="crm-modal-body">
+                <div id="crm-login-error" class="crm-error"></div>
+                <form id="crm-login-form">
+                    <div class="crm-form-group">
+                        <label for="crm-username">Username</label>
+                        <input type="text" id="crm-username" name="username" required placeholder="Enter username">
+                    </div>
+                    <div class="crm-form-group">
+                        <label for="crm-password">Password</label>
+                        <input type="password" id="crm-password" name="password" required placeholder="Enter password">
+                    </div>
+                    <button type="submit" class="crm-login-btn">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <header>
         <div class="container header-container">
@@ -273,16 +418,16 @@
     </footer>
 
     <script>
-        // CRM Login Functions - Must be defined first
+        // CRM Login Functions
         function showCRMLogin() {
-            console.log('CRM Login button clicked'); // Debug log
+            console.log('CRM Login button clicked');
             const modal = document.getElementById('crm-login-modal');
             if (modal) {
                 modal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
-                console.log('Modal should be visible now'); // Debug log
+                console.log('Modal opened');
             } else {
-                console.error('Modal element not found!'); // Error log
+                console.error('Modal element not found!');
             }
         }
 
@@ -298,48 +443,15 @@
             }
         }
 
-        // Wait for DOM to load
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, setting up CRM system'); // Debug log
-            
-            // Default admin credentials for CRM
-            const defaultUsers = [
-                {
-                    username: 'admin',
-                    password: 'lawn123',
-                    role: 'admin',
-                    name: 'System Administrator'
-                }
-            ];
-
-            // Get stored users or use defaults
-            let crmUsers = JSON.parse(localStorage.getItem('lawn-care-users') || JSON.stringify(defaultUsers));
-
-            // Handle CRM login form submission
-            document.addEventListener('click', function(e) {
-                if (e.target && e.target.id === 'crm-login-form') {
-                    e.preventDefault();
-                    handleCRMLogin();
-                }
-            });
-            
-            // Handle form submission through event delegation
-            document.addEventListener('submit', function(e) {
-                if (e.target && e.target.id === 'crm-login-form') {
-                    e.preventDefault();
-                    handleCRMLogin();
-                }
-            });
-        });
-
-        function handleCRMLogin() {
-            console.log('CRM form submitted'); // Debug log
+        function handleCRMLogin(e) {
+            e.preventDefault();
+            console.log('CRM form submitted');
             
             const username = document.getElementById('crm-username').value;
             const password = document.getElementById('crm-password').value;
             const errorDiv = document.getElementById('crm-login-error');
             
-            // Default admin credentials for CRM
+            // Default admin credentials
             const defaultUsers = [
                 {
                     username: 'admin',
@@ -352,11 +464,11 @@
             // Get stored users or use defaults
             let crmUsers = JSON.parse(localStorage.getItem('lawn-care-users') || JSON.stringify(defaultUsers));
             
-            // Find user in users array
+            // Find user
             const user = crmUsers.find(u => u.username === username && u.password === password);
             
             if (user) {
-                console.log('Login successful, redirecting...'); // Debug log
+                console.log('Login successful');
                 // Store login info
                 sessionStorage.setItem('lawn-care-logged-in', 'true');
                 sessionStorage.setItem('current-user', JSON.stringify(user));
@@ -364,9 +476,9 @@
                 // Redirect to admin panel
                 window.location.href = 'admin.html';
             } else {
-                console.log('Login failed'); // Debug log
+                console.log('Login failed');
                 if (errorDiv) {
-                    errorDiv.textContent = 'Invalid username or password. Please check your credentials and try again.';
+                    errorDiv.textContent = 'Invalid username or password.';
                     errorDiv.style.display = 'block';
                 }
                 
@@ -376,17 +488,27 @@
             }
         }
 
-            // Original quote form code
-            const form = document.getElementById('quote-form');
+        // Wait for DOM to load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded');
+            
+            // CRM Login Form Handler
+            const crmForm = document.getElementById('crm-login-form');
+            if (crmForm) {
+                crmForm.addEventListener('submit', handleCRMLogin);
+            }
+            
+            // Quote Form Handler
+            const quoteForm = document.getElementById('quote-form');
             const successMessage = document.getElementById('success-message');
 
-            if (form && successMessage) {
-                form.addEventListener('submit', async function(event) {
+            if (quoteForm && successMessage) {
+                quoteForm.addEventListener('submit', async function(event) {
                     event.preventDefault();
 
-                    const response = await fetch(form.action, {
+                    const response = await fetch(quoteForm.action, {
                         method: 'POST',
-                        body: new FormData(form),
+                        body: new FormData(quoteForm),
                         headers: {
                             'Accept': 'application/json'
                         }
@@ -394,7 +516,7 @@
 
                     if (response.ok) {
                         successMessage.style.display = 'block';
-                        form.reset();
+                        quoteForm.reset();
                     } else {
                         alert('Form submission failed. Please try again.');
                     }
