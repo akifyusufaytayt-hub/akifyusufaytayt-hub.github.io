@@ -316,40 +316,65 @@
             let crmUsers = JSON.parse(localStorage.getItem('lawn-care-users') || JSON.stringify(defaultUsers));
 
             // Handle CRM login form submission
-            const crmForm = document.getElementById('crm-login-form');
-            if (crmForm) {
-                crmForm.addEventListener('submit', function(e) {
+            document.addEventListener('click', function(e) {
+                if (e.target && e.target.id === 'crm-login-form') {
                     e.preventDefault();
-                    console.log('CRM form submitted'); // Debug log
-                    
-                    const username = document.getElementById('crm-username').value;
-                    const password = document.getElementById('crm-password').value;
-                    const errorDiv = document.getElementById('crm-login-error');
-                    
-                    // Find user in users array
-                    const user = crmUsers.find(u => u.username === username && u.password === password);
-                    
-                    if (user) {
-                        console.log('Login successful, redirecting...'); // Debug log
-                        // Store login info
-                        sessionStorage.setItem('lawn-care-logged-in', 'true');
-                        sessionStorage.setItem('current-user', JSON.stringify(user));
-                        
-                        // Redirect to admin panel
-                        window.location.href = 'admin.html';
-                    } else {
-                        console.log('Login failed'); // Debug log
-                        if (errorDiv) {
-                            errorDiv.textContent = 'Invalid username or password. Please check your credentials and try again.';
-                            errorDiv.style.display = 'block';
-                        }
-                        
-                        // Clear password field
-                        const passwordField = document.getElementById('crm-password');
-                        if (passwordField) passwordField.value = '';
-                    }
-                });
+                    handleCRMLogin();
+                }
+            });
+            
+            // Handle form submission through event delegation
+            document.addEventListener('submit', function(e) {
+                if (e.target && e.target.id === 'crm-login-form') {
+                    e.preventDefault();
+                    handleCRMLogin();
+                }
+            });
+        });
+
+        function handleCRMLogin() {
+            console.log('CRM form submitted'); // Debug log
+            
+            const username = document.getElementById('crm-username').value;
+            const password = document.getElementById('crm-password').value;
+            const errorDiv = document.getElementById('crm-login-error');
+            
+            // Default admin credentials for CRM
+            const defaultUsers = [
+                {
+                    username: 'admin',
+                    password: 'lawn123',
+                    role: 'admin',
+                    name: 'System Administrator'
+                }
+            ];
+
+            // Get stored users or use defaults
+            let crmUsers = JSON.parse(localStorage.getItem('lawn-care-users') || JSON.stringify(defaultUsers));
+            
+            // Find user in users array
+            const user = crmUsers.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                console.log('Login successful, redirecting...'); // Debug log
+                // Store login info
+                sessionStorage.setItem('lawn-care-logged-in', 'true');
+                sessionStorage.setItem('current-user', JSON.stringify(user));
+                
+                // Redirect to admin panel
+                window.location.href = 'admin.html';
+            } else {
+                console.log('Login failed'); // Debug log
+                if (errorDiv) {
+                    errorDiv.textContent = 'Invalid username or password. Please check your credentials and try again.';
+                    errorDiv.style.display = 'block';
+                }
+                
+                // Clear password field
+                const passwordField = document.getElementById('crm-password');
+                if (passwordField) passwordField.value = '';
             }
+        }
 
             // Original quote form code
             const form = document.getElementById('quote-form');
