@@ -64,4 +64,454 @@
     .modal-content{background:#fff;margin:5% auto;padding:30px;border-radius:10px;width:90%;max-width:600px;max-height:80vh;overflow-y:auto}
     .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
     .close{font-size:24px;cursor:pointer;color:#666}.close:hover{color:#000}
-    @media(max-width:768px){.container{padding:0 15px}.header-container{flex-direction:column;gap:10px}.user-section{position:static;transform:none;margin-top:15px}.nav-tabs ul{flex-direction:column}.search-controls{flex-direction:column;align-items:stretch}.search-controls input{min-width:auto}.customer
+    @media(max-width:768px){.container{padding:0 15px}.header-container{flex-direction:column;gap:10px}.user-section{position:static;transform:none;margin-top:15px}.nav-tabs ul{flex-direction:column}.search-controls{flex-direction:column;align-items:stretch}.search-controls input{min-width:auto}.customer-actions{flex-direction:column}.form-grid{grid-template-columns:1fr}}
+  </style>
+
+  <!-- Firebase compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBewthZtqSGpLsrP4sRBkBkM6fYvvr1T4E",
+      authDomain: "lawncare-crm-b3617.firebaseapp.com",
+      projectId: "lawncare-crm-b3617",
+      storageBucket: "lawncare-crm-b3617.appspot.com",
+      messagingSenderId: "208959921459",
+      appId: "1:208959921459:web:5161477d1943f96c7c8246",
+      measurementId: "G-7VG6PHM0N1"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+  </script>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-container">
+        <img src="logo.png" alt="Melbourne Lawn Care Logo" class="logo">
+        <div>
+          <h1>Melbourne Lawn Care</h1>
+          <p class="tagline">Admin Panel - Customer Management</p>
+        </div>
+        <div class="user-section">
+          <div class="user-info">
+            <i class="fas fa-user-circle"></i>
+            <span id="current-user-display">Admin</span>
+          </div>
+          <button onclick="logout()" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="nav-tabs">
+      <ul>
+        <li><button class="nav-btn active" data-section="dashboard"><i class="fas fa-chart-line"></i> Dashboard</button></li>
+        <li><button class="nav-btn" data-section="customers"><i class="fas fa-users"></i> Customers</button></li>
+        <li><button class="nav-btn" data-section="add-customer"><i class="fas fa-user-plus"></i> Add Customer</button></li>
+        <li><button class="nav-btn" data-section="services"><i class="fas fa-clipboard-list"></i> Services</button></li>
+      </ul>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <div id="dashboard" class="content-section active">
+      <h2><i class="fas fa-chart-line"></i> Dashboard</h2>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-number" id="total-customers">0</div><div class="stat-label">Total Customers</div></div>
+        <div class="stat-card"><div class="stat-number" id="total-services">0</div><div class="stat-label">Total Services</div></div>
+        <div class="stat-card"><div class="stat-number" id="monthly-revenue">$0</div><div class="stat-label">This Month Revenue</div></div>
+        <div class="stat-card"><div class="stat-number" id="avg-service-value">$0</div><div class="stat-label">Avg Service Value</div></div>
+      </div>
+      <div style="background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);">
+        <h3 style="color:#2e7d32;margin-bottom:15px;">Recent Activities</h3>
+        <div id="recent-activities"></div>
+      </div>
+    </div>
+
+    <div id="customers" class="content-section">
+      <h2><i class="fas fa-users"></i> Customer Management</h2>
+      <div class="search-bar">
+        <div class="search-controls">
+          <input type="text" id="search-customers" placeholder="Search customers by name, address, or phone...">
+          <select id="filter-frequency">
+            <option value="">All Frequencies</option>
+            <option value="weekly">Weekly</option>
+            <option value="fortnightly">Fortnightly</option>
+            <option value="monthly">Monthly</option>
+            <option value="one-off">One-off</option>
+          </select>
+          <button class="btn" onclick="exportCustomers()"><i class="fas fa-download"></i> Export</button>
+        </div>
+      </div>
+      <div id="customers-list" class="customer-grid"></div>
+    </div>
+
+    <div id="add-customer" class="content-section">
+      <h2><i class="fas fa-user-plus"></i> Add New Customer</h2>
+      <form id="customer-form">
+        <div class="form-grid">
+          <div>
+            <div class="form-group"><label for="customer-name">Full Name *</label><input type="text" id="customer-name" name="name" required></div>
+            <div class="form-group"><label for="customer-email">Email *</label><input type="email" id="customer-email" name="email" required></div>
+            <div class="form-group"><label for="customer-phone">Phone *</label><input type="tel" id="customer-phone" name="phone" required></div>
+            <div class="form-group"><label for="customer-address">Address *</label><input type="text" id="customer-address" name="address" required></div>
+          </div>
+          <div>
+            <div class="form-group"><label for="customer-postcode">Postcode</label><input type="text" id="customer-postcode" name="postcode"></div>
+            <div class="form-group"><label for="lawn-size">Lawn Size</label>
+              <select id="lawn-size" name="lawnSize">
+                <option value="">Select Size</option>
+                <option value="small">Small (up to 300m²)</option>
+                <option value="medium">Medium (300-600m²)</option>
+                <option value="large">Large (600m²+)</option>
+              </select>
+            </div>
+            <div class="form-group"><label for="service-frequency">Service Frequency</label>
+              <select id="service-frequency" name="frequency">
+                <option value="">Select Frequency</option>
+                <option value="weekly">Weekly</option>
+                <option value="fortnightly">Fortnightly</option>
+                <option value="monthly">Monthly</option>
+                <option value="one-off">One-off</option>
+              </select>
+            </div>
+            <div class="form-group"><label for="customer-notes">Notes</label><textarea id="customer-notes" name="notes" rows="3" placeholder="Special instructions, gate access, etc."></textarea></div>
+          </div>
+        </div>
+        <button type="submit" class="btn"><i class="fas fa-save"></i> Save Customer</button>
+        <button type="button" class="btn btn-secondary" onclick="clearForm()"><i class="fas fa-times"></i> Clear Form</button>
+      </form>
+    </div>
+
+    <div id="services" class="content-section">
+      <h2><i class="fas fa-clipboard-list"></i> Service Management</h2>
+      <div style="background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);margin-bottom:20px;">
+        <h3 style="color:#2e7d32;margin-bottom:15px;">Add New Service</h3>
+        <form id="service-form">
+          <div class="form-grid">
+            <div>
+              <div class="form-group"><label for="service-customer">Customer *</label>
+                <select id="service-customer" name="customerId" required><option value="">Select Customer</option></select>
+              </div>
+              <div class="form-group"><label for="service-date">Service Date *</label><input type="date" id="service-date" name="date" required></div>
+            </div>
+            <div>
+              <div class="form-group"><label for="service-type">Service Type *</label>
+                <select id="service-type" name="type" required>
+                  <option value="">Select Service</option>
+                  <option value="standard-mowing">Standard Mowing</option>
+                  <option value="mowing-edging">Mowing + Edge Trimming</option>
+                  <option value="full-service">Full Service + Green Waste</option>
+                  <option value="hedge-trimming">Hedge Trimming</option>
+                  <option value="garden-weeding">Garden Bed Weeding</option>
+                </select>
+              </div>
+              <div class="form-group"><label for="service-amount">Amount ($) *</label><input type="number" id="service-amount" name="amount" step="0.01" required></div>
+            </div>
+          </div>
+          <div class="form-group"><label for="service-notes">Service Notes</label><textarea id="service-notes" name="notes" rows="2" placeholder="Additional details about the service..."></textarea></div>
+          <button type="submit" class="btn"><i class="fas fa-plus"></i> Add Service</button>
+        </form>
+      </div>
+      <div style="background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);">
+        <h3 style="color:#2e7d32;margin-bottom:15px;">Recent Services</h3>
+        <div id="recent-services"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="customer-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-customer-name"></h3>
+        <span class="close" onclick="closeModal()">&times;</span>
+      </div>
+      <div id="modal-customer-details"></div>
+    </div>
+  </div>
+
+  <script>
+    let customersCache = [];
+    let servicesCache = [];
+    let currentEditingId = null;
+
+    // Auth gate
+    auth.onAuthStateChanged(async user=>{
+      if(!user){ window.location.href="index.html"; return; }
+      document.getElementById('current-user-display').textContent=user.email;
+      await loadCustomers();
+      await loadServices();
+      updateDashboard();
+      updateCustomerDropdown();
+    });
+
+    function logout(){ auth.signOut(); }
+
+    // Tabs
+    document.querySelectorAll('.nav-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>showSection(btn.dataset.section));
+    });
+    function showSection(id){
+      document.querySelectorAll('.content-section').forEach(s=>s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelector(`.nav-btn[data-section="${id}"]`).classList.add('active');
+      if(id==='services') updateCustomerDropdown();
+    }
+
+    function showMessage(text,type){
+      const el=document.getElementById('message');
+      el.textContent=text;
+      el.className=`message ${type}`;
+      el.style.display='block';
+      setTimeout(()=>el.style.display='none',3000);
+    }
+
+    // Customers
+    document.getElementById('customer-form').addEventListener('submit',saveCustomer);
+
+    async function saveCustomer(e){
+      e.preventDefault();
+      const data={
+        name:document.getElementById('customer-name').value.trim(),
+        email:document.getElementById('customer-email').value.trim(),
+        phone:document.getElementById('customer-phone').value.trim(),
+        address:document.getElementById('customer-address').value.trim(),
+        postcode:document.getElementById('customer-postcode').value.trim(),
+        lawnSize:document.getElementById('lawn-size').value,
+        frequency:document.getElementById('service-frequency').value,
+        notes:document.getElementById('customer-notes').value.trim(),
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
+        createdAt:firebase.firestore.FieldValue.serverTimestamp()
+      };
+      if(currentEditingId){
+        await db.collection('musteriler').doc(currentEditingId).update(data);
+        currentEditingId=null;
+        document.querySelector('#add-customer h2').innerHTML='<i class="fas fa-user-plus"></i> Add New Customer';
+        showMessage('Customer updated successfully!','success');
+      }else{
+        await db.collection('musteriler').add(data);
+        showMessage('Customer added successfully!','success');
+      }
+      clearForm();
+      await loadCustomers();
+      updateDashboard();
+      updateCustomerDropdown();
+    }
+
+    function clearForm(){ document.getElementById('customer-form').reset(); }
+
+    async function loadCustomers(){
+      const snap=await db.collection('musteriler').orderBy('createdAt','desc').get();
+      customersCache=snap.docs.map(d=>({id:d.id,...d.data()}));
+      renderCustomers(customersCache);
+    }
+
+    function renderCustomers(list){
+      const wrap=document.getElementById('customers-list');
+      wrap.innerHTML='';
+      if(!list.length){ wrap.innerHTML='<p style="text-align:center;color:#666;padding:40px;">No customers found. Add your first customer to get started!</p>'; return; }
+      list.forEach(c=>wrap.appendChild(createCustomerCard(c)));
+    }
+
+    function createCustomerCard(c){
+      const cServices=servicesCache.filter(s=>s.customerId===c.id);
+      const totalServices=cServices.length;
+      const totalRevenue=cServices.reduce((sum,s)=>sum+(parseFloat(s.amount)||0),0);
+      const lastService=cServices.sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+
+      const card=document.createElement('div');
+      card.className='customer-card';
+      card.innerHTML=`
+        <div class="customer-header">
+          <h3 class="customer-name">${escapeHtml(c.name||'')}</h3>
+          <div class="customer-actions">
+            <button class="btn" title="View Details" onclick="viewCustomer('${c.id}')"><i class="fas fa-eye"></i></button>
+            <button class="btn btn-secondary" title="Edit" onclick="editCustomer('${c.id}')"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-danger" title="Delete" onclick="deleteCustomer('${c.id}')"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+        <div class="customer-info">
+          <div class="info-item"><i class="fas fa-envelope"></i><span>${escapeHtml(c.email||'')}</span></div>
+          <div class="info-item"><i class="fas fa-phone"></i><span>${escapeHtml(c.phone||'')}</span></div>
+          <div class="info-item"><i class="fas fa-map-marker-alt"></i><span>${escapeHtml(c.address||'')}</span></div>
+          <div class="info-item"><i class="fas fa-calendar"></i><span>${escapeHtml(c.frequency||'Not set')}</span></div>
+          <div class="info-item"><i class="fas fa-chart-line"></i><span>${totalServices} services</span></div>
+          <div class="info-item"><i class="fas fa-dollar-sign"></i><span>$${totalRevenue.toFixed(2)} total</span></div>
+        </div>
+        ${ lastService ? `
+          <div class="service-history">
+            <strong>Last Service:</strong>
+            <div class="service-item">
+              <span class="service-date">${escapeHtml(lastService.date||'')}</span> •
+              <span>${escapeHtml(lastService.type||'')}</span> •
+              <span>$${Number(lastService.amount||0).toFixed(2)}</span>
+            </div>
+          </div>` : ``}
+      `;
+      return card;
+    }
+
+    function editCustomer(id){
+      const c=customersCache.find(x=>x.id===id); if(!c) return;
+      currentEditingId=id;
+      document.getElementById('customer-name').value=c.name||'';
+      document.getElementById('customer-email').value=c.email||'';
+      document.getElementById('customer-phone').value=c.phone||'';
+      document.getElementById('customer-address').value=c.address||'';
+      document.getElementById('customer-postcode').value=c.postcode||'';
+      document.getElementById('lawn-size').value=c.lawnSize||'';
+      document.getElementById('service-frequency').value=c.frequency||'';
+      document.getElementById('customer-notes').value=c.notes||'';
+      document.querySelector('#add-customer h2').innerHTML='<i class="fas fa-user-plus"></i> Edit Customer';
+      showSection('add-customer');
+    }
+
+    async function deleteCustomer(id){
+      if(!confirm('Delete this customer?')) return;
+      const sSnap=await db.collection('hizmetler').where('customerId','==',id).get();
+      const batch=db.batch();
+      sSnap.forEach(doc=>batch.delete(doc.ref));
+      batch.delete(db.collection('musteriler').doc(id));
+      await batch.commit();
+      await loadCustomers();
+      await loadServices();
+      updateDashboard();
+      updateCustomerDropdown();
+      showMessage('Customer deleted.','success');
+    }
+
+    function viewCustomer(id){
+      const c=customersCache.find(x=>x.id===id); if(!c) return;
+      const modal=document.getElementById('customer-modal');
+      const nameEl=document.getElementById('modal-customer-name');
+      const details=document.getElementById('modal-customer-details');
+      const cServices=servicesCache.filter(s=>s.customerId===id).sort((a,b)=>new Date(b.date)-new Date(a.date));
+
+      nameEl.textContent=c.name||'Customer';
+      details.innerHTML=`
+        <p><strong>Email:</strong> ${escapeHtml(c.email||'')}</p>
+        <p><strong>Phone:</strong> ${escapeHtml(c.phone||'')}</p>
+        <p><strong>Address:</strong> ${escapeHtml(c.address||'')}</p>
+        <p><strong>Frequency:</strong> ${escapeHtml(c.frequency||'')}</p>
+        <p><strong>Notes:</strong> ${escapeHtml(c.notes||'')}</p>
+        <div class="service-history" style="margin-top:10px;">
+          <h4 style="margin:10px 0;color:#2e7d32;">Service History</h4>
+          ${ cServices.length ? cServices.map(s=>(
+              `<div class="service-item">
+                 <span class="service-date">${escapeHtml(s.date||'')}</span> •
+                 <span>${escapeHtml(s.type||'')}</span> •
+                 <span>$${Number(s.amount||0).toFixed(2)}</span>
+                 ${s.notes?`<div style="color:#666;margin-top:5px">${escapeHtml(s.notes)}</div>`:''}
+               </div>`
+            )).join('') : '<p>No services yet.</p>'}
+        </div>`;
+      modal.style.display='block';
+      window.onclick=(e)=>{if(e.target===modal) closeModal();};
+      document.onkeydown=(e)=>{if(e.key==='Escape') closeModal();};
+    }
+    function closeModal(){const m=document.getElementById('customer-modal');m.style.display='none';window.onclick=null;document.onkeydown=null;}
+
+    // Search / filter
+    document.getElementById('search-customers').addEventListener('input',filterCustomers);
+    document.getElementById('filter-frequency').addEventListener('change',filterCustomers);
+    function filterCustomers(){
+      const q=document.getElementById('search-customers').value.toLowerCase();
+      const freq=document.getElementById('filter-frequency').value;
+      const list=customersCache.filter(c=>{
+        const text=`${c.name||''} ${c.address||''} ${c.phone||''}`.toLowerCase();
+        const okText=!q||text.includes(q);
+        const okFreq=!freq||(c.frequency||'')===freq;
+        return okText&&okFreq;
+      });
+      renderCustomers(list);
+    }
+
+    // Export CSV
+    function exportCustomers(){
+      if(!customersCache.length){showMessage('No data to export.','error');return;}
+      const rows=[['Name','Email','Phone','Address','Postcode','LawnSize','Frequency','Notes'],
+        ...customersCache.map(c=>[c.name||'',c.email||'',c.phone||'',c.address||'',c.postcode||'',c.lawnSize||'',c.frequency||'',(c.notes||'').replace(/\n/g,' ')])];
+      const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download='customers.csv';a.click();URL.revokeObjectURL(url);
+    }
+
+    // Services
+    document.getElementById('service-form').addEventListener('submit',saveService);
+    async function saveService(e){
+      e.preventDefault();
+      const data={
+        customerId:document.getElementById('service-customer').value,
+        date:document.getElementById('service-date').value,
+        type:document.getElementById('service-type').value,
+        amount:parseFloat(document.getElementById('service-amount').value||'0'),
+        notes:document.getElementById('service-notes').value.trim(),
+        createdAt:firebase.firestore.FieldValue.serverTimestamp()
+      };
+      if(!data.customerId){showMessage('Select a customer.','error');return;}
+      await db.collection('hizmetler').add(data);
+      document.getElementById('service-form').reset();
+      await loadServices();
+      updateDashboard();
+      showMessage('Service added.','success');
+    }
+
+    async function loadServices(){
+      const snap=await db.collection('hizmetler').orderBy('createdAt','desc').limit(50).get();
+      servicesCache=snap.docs.map(d=>({id:d.id,...d.data()}));
+      renderRecentServices();
+      renderCustomers(customersCache);
+    }
+
+    function renderRecentServices(){
+      const wrap=document.getElementById('recent-services');
+      wrap.innerHTML = servicesCache.length ? servicesCache.slice(0,10).map(s=>{
+        const c=customersCache.find(x=>x.id===s.customerId);
+        return `<div class="service-item">
+                  <span class="service-date">${escapeHtml(s.date||'')}</span> •
+                  <strong>${escapeHtml(c?.name||'Unknown')}</strong> •
+                  ${escapeHtml(s.type||'')} • $${Number(s.amount||0).toFixed(2)}
+                  ${s.notes?`<div style="color:#666;margin-top:5px">${escapeHtml(s.notes)}</div>`:''}
+                </div>`;
+      }).join('') : '<p>No services recorded yet.</p>';
+    }
+
+    function updateCustomerDropdown(){
+      const sel=document.getElementById('service-customer'); if(!sel) return;
+      const cur=sel.value;
+      sel.innerHTML='<option value="">Select Customer</option>'+customersCache.map(c=>`<option value="${c.id}">${escapeHtml(c.name||'')}</option>`).join('');
+      if(cur) sel.value=cur;
+    }
+
+    function updateDashboard(){
+      document.getElementById('total-customers').textContent=customersCache.length;
+      document.getElementById('total-services').textContent=servicesCache.length;
+
+      const now=new Date(); const ym=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+      const thisMonth=ym(now);
+      const monthServices=servicesCache.filter(s=>s.date && ym(new Date(s.date))===thisMonth);
+      const monthRevenue=monthServices.reduce((sum,s)=>sum+(parseFloat(s.amount)||0),0);
+      const avg=servicesCache.length?servicesCache.reduce((sum,s)=>sum+(parseFloat(s.amount)||0),0)/servicesCache.length:0;
+
+      document.getElementById('monthly-revenue').textContent=`$${monthRevenue.toFixed(2)}`;
+      document.getElementById('avg-service-value').textContent=`$${avg.toFixed(2)}`;
+
+      const act=document.getElementById('recent-activities');
+      const latest=[...servicesCache].slice(0,5).map(s=>{
+        const c=customersCache.find(x=>x.id===s.customerId);
+        return `<div>- ${escapeHtml(s.date||'')} • ${escapeHtml(s.type||'')} • ${escapeHtml(c?.name||'Unknown')} • $${Number(s.amount||0).toFixed(2)}</div>`;
+      }).join('');
+      act.innerHTML=latest||'<p>No recent activity.</p>';
+    }
+
+    function escapeHtml(str){return String(str).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  </script>
+</body>
+</html>
