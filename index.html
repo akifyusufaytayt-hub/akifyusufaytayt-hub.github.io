@@ -1,150 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Melbourne Lawn Care - Professional Lawn & Garden Services</title>
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="icon" type="image/png" href="logo.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Melbourne Lawn Care - Professional Lawn & Garden Services</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" type="image/png" href="logo.png">
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"></script>
 
-  <script>
-    // Senin Firebase config (Firebase panelinden aldığın değerler)
-    const firebaseConfig = {
-      apiKey: "AIzaSyBewthZtqSGpLsrP4sRBkBkM6fYvvr1T4E",
-      authDomain: "lawncare-crm-b3617.firebaseapp.com",
-      projectId: "lawncare-crm-b3617",
-      storageBucket: "lawncare-crm-b3617.appspot.com",
-      messagingSenderId: "208959921459",
-      appId: "1:208959921459:web:5161477d1943f96c7c8246",
-      measurementId: "G-7VG6PHM0N1"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-  </script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBewthZtqSGpLsrP4sRBkBkM6fYvvr1T4E",
+        authDomain: "lawncare-crm-b3617.firebaseapp.com",
+        projectId: "lawncare-crm-b3617",
+        storageBucket: "lawncare-crm-b3617.appspot.com",
+        messagingSenderId: "208959921459",
+        appId: "1:208959921459:web:5161477d1943f96c7c8246",
+        measurementId: "G-7VG6PHM0N1"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+    </script>
 
-  <style>
-    /* CRM Modal Styles */
-    .crm-modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-    }
-    .crm-modal-content {
-      background: #fff;
-      margin: 10% auto;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 400px;
-    }
-    .crm-close {
-      float: right;
-      font-size: 28px;
-      cursor: pointer;
-    }
-    .crm-error {
-      display: none;
-      color: red;
-      margin-bottom: 10px;
-    }
-    .crm-form-group {
-      margin-bottom: 15px;
-    }
-    .crm-form-group input {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
-    .crm-login-btn {
-      width: 100%;
-      padding: 12px;
-      background: #2e7d32;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-  </style>
+    <style>
+        /* CRM Modal Styles */
+        .crm-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+        .crm-modal-content {
+            background: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%; max-width: 400px;
+        }
+        .crm-close {
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+        }
+        .crm-error { display: none; color: red; margin-bottom: 10px; }
+        .crm-form-group { margin-bottom: 15px; }
+        .crm-form-group input {
+            width: 100%; padding: 10px;
+            border: 1px solid #ddd; border-radius: 5px;
+        }
+        .crm-login-btn {
+            width: 100%; padding: 12px;
+            background: #2e7d32; color: white;
+            border: none; border-radius: 5px;
+            font-weight: bold; cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-  <!-- CRM Login Modal -->
-  <div id="crm-login-modal" class="crm-modal">
-    <div class="crm-modal-content">
-      <span class="crm-close" onclick="closeCRMLogin()">&times;</span>
-      <h2>CRM Login</h2>
-      <div id="crm-login-error" class="crm-error"></div>
-      <form id="crm-login-form">
-        <div class="crm-form-group">
-          <input type="email" id="crm-email" placeholder="Email" required>
+    <a href="tel:+61478733900" class="fixed-phone-btn">
+        <i class="fas fa-phone"></i> +61 478 733 900
+    </a>
+
+    <!-- CRM Login Modal -->
+    <div id="crm-login-modal" class="crm-modal">
+        <div class="crm-modal-content">
+            <span class="crm-close" onclick="closeCRMLogin()">&times;</span>
+            <h2>CRM Login</h2>
+            <div id="crm-login-error" class="crm-error"></div>
+            <form id="crm-login-form">
+                <div class="crm-form-group">
+                    <input type="email" id="crm-email" placeholder="Email" required>
+                </div>
+                <div class="crm-form-group">
+                    <input type="password" id="crm-password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="crm-login-btn">Login</button>
+            </form>
         </div>
-        <div class="crm-form-group">
-          <input type="password" id="crm-password" placeholder="Password" required>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <img src="logo.png" alt="Melbourne Lawn Care Logo" class="logo">
+            <h1>Melbourne Lawn Care</h1>
+            <p class="tagline">Professional Lawn Care Services</p>
         </div>
-        <button type="submit" class="crm-login-btn">Login</button>
-      </form>
-    </div>
-  </div>
+    </header>
 
-  <header>
-    <div class="container header-container">
-      <img src="logo.png" alt="Melbourne Lawn Care Logo" class="logo">
-      <h1>Melbourne Lawn Care</h1>
-      <p class="tagline">Professional Lawn Care Services</p>
-    </div>
-  </header>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#about">About</a></li>
+                <li><a href="#quote">Get Quote</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#" onclick="showCRMLogin()" style="color:#2e7d32;font-weight:600;">
+                    <i class="fas fa-users-cog"></i> CRM</a></li>
+            </ul>
+        </div>
+    </nav>
 
-  <nav>
-    <div class="container">
-      <ul>
-        <li><a href="#about">About</a></li>
-        <li><a href="#quote">Get Quote</a></li>
-        <li><a href="#contact">Contact</a></li>
-        <li><a href="#" onclick="showCRMLogin()"><i class="fas fa-users-cog"></i> CRM</a></li>
-      </ul>
-    </div>
-  </nav>
+    <!-- Hero Section -->
+    <section id="hero-intro" class="section hero">
+        <div class="container">
+            <h2>Welcome to Melbourne's premier lawn care service...</h2>
+            <p>Our dedicated team ...</p>
+        </div>
+    </section>
 
-  <!-- ... senin site bölümleri (hero, services, contact vs) buraya kalacak ... -->
+    <!-- Why Choose Us -->
+    <section id="why-choose-us" class="section light-bg">
+        <div class="container content-with-image">
+            <div class="text-content">
+                <h2>Why Choose Our Melbourne Lawn Care Service?</h2>
+                <h3>Local Expertise</h3>
+                <p>As Melbourne locals...</p>
+                <h3>Professional Equipment</h3>
+                <p>We invest in ...</p>
+                <h3>Flexible Scheduling</h3>
+                <ul>
+                    <li>Weekly, fortnightly, or monthly visits</li>
+                    <li>Seasonal cleanup services</li>
+                    <li>Emergency lawn care</li>
+                </ul>
+                <h3>Competitive Pricing</h3>
+                <p>We believe quality ...</p>
+            </div>
+            <div class="image-content">
+                <img src="1.jpeg" alt="Professional Lawn Mowing">
+            </div>
+        </div>
+    </section>
 
-  <script>
-    // Modal aç/kapat
-    function showCRMLogin() {
-      document.getElementById('crm-login-modal').style.display = 'block';
-    }
-    function closeCRMLogin() {
-      document.getElementById('crm-login-modal').style.display = 'none';
-    }
+    <!-- Service Areas -->
+    <section id="service-areas" class="section">
+        <div class="container content-with-image">
+            <div class="text-content">
+                <h2>Service Areas Across Melbourne</h2>
+                <ul>
+                    <li><strong>Eastern Suburbs:</strong> Box Hill, Camberwell...</li>
+                    <li><strong>Northern Suburbs:</strong> Preston, Thornbury...</li>
+                </ul>
+            </div>
+            <div class="image-content">
+                <img src="2.jpeg" alt="Service Areas Map">
+            </div>
+        </div>
+    </section>
 
-    // Login işlemi
-    document.getElementById('crm-login-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('crm-email').value;
-      const password = document.getElementById('crm-password').value;
-      const errorDiv = document.getElementById('crm-login-error');
+    <!-- Pricing -->
+    <section id="pricing" class="section light-bg">
+        <div class="container">
+            <h2>Our Service Menu</h2>
+            <div class="menu-container">
+                <div class="menu-item">
+                    <h3>Standard Lawn Mowing</h3>
+                    <p>Regular lawn mowing service...</p>
+                </div>
+                <div class="menu-item highlight">
+                    <h3>Special Offer</h3>
+                    <p>New customers get a discount...</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-      try {
-        await auth.signInWithEmailAndPassword(email, password);
-        window.location.href = "admin.html";
-      } catch (err) {
-        errorDiv.style.display = "block";
-        errorDiv.textContent = err.message;
+    <!-- Quote Form -->
+    <section id="quote" class="section">
+        <div class="container">
+            <h2>Request a Free Quote</h2>
+            <form id="quote-form" action="https://formspree.io/f/mvgqjyqg" method="POST">
+                <input type="text" name="name" placeholder="Full name" required><br>
+                <input type="email" name="email" placeholder="Email" required><br>
+                <input type="tel" name="phone" placeholder="Phone" required><br>
+                <input type="text" name="address" placeholder="Address" required><br>
+                <textarea name="notes" placeholder="Additional notes"></textarea><br>
+                <button type="submit" class="btn">Get My Quote</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="section">
+        <div class="container">
+            <h2>Contact Us</h2>
+            <p><strong>Phone:</strong> +61 478 733 900</p>
+            <p><strong>Email:</strong> <a href="mailto:melbournelawncareau@gmail.com">melbournelawncareau@gmail.com</a></p>
+            <p><strong>Address:</strong> Murray Ct, Greenvale VIC 3059</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>© 2025 Melbourne Lawn Care. All rights reserved.</p>
+            <div style="opacity:0.3;">
+                <a href="admin.html">ADMIN</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+      // CRM Modal functions
+      function showCRMLogin() {
+        document.getElementById('crm-login-modal').style.display = 'block';
       }
-    });
-  </script>
+      function closeCRMLogin() {
+        document.getElementById('crm-login-modal').style.display = 'none';
+      }
+
+      // Login process
+      document.getElementById('crm-login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('crm-email').value;
+        const password = document.getElementById('crm-password').value;
+        const errorDiv = document.getElementById('crm-login-error');
+
+        try {
+          await auth.signInWithEmailAndPassword(email, password);
+          window.location.href = "admin.html";
+        } catch (err) {
+          errorDiv.style.display = "block";
+          errorDiv.textContent = err.message;
+        }
+      });
+    </script>
 </body>
 </html>
