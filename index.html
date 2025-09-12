@@ -39,7 +39,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
   <script>
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
     const firebaseConfig = {
       apiKey: "AIzaSyDewthZGtpSgLr3P4sRBkkMt6FyvVrlT4E",
       authDomain: "lawncare-crm-b3617.firebaseapp.com",
@@ -237,6 +236,7 @@
     </div>
   </section>
 
+  <!-- UPDATED QUOTE FORM -->
   <section id="quote" class="section">
     <div class="container">
       <h2>Request a Free Quote</h2>
@@ -257,18 +257,9 @@
         </div>
 
         <div class="form-group">
-          <label for="address">Street Address</label>
-          <input autocomplete="street-address" type="text" id="address" name="address" placeholder="e.g., 123 Murray Ct, Greenvale Melbourne Victoria" required />
-        </div>
-
-        <div class="form-group">
-          <label for="unit">Apt/Unit (Optional)</label>
-          <input type="text" id="unit" name="unit" placeholder="Apt, Suite, Unit, etc." />
-        </div>
-
-        <div class="form-group">
-          <label for="zipcode">Postal Code</label>
-          <input autocomplete="postal-code" type="text" id="zipcode" name="zipcode" placeholder="e.g., 3059" required />
+          <label for="address">Address</label>
+          <input autocomplete="street-address" type="text" id="address" name="address"
+                 placeholder="Street address, suburb, VIC" required />
         </div>
 
         <div class="form-group">
@@ -289,7 +280,7 @@
     <div class="container">
       <h2>Contact Us</h2>
       <p>We are committed to providing you with the best lawn care service. There are several ways to get in touch with us: You can fill out the form above to request a free quote, send us an email, or give us a call. Our team members will get in touch with you as soon as possible to schedule an appointment.</p>
-      <p><strong>Phone:</strong> +61 478 733 900</p>
+    <p><strong>Phone:</strong> +61 478 733 900</p>
       <p><strong>Email:</strong> <a href="mailto:melbournelawncareau@gmail.com">melbournelawncareau@gmail.com</a></p>
       <p><strong>Address:</strong> Murray Ct, Greenvale VIC 3059</p>
 
