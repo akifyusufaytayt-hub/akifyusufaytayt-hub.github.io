@@ -1,239 +1,376 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Melbourne Lawn Care - Professional Lawn & Garden Services</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="icon" type="image/png" href="logo.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Melbourne Lawn Care - Professional Lawn & Garden Services</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="icon" type="image/png" href="logo.png" />
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Melbourne Lawn Care",
+    "image": "https://www.melbournelawncare.com.au/logo.png",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Murray Ct, Greenvale",
+      "addressLocality": "Melbourne",
+      "addressRegion": "VIC",
+      "postalCode": "3059",
+      "addressCountry": "AU"
+    },
+    "telephone": "+61478733900",
+    "url": "https://www.melbournelawncare.com.au",
+    "openingHours": "Mo-Sa 09:00-18:00",
+    "priceRange": "$$",
+    "sameAs": [
+      "https://www.facebook.com/profile.php?id=61579606565810",
+      "https://www.instagram.com/melbournelawncare/"
+    ]
+  }
+  </script>
 
-    <script>
-      const firebaseConfig = {
-        apiKey: "AIzaSyBewthZtqSGpLsrP4sRBkBkM6fYvvr1T4E",
-        authDomain: "lawncare-crm-b3617.firebaseapp.com",
-        projectId: "lawncare-crm-b3617",
-        storageBucket: "lawncare-crm-b3617.appspot.com",
-        messagingSenderId: "208959921459",
-        appId: "1:208959921459:web:5161477d1943f96c7c8246",
-        measurementId: "G-7VG6PHM0N1"
-      };
-      firebase.initializeApp(firebaseConfig);
-      const auth = firebase.auth();
-      const db = firebase.firestore();
-    </script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"></script>
 
-    <style>
-        /* CRM Modal Styles */
-        .crm-modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0; top: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-        }
-        .crm-modal-content {
-            background: #fff;
-            margin: 10% auto;
-            padding: 20px;
-            border-radius: 10px;
-            width: 90%; max-width: 400px;
-        }
-        .crm-close {
-            float: right;
-            font-size: 28px;
-            cursor: pointer;
-        }
-        .crm-error { display: none; color: red; margin-bottom: 10px; }
-        .crm-form-group { margin-bottom: 15px; }
-        .crm-form-group input {
-            width: 100%; padding: 10px;
-            border: 1px solid #ddd; border-radius: 5px;
-        }
-        .crm-login-btn {
-            width: 100%; padding: 12px;
-            background: #2e7d32; color: white;
-            border: none; border-radius: 5px;
-            font-weight: bold; cursor: pointer;
-        }
-    </style>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBewthZtqSGpLsrP4sRBkBkM6fYvvr1T4E",
+      authDomain: "lawncare-crm-b3617.firebaseapp.com",
+      projectId: "lawncare-crm-b3617",
+      storageBucket: "lawncare-crm-b3617.appspot.com",
+      messagingSenderId: "208959921459",
+      appId: "1:208959921459:web:5161477d1943f96c7c8246",
+      measurementId: "G-7VG6PHM0N1"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+  </script>
+
+  <style>
+    /* CRM Modal Styles */
+    .crm-modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,.5);animation:fadeIn .3s}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    .crm-modal-content{background-color:#fefefe;margin:10% auto;padding:0;border-radius:10px;width:90%;max-width:400px;box-shadow:0 5px 25px rgba(0,0,0,.2);animation:slideDown .3s}
+    @keyframes slideDown{from{transform:translateY(-50px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .crm-modal-header{background:linear-gradient(135deg,#2e7d32,#4caf50);color:#fff;padding:20px;border-radius:10px 10px 0 0;position:relative}
+    .crm-modal-header h2{margin:0;font-size:24px}
+    .crm-close{color:#fff;position:absolute;right:20px;top:20px;font-size:28px;font-weight:700;cursor:pointer;transition:.3s}
+    .crm-close:hover{transform:rotate(90deg)}
+    .crm-modal-body{padding:30px}
+    .crm-form-group{margin-bottom:20px}
+    .crm-form-group label{display:block;margin-bottom:5px;color:#333;font-weight:500}
+    .crm-form-group input{width:100%;padding:10px;border:1px solid #ddd;border-radius:5px;font-size:16px;transition:border-color .3s}
+    .crm-form-group input:focus{outline:none;border-color:#4caf50;box-shadow:0 0 5px rgba(76,175,80,.2)}
+    .crm-login-btn{width:100%;padding:12px;background:linear-gradient(135deg,#2e7d32,#4caf50);color:#fff;border:none;border-radius:5px;font-size:16px;font-weight:700;cursor:pointer;transition:.3s}
+    .crm-login-btn:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(46,125,50,.3)}
+    .crm-error{display:none;background-color:#ffebee;color:#c62828;padding:10px;border-radius:5px;margin-bottom:15px;font-size:14px}
+  </style>
 </head>
 <body>
-    <a href="tel:+61478733900" class="fixed-phone-btn">
-        <i class="fas fa-phone"></i> +61 478 733 900
-    </a>
+  <a href="tel:+61478733900" class="fixed-phone-btn">
+    <i class="fas fa-phone"></i> +61 478 733 900
+  </a>
 
-    <!-- CRM Login Modal -->
-    <div id="crm-login-modal" class="crm-modal">
-        <div class="crm-modal-content">
-            <span class="crm-close" onclick="closeCRMLogin()">&times;</span>
-            <h2>CRM Login</h2>
-            <div id="crm-login-error" class="crm-error"></div>
-            <form id="crm-login-form">
-                <div class="crm-form-group">
-                    <input type="email" id="crm-email" placeholder="Email" required>
-                </div>
-                <div class="crm-form-group">
-                    <input type="password" id="crm-password" placeholder="Password" required>
-                </div>
-                <button type="submit" class="crm-login-btn">Login</button>
-            </form>
-        </div>
+  <!-- CRM Login Modal -->
+  <div id="crm-login-modal" class="crm-modal">
+    <div class="crm-modal-content">
+      <div class="crm-modal-header">
+        <span class="crm-close" onclick="closeCRMLogin()">&times;</span>
+        <h2><i class="fas fa-lock"></i> CRM Login</h2>
+      </div>
+      <div class="crm-modal-body">
+        <div id="crm-login-error" class="crm-error"></div>
+        <form id="crm-login-form">
+          <div class="crm-form-group">
+            <label for="crm-email">Email</label>
+            <input type="email" id="crm-email" name="email" required placeholder="Enter email" />
+          </div>
+          <div class="crm-form-group">
+            <label for="crm-password">Password</label>
+            <input type="password" id="crm-password" name="password" required placeholder="Enter password" />
+          </div>
+          <button type="submit" class="crm-login-btn">Login</button>
+        </form>
+      </div>
     </div>
+  </div>
 
-    <!-- Header -->
-    <header>
-        <div class="container header-container">
-            <img src="logo.png" alt="Melbourne Lawn Care Logo" class="logo">
-            <h1>Melbourne Lawn Care</h1>
-            <p class="tagline">Professional Lawn Care Services</p>
+  <header>
+    <div class="container header-container">
+      <img src="logo.png" alt="Melbourne Lawn Care Logo" class="logo" />
+      <h1>Melbourne Lawn Care</h1>
+      <p class="tagline">Professional Lawn Care Services</p>
+    </div>
+  </header>
+
+  <nav>
+    <div class="container">
+      <ul>
+        <li><a href="#about">About</a></li>
+        <li><a href="#quote">Get Quote</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#" onclick="showCRMLogin()" style="color:#2e7d32;font-weight:600;"><i class="fas fa-users-cog"></i> CRM</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section id="hero-intro" class="section hero">
+    <div class="container">
+      <h2>Welcome to Melbourne's premier lawn care service, where we transform ordinary yards into extraordinary outdoor spaces.</h2>
+      <p>Our dedicated team of professionals understands the unique challenges of maintaining beautiful lawns in Melbourne's diverse climate, from the hot summer months to the cooler winter seasons.</p>
+    </div>
+  </section>
+
+  <section id="why-choose-us" class="section light-bg">
+    <div class="container content-with-image">
+      <div class="text-content">
+        <h2>Why Choose Our Melbourne Lawn Care Service?</h2>
+        <h3>Local Expertise</h3>
+        <p>As Melbourne locals, we understand the specific challenges of maintaining lawns in our city's variable climate. From the clay soils in the eastern suburbs to the sandy conditions closer to the bay, we tailor our approach to your property's unique needs.</p>
+        <h3>Professional Equipment</h3>
+        <p>We invest in commercial-grade mowing equipment and tools to ensure every job is completed to the highest standard. Our equipment is regularly maintained and serviced for optimal performance.</p>
+        <h3>Flexible Scheduling</h3>
+        <p>We work around your schedule with services available:</p>
+        <ul>
+          <li>Weekly, fortnightly, or monthly visits</li>
+          <li>Seasonal cleanup services</li>
+          <li>Emergency lawn care</li>
+          <li>One-off services for special events</li>
+        </ul>
+        <h3>Competitive Pricing</h3>
+        <p>We believe quality lawn care should be accessible to all Melbourne homeowners. Our transparent pricing structure ensures you know exactly what you're paying for, with no hidden fees or surprises.</p>
+      </div>
+      <div class="image-content">
+        <img src="1.jpeg" alt="Why Choose Us - Professional Lawn Mowing" />
+      </div>
+    </div>
+  </section>
+
+  <section id="service-areas" class="section">
+    <div class="container content-with-image">
+      <div class="text-content">
+        <h2>Service Areas Across Melbourne</h2>
+        <p>We proudly serve the greater Melbourne area, including:</p>
+        <ul>
+          <li><strong>Eastern Suburbs:</strong> Box Hill, Camberwell, Hawthorn, Richmond</li>
+          <li><strong>Northern Suburbs:</strong> Preston, Thornbury, Brunswick, Coburg</li>
+          <li><strong>Western Suburbs:</strong> Footscray, Williamstown, Yarraville</li>
+          <li><strong>Southern Suburbs:</strong> Brighton, St Kilda, Caulfield, Malvern</li>
+          <li><strong>Inner City:</strong> Carlton, Fitzroy, South Yarra, Toorak</li>
+        </ul>
+        <p>Don't see your suburb listed? Contact us – we're always expanding our service areas!</p>
+      </div>
+      <div class="image-content">
+        <img src="2.jpeg" alt="Melbourne Service Areas Map" />
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing" class="section light-bg">
+    <div class="container">
+      <h2>Our Service Menu</h2>
+      <p class="tagline">Pricing information for our core services and additional options is listed below.</p>
+
+      <div class="menu-container">
+        <div class="menu-item">
+          <div class="item-header">
+            <h3>Standard Lawn Mowing</h3>
+            <span class="price">Variable Pricing</span>
+          </div>
+          <p class="description">Regular lawn mowing service to keep your grass pristine all year round.</p>
+          <ul class="size-list">
+            <li>Small Lawns (up to 300m²): <span class="price-detail">Starting from $50</span></li>
+            <li>Medium Lawns (300-600m²): <span class="price-detail">Starting from $70</span></li>
+            <li>Large Lawns (600m²+): <span class="price-detail">Starting from $90</span></li>
+          </ul>
         </div>
-    </header>
 
-    <!-- Navigation -->
-    <nav>
-        <div class="container">
-            <ul>
-                <li><a href="#about">About</a></li>
-                <li><a href="#quote">Get Quote</a></li>
-                <li><a href="#contact">Contact</a></li>
-                <li><a href="#" onclick="showCRMLogin()" style="color:#2e7d32;font-weight:600;">
-                    <i class="fas fa-users-cog"></i> CRM</a></li>
-            </ul>
+        <div class="menu-item highlight">
+          <div class="item-header">
+            <h3>Special Offer</h3>
+            <span class="price">Discounted Price</span>
+          </div>
+          <p class="description">New customers get a 20% discount on their first service!</p>
+          <ul class="size-list">
+            <li>Small Lawns: <span class="price-detail">From $40</span></li>
+            <li>Medium Lawns: <span class="price-detail">From $56</span></li>
+            <li>Large Lawns: <span class="price-detail">From $72</span></li>
+          </ul>
         </div>
-    </nav>
 
-    <!-- Hero Section -->
-    <section id="hero-intro" class="section hero">
-        <div class="container">
-            <h2>Welcome to Melbourne's premier lawn care service...</h2>
-            <p>Our dedicated team ...</p>
+        <div class="menu-item">
+          <div class="item-header">
+            <h3>Additional Services</h3>
+            <span class="price">Extra Charges</span>
+          </div>
+          <p class="description">Other services we offer to complement your lawn care.</p>
+          <ul class="extra-services">
+            <li>Edge Trimming: <span class="price-detail">$15-20 extra</span></li>
+            <li>Green Waste Removal: <span class="price-detail">$20-30 extra</span></li>
+            <li>Hedge Trimming: <span class="price-detail">$25-35/hour</span></li>
+            <li>Garden Bed Weeding: <span class="price-detail">$30-40/hour</span></li>
+          </ul>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <!-- Why Choose Us -->
-    <section id="why-choose-us" class="section light-bg">
-        <div class="container content-with-image">
-            <div class="text-content">
-                <h2>Why Choose Our Melbourne Lawn Care Service?</h2>
-                <h3>Local Expertise</h3>
-                <p>As Melbourne locals...</p>
-                <h3>Professional Equipment</h3>
-                <p>We invest in ...</p>
-                <h3>Flexible Scheduling</h3>
-                <ul>
-                    <li>Weekly, fortnightly, or monthly visits</li>
-                    <li>Seasonal cleanup services</li>
-                    <li>Emergency lawn care</li>
-                </ul>
-                <h3>Competitive Pricing</h3>
-                <p>We believe quality ...</p>
-            </div>
-            <div class="image-content">
-                <img src="1.jpeg" alt="Professional Lawn Mowing">
-            </div>
+  <section id="getting-started" class="section">
+    <div class="container content-with-image">
+      <div class="text-content">
+        <h2>Getting Started is Easy</h2>
+        <ul>
+          <li><strong>Free Quote:</strong> Contact us for a no-obligation assessment of your property</li>
+          <li><strong>Flexible Scheduling:</strong> Choose a service frequency that suits your needs and budget</li>
+          <li><strong>Professional Service:</strong> Sit back and enjoy your beautifully maintained lawn</li>
+          <li><strong>Satisfaction Guaranteed:</strong> We're not happy unless you're completely satisfied</li>
+        </ul>
+      </div>
+      <div class="image-content">
+        <img src="3.jpeg" alt="Steps to Get Started" />
+      </div>
+    </div>
+  </section>
+
+  <section id="quote" class="section">
+    <div class="container">
+      <h2>Request a Free Quote</h2>
+      <form id="quote-form" action="https://formspree.io/f/mvgqjyqg" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input autocomplete="name" type="text" id="name" name="name" placeholder="Full name" required />
         </div>
-    </section>
 
-    <!-- Service Areas -->
-    <section id="service-areas" class="section">
-        <div class="container content-with-image">
-            <div class="text-content">
-                <h2>Service Areas Across Melbourne</h2>
-                <ul>
-                    <li><strong>Eastern Suburbs:</strong> Box Hill, Camberwell...</li>
-                    <li><strong>Northern Suburbs:</strong> Preston, Thornbury...</li>
-                </ul>
-            </div>
-            <div class="image-content">
-                <img src="2.jpeg" alt="Service Areas Map">
-            </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input autocomplete="email" type="email" id="email" name="email" placeholder="you@example.com" required />
         </div>
-    </section>
 
-    <!-- Pricing -->
-    <section id="pricing" class="section light-bg">
-        <div class="container">
-            <h2>Our Service Menu</h2>
-            <div class="menu-container">
-                <div class="menu-item">
-                    <h3>Standard Lawn Mowing</h3>
-                    <p>Regular lawn mowing service...</p>
-                </div>
-                <div class="menu-item highlight">
-                    <h3>Special Offer</h3>
-                    <p>New customers get a discount...</p>
-                </div>
-            </div>
+        <div class="form-group">
+          <label for="phone">Phone</label>
+          <input autocomplete="tel" inputmode="tel" type="tel" id="phone" name="phone" placeholder="+61 ..." required />
         </div>
-    </section>
 
-    <!-- Quote Form -->
-    <section id="quote" class="section">
-        <div class="container">
-            <h2>Request a Free Quote</h2>
-            <form id="quote-form" action="https://formspree.io/f/mvgqjyqg" method="POST">
-                <input type="text" name="name" placeholder="Full name" required><br>
-                <input type="email" name="email" placeholder="Email" required><br>
-                <input type="tel" name="phone" placeholder="Phone" required><br>
-                <input type="text" name="address" placeholder="Address" required><br>
-                <textarea name="notes" placeholder="Additional notes"></textarea><br>
-                <button type="submit" class="btn">Get My Quote</button>
-            </form>
+        <div class="form-group">
+          <label for="address">Street Address</label>
+          <input autocomplete="street-address" type="text" id="address" name="address" placeholder="e.g., 123 Murray Ct, Greenvale Melbourne Victoria" required />
         </div>
-    </section>
 
-    <!-- Contact -->
-    <section id="contact" class="section">
-        <div class="container">
-            <h2>Contact Us</h2>
-            <p><strong>Phone:</strong> +61 478 733 900</p>
-            <p><strong>Email:</strong> <a href="mailto:melbournelawncareau@gmail.com">melbournelawncareau@gmail.com</a></p>
-            <p><strong>Address:</strong> Murray Ct, Greenvale VIC 3059</p>
+        <div class="form-group">
+          <label for="unit">Apt/Unit (Optional)</label>
+          <input type="text" id="unit" name="unit" placeholder="Apt, Suite, Unit, etc." />
         </div>
-    </section>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>© 2025 Melbourne Lawn Care. All rights reserved.</p>
-            <div style="opacity:0.3;">
-                <a href="admin.html">ADMIN</a>
-            </div>
+        <div class="form-group">
+          <label for="zipcode">Postal Code</label>
+          <input autocomplete="postal-code" type="text" id="zipcode" name="zipcode" placeholder="e.g., 3059" required />
         </div>
-    </footer>
 
-    <script>
-      // CRM Modal functions
-      function showCRMLogin() {
-        document.getElementById('crm-login-modal').style.display = 'block';
+        <div class="form-group">
+          <label for="notes">Additional Notes (Optional)</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="e.g., Please trim the hedges as well."></textarea>
+        </div>
+
+        <div id="success-message" style="display:none;margin-top:20px;">
+          <p><strong>✅ Your request has been sent successfully!</strong></p>
+          <p>A team member will get back to you as soon as possible. Thank you for your interest!</p>
+        </div>
+        <button type="submit" class="btn">Get My Quote</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="contact" class="section">
+    <div class="container">
+      <h2>Contact Us</h2>
+      <p>We are committed to providing you with the best lawn care service. There are several ways to get in touch with us: You can fill out the form above to request a free quote, send us an email, or give us a call. Our team members will get in touch with you as soon as possible to schedule an appointment.</p>
+      <p><strong>Phone:</strong> +61 478 733 900</p>
+      <p><strong>Email:</strong> <a href="mailto:melbournelawncareau@gmail.com">melbournelawncareau@gmail.com</a></p>
+      <p><strong>Address:</strong> Murray Ct, Greenvale VIC 3059</p>
+
+      <div class="google-profile-link" style="margin-top:20px;">
+        <p>
+          Read our reviews or view our business profile on Google:
+          <a href="https://maps.google.com/?cid=5143709882782240015&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNl" target="_blank" style="text-decoration:none;color:#4285F4;font-weight:bold;">Click here</a>.
+        </p>
+      </div>
+
+      <div class="map-container">
+        <iframe
+          title="Melbourne Lawn Care on Google Maps"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d59528.808760094435!2d144.92619921553668!3d-37.65244146241169!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xc6021f732e6171b%3A0x476220e2c6e6cd0f!2sMelbourne%20Lawn%20Care!5e0!3m2!1sen!2sau!4v1755915976310!5m2!1sen!2sau"
+          allowfullscreen
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="social-links">
+        <a href="https://www.facebook.com/profile.php?id=61579606565810" target="_blank"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.instagram.com/melbournelawncare/" target="_blank"><i class="fab fa-instagram"></i></a>
+      </div>
+      <img src="logo.png" alt="Melbourne Lawn Care Logo" class="footer-logo" />
+      <p>© 2025 Melbourne Lawn Care. All rights reserved.</p>
+
+      <div style="text-align:center;margin-top:15px;opacity:.3;transition:opacity .3s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.3'">
+        <a href="admin.html" style="color:#666;font-size:.7rem;text-decoration:none;letter-spacing:1px;">ADMIN</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // CRM Login
+    function showCRMLogin(){const m=document.getElementById('crm-login-modal');if(m){m.style.display='block';document.body.style.overflow='hidden';}}
+    function closeCRMLogin(){const m=document.getElementById('crm-login-modal');if(m){m.style.display='none';document.body.style.overflow='auto';const f=document.getElementById('crm-login-form');const e=document.getElementById('crm-login-error');if(f)f.reset();if(e)e.style.display='none';}}
+
+    async function handleCRMLogin(e){
+      e.preventDefault();
+      const email=document.getElementById('crm-email').value;
+      const password=document.getElementById('crm-password').value;
+      const errorDiv=document.getElementById('crm-login-error');
+      try{
+        await auth.signInWithEmailAndPassword(email,password);
+        window.location.href='admin.html';
+      }catch(err){
+        if(errorDiv){errorDiv.textContent=err.message;errorDiv.style.display='block';}
       }
-      function closeCRMLogin() {
-        document.getElementById('crm-login-modal').style.display = 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded',function(){
+      const crmForm=document.getElementById('crm-login-form');
+      if(crmForm){crmForm.addEventListener('submit',handleCRMLogin);}
+
+      const quoteForm=document.getElementById('quote-form');
+      const successMessage=document.getElementById('success-message');
+      if(quoteForm&&successMessage){
+        quoteForm.addEventListener('submit',async function(event){
+          event.preventDefault();
+          const response=await fetch(quoteForm.action,{method:'POST',body:new FormData(quoteForm),headers:{'Accept':'application/json'}});
+          if(response.ok){successMessage.style.display='block';quoteForm.reset();}
+          else{alert('Form submission failed. Please try again.');}
+        });
       }
 
-      // Login process
-      document.getElementById('crm-login-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('crm-email').value;
-        const password = document.getElementById('crm-password').value;
-        const errorDiv = document.getElementById('crm-login-error');
-
-        try {
-          await auth.signInWithEmailAndPassword(email, password);
-          window.location.href = "admin.html";
-        } catch (err) {
-          errorDiv.style.display = "block";
-          errorDiv.textContent = err.message;
-        }
+      window.addEventListener('click',function(event){
+        const modal=document.getElementById('crm-login-modal');
+        if(event.target===modal){closeCRMLogin();}
       });
-    </script>
+      document.addEventListener('keydown',function(event){
+        if(event.key==='Escape'){closeCRMLogin();}
+      });
+    });
+  </script>
 </body>
 </html>
