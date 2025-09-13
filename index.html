@@ -44,7 +44,7 @@
   </script>
 
   <style>
-    /* ---- Centering tweaks ---- */
+    /* Centering */
     .container { max-width: 960px; margin: 0 auto; padding: 0 16px; }
     header .header-container { display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; }
     nav .container ul { list-style:none; margin:0; padding:0; display:flex; justify-content:center; gap:24px; align-items:center; }
@@ -52,11 +52,12 @@
     .section h2, .section .tagline { text-align:center; margin-left:auto; margin-right:auto; }
     .text-content, .section p { margin-left:auto; margin-right:auto; }
     footer .container { text-align:center; }
-    /* Form as a centered card, texts left */
+    /* Quote form centered card */
     #quote form { max-width: 560px; margin: 0 auto; text-align:left; }
     #contact .map-container { max-width: 960px; margin: 20px auto 0; }
     .map-container iframe { width:100%; height:380px; border:0; }
-    /* ---- CRM Modal (değişmedi) ---- */
+
+    /* CRM Modal */
     .crm-modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,.5);animation:fadeIn .3s}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
     .crm-modal-content{background:#fefefe;margin:10% auto;padding:0;border-radius:10px;width:90%;max-width:420px;box-shadow:0 5px 25px rgba(0,0,0,.2);animation:slideDown .3s}
@@ -71,6 +72,9 @@
     .crm-form-group input{width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:15px}
     .crm-login-btn{width:100%;padding:12px;background:linear-gradient(135deg,#2e7d32,#4caf50);color:#fff;border:none;border-radius:6px;font-size:16px;font-weight:700;cursor:pointer}
     .crm-error{display:none;background:#ffebee;color:#c62828;padding:10px;border-radius:6px;margin-bottom:12px;font-size:14px}
+
+    /* About callout */
+    .notice { display:inline-block; text-align:left; background:#f1f8e9; border:1px solid #c5e1a5; padding:14px 16px; border-radius:8px; margin-top:10px;}
   </style>
 </head>
 <body>
@@ -124,37 +128,37 @@
   <section id="hero-intro" class="section hero">
     <div class="container">
       <h2>Welcome to Melbourne's premier lawn care service, where we transform ordinary yards into extraordinary outdoor spaces.</h2>
-      <p>Our dedicated team of professionals understands the unique challenges of maintaining beautiful lawns in Melbourne's diverse climate, from the hot summer months to the cooler winter seasons.</p>
+      <p>Our team services homes across Melbourne with reliable, quality-focused lawn and garden care.</p>
     </div>
   </section>
 
-  <section id="why-choose-us" class="section light-bg">
-    <div class="container content-with-image">
-      <div class="text-content">
-        <h2>Why Choose Our Melbourne Lawn Care Service?</h2>
-        <h3>Local Expertise</h3>
-        <p>As Melbourne locals, we understand the specific challenges of maintaining lawns in our city's variable climate.</p>
-        <h3>Professional Equipment</h3>
-        <p>We invest in commercial-grade equipment and maintain it regularly for optimal performance.</p>
-        <h3>Flexible Scheduling</h3>
-        <p>Weekly, fortnightly, monthly, seasonal cleanup, emergency and one-off services.</p>
-        <h3>Competitive Pricing</h3>
-        <p>Transparent pricing. No hidden fees.</p>
+  <!-- ABOUT -->
+  <section id="about" class="section light-bg">
+    <div class="container">
+      <h2>About Us</h2>
+      <p style="max-width:720px;">
+        We provide <strong>end-to-end lawn mowing and full garden maintenance</strong>.
+        Services include mowing, edging, hedging, pruning, weeding, fertilising, lawn
+        repair and turf laying, seasonal clean-ups, green waste removal, irrigation checks,
+        and general garden tidy-ups. If it’s lawn or garden, we handle it.
+      </p>
+      <div class="notice" style="max-width:720px;">
+        <strong>Booking and quotes:</strong> Please submit your details <em>only</em> via the
+        <a href="#quote">“Get My Quote”</a> button. This ensures we capture your address and contact
+        correctly and schedule you faster.
       </div>
     </div>
   </section>
 
   <section id="getting-started" class="section">
-    <div class="container content-with-image">
-      <div class="text-content">
-        <h2>Getting Started is Easy</h2>
-        <ul style="display:inline-block; text-align:left;">
-          <li><strong>Free Quote:</strong> contact us for a no-obligation assessment</li>
-          <li><strong>Flexible Scheduling:</strong> pick a frequency that fits</li>
-          <li><strong>Professional Service:</strong> enjoy a well-kept lawn</li>
-          <li><strong>Satisfaction Guaranteed:</strong> we fix it if you’re not happy</li>
-        </ul>
-      </div>
+    <div class="container">
+      <h2>Getting Started is Easy</h2>
+      <ul style="display:inline-block; text-align:left;">
+        <li><strong>Free Quote:</strong> contact us for a no-obligation assessment</li>
+        <li><strong>Flexible Scheduling:</strong> pick a frequency that fits</li>
+        <li><strong>Professional Service:</strong> enjoy a well-kept lawn</li>
+        <li><strong>Satisfaction Guaranteed:</strong> we fix it if you’re not happy</li>
+      </ul>
     </div>
   </section>
 
@@ -180,11 +184,11 @@
         </div>
         <div class="form-group">
           <label for="notes">Additional Notes (Optional)</label>
-          <textarea id="notes" name="notes" rows="4" placeholder="e.g., Please trim the hedges as well."></textarea>
+          <textarea id="notes" name="notes" rows="4" placeholder="e.g., hedge trim as well"></textarea>
         </div>
         <div id="success-message" style="display:none;margin-top:20px;text-align:center;">
           <p><strong>✅ Your request has been sent successfully!</strong></p>
-          <p>A team member will get back to you as soon as possible. Thank you for your interest!</p>
+          <p>We will get back to you as soon as possible.</p>
         </div>
         <div style="text-align:center;">
           <button type="submit" class="btn">Get My Quote</button>
@@ -196,13 +200,13 @@
   <section id="contact" class="section">
     <div class="container">
       <h2>Contact Us</h2>
-      <p>We are committed to providing you with the best lawn care service. Reach us by form, email, or phone.</p>
+      <p>Reach us by form, email, or phone.</p>
       <p><strong>Phone:</strong> +61 478 733 900</p>
       <p><strong>Email:</strong> <a href="mailto:melbournelawncareau@gmail.com">melbournelawncareau@gmail.com</a></p>
       <p><strong>Address:</strong> Murray Ct, Greenvale VIC 3059</p>
 
       <div class="google-profile-link" style="margin-top:20px;">
-        <p>Read our reviews on Google:
+        <p>Reviews and business profile on Google:
           <a href="https://maps.google.com/?cid=5143709882782240015&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNl" target="_blank" style="text-decoration:none;color:#4285F4;font-weight:bold;">Click here</a>.
         </p>
       </div>
