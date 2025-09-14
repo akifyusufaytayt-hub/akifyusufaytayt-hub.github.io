@@ -73,11 +73,42 @@
     .crm-login-btn{width:100%;padding:12px;background:linear-gradient(135deg,#2e7d32,#4caf50);color:#fff;border:none;border-radius:6px;font-size:16px;font-weight:700;cursor:pointer}
     .crm-error{display:none;background:#ffebee;color:#c62828;padding:10px;border-radius:6px;margin-bottom:12px;font-size:14px}
 
-    /* About callout */
-    .notice { display:inline-block; text-align:left; background:#f1f8e9; border:1px solid #c5e1a5; padding:14px 16px; border-radius:8px; margin-top:10px;}
+    /* Discreet top-right CRM link */
+    .crm-toplink {
+      position: fixed;
+      top: 8px;
+      right: 10px;
+      z-index: 1100;
+      font-size: 12px;
+      letter-spacing: 1px;
+      opacity: .15;
+      transition: opacity .2s ease;
+      user-select: none;
+    }
+    .crm-toplink:focus-within,
+    .crm-toplink:hover { opacity: .9; }
+    .crm-toplink a{
+      text-decoration:none;
+      color:#2e7d32;
+      background:#e8f5e9;
+      border:1px solid #a5d6a7;
+      padding:6px 10px;
+      border-radius:16px;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+    }
+    .crm-toplink a:focus{ outline:2px solid #2e7d32; outline-offset:2px; }
   </style>
 </head>
 <body>
+  <!-- Discreet CRM trigger (top-right) -->
+  <div class="crm-toplink" aria-hidden="false">
+    <a href="#" onclick="showCRMLogin()" aria-label="Open CRM login">
+      <i class="fas fa-user-shield" aria-hidden="true"></i> CRM
+    </a>
+  </div>
+
   <a href="tel:+61478733900" class="fixed-phone-btn">
     <i class="fas fa-phone"></i> +61 478 733 900
   </a>
@@ -109,7 +140,7 @@
   <header>
     <div class="container header-container">
       <img src="logo.png" alt="Melbourne Lawn Care Logo" class="logo" />
-      <h1>Melbourne Lawn&Gardening Care</h1>
+      <h1>Melbourne Lawn &amp; Gardening Care</h1>
       <p class="tagline">Professional Lawn Care and Gardening Services</p>
     </div>
   </header>
@@ -120,14 +151,14 @@
         <li><a href="#about">About</a></li>
         <li><a href="#quote">Get Quote</a></li>
         <li><a href="#contact">Contact</a></li>
-        <li><a href="#" onclick="showCRMLogin()" style="color:#2e7d32;font-weight:600;"><i class="fas fa-users-cog"></i> CRM</a></li>
+        <!-- CRM link nav'dan kaldırıldı -->
       </ul>
     </div>
   </nav>
 
   <section id="hero-intro" class="section hero">
     <div class="container">
-      <h2>Welcome to Melbourne's premier lawn&Gardening care service, where we transform ordinary yards into extraordinary outdoor spaces.</h2>
+      <h2>Welcome to Melbourne's premier lawn &amp; gardening care service. We turn ordinary yards into neat, healthy outdoor spaces.</h2>
       <p>Our team services homes across Melbourne with reliable, quality-focused lawn and garden care.</p>
     </div>
   </section>
@@ -144,8 +175,7 @@
       </p>
       <div class="notice" style="max-width:720px;">
         <strong>Booking and quotes:</strong> Please submit your details <em>only</em> via the
-        <a href="#quote">“Get My Quote”</a> button. This ensures we capture your address and contact
-        correctly and schedule you faster.
+        <a href="#quote">“Get My Quote”</a> button so we capture your address and contact correctly.
       </div>
     </div>
   </section>
@@ -165,7 +195,7 @@
   <section id="quote" class="section">
     <div class="container">
       <h2>Request a Free Quote</h2>
-      <form id="quote-form" action="https://formspree.io/f/mvgqjyqg" method="POST" enctype="multipart/form-data">
+    <form id="quote-form" action="https://formspree.io/f/mvgqjyqg" method="POST" enctype="multipart/form-data">
         <div class="form-group">
           <label for="name">Full Name</label>
           <input autocomplete="name" type="text" id="name" name="name" placeholder="Full name" required />
@@ -252,5 +282,3 @@
   </script>
 </body>
 </html>
-
-
