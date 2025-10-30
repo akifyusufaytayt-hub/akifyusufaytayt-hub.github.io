@@ -110,8 +110,6 @@
         <li><button class="nav-btn active" data-section="dashboard"><i class="fas fa-chart-line"></i> Dashboard</button></li>
         <li><button class="nav-btn" data-section="customers"><i class="fas fa-users"></i> Customers</button></li>
         <li><button class="nav-btn" data-section="add-customer"><i class="fas fa-user-plus"></i> Add Customer</button></li>
-        <li><button class="nav-btn" data-section="services"><i class="fas fa-clipboard-list"></i> Services</button></li>
-        <!-- YENİ: Quotes sekmesi -->
         <li><button class="nav-btn" data-section="quotes"><i class="fas fa-file-invoice-dollar"></i> Quotes</button></li>
       </ul>
     </div>
@@ -136,19 +134,6 @@
     <!-- CUSTOMERS -->
     <div id="customers" class="content-section">
       <h2><i class="fas fa-users"></i> Customer Management</h2>
-      <div class="search-bar">
-        <div class="search-controls">
-          <input type="text" id="search-customers" placeholder="Search customers by name, address, or phone...">
-          <select id="filter-frequency">
-            <option value="">All Frequencies</option>
-            <option value="weekly">Weekly</option>
-            <option value="fortnightly">Fortnightly</option>
-            <option value="monthly">Monthly</option>
-            <option value="one-off">One-off</option>
-          </select>
-          <button class="btn" onclick="exportCustomers()"><i class="fas fa-download"></i> Export</button>
-        </div>
-      </div>
       <div id="customers-list" class="customer-grid"></div>
     </div>
 
@@ -190,55 +175,32 @@
       </form>
     </div>
 
-    <!-- SERVICES -->
-    <div id="services" class="content-section">
-      <h2><i class="fas fa-clipboard-list"></i> Service Management</h2>
-      <div style="background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);margin-bottom:20px;">
-        <h3 style="color:#2e7d32;margin-bottom:15px;">Add New Service</h3>
-        <form id="service-form">
-          <div class="form-grid">
-            <div>
-              <div class="form-group"><label for="service-customer">Customer *</label>
-                <select id="service-customer" name="customerId" required><option value="">Select Customer</option></select>
-              </div>
-              <div class="form-group"><label for="service-date">Service Date *</label><input type="date" id="service-date" name="date" required></div>
-            </div>
-            <div>
-              <div class="form-group"><label for="service-type">Service Type *</label>
-                <select id="service-type" name="type" required>
-                  <option value="">Select Service</option>
-                  <option value="standard-mowing">Standard Mowing</option>
-                  <option value="mowing-edging">Mowing + Edge Trimming</option>
-                  <option value="full-service">Full Service + Green Waste</option>
-                  <option value="hedge-trimming">Hedge Trimming</option>
-                  <option value="garden-weeding">Garden Bed Weeding</option>
-                </select>
-              </div>
-              <div class="form-group"><label for="service-amount">Amount ($) *</label><input type="number" id="service-amount" name="amount" step="0.01" required></div>
-            </div>
-          </div>
-          <div class="form-group"><label for="service-notes">Service Notes</label><textarea id="service-notes" name="notes" rows="2" placeholder="Additional details about the service..."></textarea></div>
-          <button type="submit" class="btn"><i class="fas fa-plus"></i> Add Service</button>
-        </form>
-      </div>
-      <div style="background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);">
-        <h3 style="color:#2e7d32;margin-bottom:15px;">Recent Services</h3>
-        <div id="recent-services"></div>
-      </div>
-    </div>
-
-    <!-- YENİ: QUOTES -->
+    <!-- QUOTES -->
     <div id="quotes" class="content-section">
       <h2><i class="fas fa-file-invoice-dollar"></i> Create Quote</h2>
 
-      <div class="search-bar" style="margin-bottom:20px;">
-        <div class="search-controls">
-          <select id="quote-customer" required>
-            <option value="">Select Customer</option>
-          </select>
-          <input type="text" id="quote-title" placeholder="Quote title (optional)"/>
-          <button class="btn" id="add-line-btn"><i class="fas fa-plus"></i> Add Service</button>
-          <button class="btn btn-secondary" id="clear-quote-btn"><i class="fas fa-eraser"></i> Clear</button>
+      <div class="customer-card" style="margin-bottom:16px;">
+        <div class="customer-info" style="align-items:flex-end;">
+          <div class="info-item" style="flex:1 1 280px;">
+            <i class="fas fa-user"></i>
+            <span style="width:100%;">
+              <label style="display:block;font-weight:600;">Customer</label>
+              <select id="quote-customer" style="width:100%;">
+                <option value="">Select Customer</option>
+              </select>
+            </span>
+          </div>
+          <div class="info-item" style="flex:2 1 420px;">
+            <i class="fas fa-heading"></i>
+            <span style="width:100%;">
+              <label style="display:block;font-weight:600;">Quote Title (optional)</label>
+              <input type="text" id="quote-title" placeholder="e.g., Regular mowing + hedging (Fortnightly)"/>
+            </span>
+          </div>
+          <div class="info-item" style="flex:0 0 auto;gap:10px;">
+            <button class="btn" id="add-line-btn"><i class="fas fa-plus"></i> Add Service</button>
+            <button class="btn btn-secondary" id="clear-quote-btn"><i class="fas fa-eraser"></i> Clear</button>
+          </div>
         </div>
       </div>
 
@@ -261,64 +223,77 @@
     </div>
   </div>
 
-  <!-- CUSTOMER DETAILS MODAL -->
+  <!-- MODAL -->
   <div id="customer-modal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
         <h3 id="modal-customer-name"></h3>
-        <span class="close" onclick="closeModal()">&#215;</span>
+        <span class="close" onclick="closeModal()">&times;</span>
       </div>
       <div id="modal-customer-details"></div>
     </div>
   </div>
 
   <script>
-    let customersCache=[];let servicesCache=[];let currentEditingId=null;
-
+    // ===== Redirect guard: user yoksa index'e; logout döngüsünü önle =====
     auth.onAuthStateChanged(async user=>{
-      if(!user){window.location.href="index.html";return;}
+      if(!user){
+        window.location.replace('index.html');
+        return;
+      }
       document.getElementById('current-user-display').textContent=user.email||'Admin';
-      await loadCustomers();await loadServices();updateDashboard();updateCustomerDropdown();
+      await loadCustomers();
+      await loadServices();
+      updateDashboard();
+      updateQuoteCustomerDropdown();
     });
 
-    function logout(){auth.signOut();}
+    function logout(){
+      auth.signOut()
+        .then(()=>{
+          // index.html'de otomatik geri dönüşü engelle
+          sessionStorage.setItem('loggedOut','1');
+          window.location.replace('index.html');
+        })
+        .catch(err=>alert('Logout failed: '+err.message));
+    }
 
+    // ====== UI: Tabs ======
     document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>showSection(b.dataset.section)));
     function showSection(id){
       document.querySelectorAll('.content-section').forEach(s=>s.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
       document.getElementById(id).classList.add('active');
       document.querySelector(`.nav-btn[data-section="${id}"]`).classList.add('active');
-      if(id==='services') updateCustomerDropdown();
-      if(id==='quotes') initQuotesUI(); /* YENİ */
+      if(id==='quotes') initQuotesUI();
     }
 
     function showMessage(text,type){const el=document.getElementById('message');el.textContent=text;el.className=`message ${type}`;el.style.display='block';setTimeout(()=>el.style.display='none',3000);}
 
-    /* CUSTOMERS */
-    document.getElementById('customer-form').addEventListener('submit',saveCustomer);
+    // ====== Data caches ======
+    let customersCache=[];let servicesCache=[];
 
-    async function saveCustomer(e){
-      e.preventDefault();
+    // ====== Customers ======
+    document.addEventListener('submit',e=>{
+      if(e.target && e.target.id==='customer-form'){e.preventDefault();saveCustomer();}
+    });
+
+    async function saveCustomer(){
       const data={
         name:val('customer-name'),email:val('customer-email'),phone:val('customer-phone'),
         address:val('customer-address'),postcode:val('customer-postcode'),
         lawnSize:val('lawn-size'),frequency:val('service-frequency'),notes:val('customer-notes'),
-        updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       };
-      if(currentEditingId){
-        await db.collection('musteriler').doc(currentEditingId).update(data);
-        currentEditingId=null;
-        document.querySelector('#add-customer h2').innerHTML='<i class="fas fa-user-plus"></i> Add New Customer';
-        showMessage('Customer updated successfully!','success');
-      }else{
-        await db.collection('musteriler').add({...data,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-        showMessage('Customer added successfully!','success');
-      }
-      clearForm();await loadCustomers();updateDashboard();updateCustomerDropdown();updateQuoteCustomerDropdown(); /* YENİ */
+      await db.collection('musteriler').add(data);
+      showMessage('Customer added successfully!','success');
+      clearForm(); await loadCustomers(); updateDashboard(); updateQuoteCustomerDropdown();
     }
-    function val(id){return (document.getElementById(id).value||'').trim();}
-    function clearForm(){document.getElementById('customer-form').reset();}
+
+    function val(id){return (document.getElementById(id)?.value||'').trim();}
+    function setV(id,v){const el=document.getElementById(id); if(el) el.value=v||'';}
+    function clearForm(){ document.getElementById('customer-form').reset(); }
 
     async function loadCustomers(){
       const snap=await db.collection('musteriler').orderBy('createdAt','desc').get();
@@ -344,8 +319,6 @@
           <h3 class="customer-name">${esc(c.name||'')}</h3>
           <div class="customer-actions">
             <button class="btn" title="View Details" onclick="viewCustomer('${c.id}')"><i class="fas fa-eye"></i></button>
-            <button class="btn btn-secondary" title="Edit" onclick="editCustomer('${c.id}')"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-danger" title="Delete" onclick="deleteCustomer('${c.id}')"><i class="fas fa-trash"></i></button>
           </div>
         </div>
         <div class="customer-info">
@@ -367,27 +340,6 @@
           </div>` : ``}
       `;
       return card;
-    }
-
-    function editCustomer(id){
-      const c=customersCache.find(x=>x.id===id);if(!c)return;
-      currentEditingId=id;
-      setV('customer-name',c.name);setV('customer-email',c.email);setV('customer-phone',c.phone);
-      setV('customer-address',c.address);setV('customer-postcode',c.postcode);
-      setV('lawn-size',c.lawnSize);setV('service-frequency',c.frequency);setV('customer-notes',c.notes);
-      document.querySelector('#add-customer h2').innerHTML='<i class="fas fa-user-plus"></i> Edit Customer';
-      showSection('add-customer');
-    }
-    function setV(id,v){const el=document.getElementById(id);if(el)el.value=v||'';}
-
-    async function deleteCustomer(id){
-      if(!confirm('Delete this customer?')) return;
-      const sSnap=await db.collection('hizmetler').where('customerId','==',id).get();
-      const batch=db.batch();sSnap.forEach(doc=>batch.delete(doc.ref));
-      batch.delete(db.collection('musteriler').doc(id));
-      await batch.commit();
-      await loadCustomers();await loadServices();updateDashboard();updateCustomerDropdown();updateQuoteCustomerDropdown(); /* YENİ */
-      showMessage('Customer deleted.','success');
     }
 
     function viewCustomer(id){
@@ -420,71 +372,20 @@
     }
     function closeModal(){const m=document.getElementById('customer-modal');m.style.display='none';window.onclick=null;document.onkeydown=null;}
 
-    document.getElementById('search-customers').addEventListener('input',filterCustomers);
-    document.getElementById('filter-frequency').addEventListener('change',filterCustomers);
-    function filterCustomers(){
-      const q=document.getElementById('search-customers').value.toLowerCase();
-      const freq=document.getElementById('filter-frequency').value;
-      const list=customersCache.filter(c=>{
-        const text=`${c.name||''} ${c.address||''} ${c.phone||''}`.toLowerCase();
-        const okText=!q||text.includes(q);
-        const okFreq=!freq||(c.frequency||'')===freq;
-        return okText&&okFreq;
-      });
-      renderCustomers(list);
-    }
-
-    function exportCustomers(){
-      if(!customersCache.length){showMessage('No data to export.','error');return;}
-      const rows=[['Name','Email','Phone','Address','Postcode','LawnSize','Frequency','Notes'],
-        ...customersCache.map(c=>[c.name||'',c.email||'',c.phone||'',c.address||'',c.postcode||'',c.lawnSize||'',c.frequency||'',(c.notes||'').replace(/\n/g,' ')])];
-      const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
-      const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);
-      const a=document.createElement('a');a.href=url;a.download='customers.csv';a.click();URL.revokeObjectURL(url);
-    }
-
-    /* SERVICES */
-    document.getElementById('service-form').addEventListener('submit',saveService);
-    async function saveService(e){
-      e.preventDefault();
-      const data={
-        customerId:document.getElementById('service-customer').value,
-        date:document.getElementById('service-date').value,
-        type:document.getElementById('service-type').value,
-        amount:parseFloat(document.getElementById('service-amount').value||'0'),
-        notes:(document.getElementById('service-notes').value||'').trim(),
-        createdAt:firebase.firestore.FieldValue.serverTimestamp()
-      };
-      if(!data.customerId){showMessage('Select a customer.','error');return;}
-      await db.collection('hizmetler').add(data);
-      document.getElementById('service-form').reset();
-      await loadServices();updateDashboard();showMessage('Service added.','success');
-    }
-
+    // ====== Services (dashboard & history için read-only) ======
     async function loadServices(){
       const snap=await db.collection('hizmetler').orderBy('createdAt','desc').limit(50).get();
       servicesCache=snap.docs.map(d=>({id:d.id,...d.data()}));
-      renderRecentServices();renderCustomers(customersCache);
+      renderRecentServices(); renderCustomers(customersCache);
     }
 
     function renderRecentServices(){
-      const wrap=document.getElementById('recent-services');
-      wrap.innerHTML = servicesCache.length ? servicesCache.slice(0,10).map(s=>{
+      const act=document.getElementById('recent-activities');
+      const latest=[...servicesCache].slice(0,5).map(s=>{
         const c=customersCache.find(x=>x.id===s.customerId);
-        return `<div class="service-item">
-                  <span class="service-date">${esc(s.date||'')}</span> •
-                  <strong>${esc(c?.name||'Unknown')}</strong> •
-                  ${esc(s.type||'')} • $${Number(s.amount||0).toFixed(2)}
-                  ${s.notes?`<div style="color:#666;margin-top:5px">${esc(s.notes)}</div>`:''}
-                </div>`;
-      }).join('') : '<p>No services recorded yet.</p>';
-    }
-
-    function updateCustomerDropdown(){
-      const sel=document.getElementById('service-customer');if(!sel)return;
-      const cur=sel.value;
-      sel.innerHTML='<option value="">Select Customer</option>'+customersCache.map(c=>`<option value="${c.id}">${esc(c.name||'')}</option>`).join('');
-      if(cur) sel.value=cur;
+        return `<div>- ${esc(s.date||'')} • ${esc(s.type||'')} • ${esc(c?.name||'Unknown')} • $${Number(s.amount||0).toFixed(2)}</div>`;
+      }).join('');
+      act.innerHTML=latest||'<p>No recent activity.</p>';
     }
 
     function updateDashboard(){
@@ -499,86 +400,71 @@
 
       document.getElementById('monthly-revenue').textContent=`$${monthRevenue.toFixed(2)}`;
       document.getElementById('avg-service-value').textContent=`$${avg.toFixed(2)}`;
-
-      const act=document.getElementById('recent-activities');
-      const latest=[...servicesCache].slice(0,5).map(s=>{
-        const c=customersCache.find(x=>x.id===s.customerId);
-        return `<div>- ${esc(s.date||'')} • ${esc(s.type||'')} • ${esc(c?.name||'Unknown')} • $${Number(s.amount||0).toFixed(2)}</div>`;
-      }).join('');
-      act.innerHTML=latest||'<p>No recent activity.</p>';
     }
 
-    function esc(str){return String(str).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+    // ====== Quotes ======
+    let pricingData=null;
+    let quoteLines=[];
 
-    /* =======================
-       QUOTES (Teklif) Bölümü
-       ======================= */
-    let pricingData = null;
-    let quoteLines = [];
-
-    async function loadPricingData() {
-      if (pricingData) return pricingData;
-      try {
-        const res = await fetch('services_pricing.json', { cache: 'no-store' });
-        pricingData = await res.json();
-      } catch (e) {
+    async function loadPricingData(){
+      if(pricingData) return pricingData;
+      try{
+        const res=await fetch('services_pricing.json',{cache:'no-store'});
+        pricingData=await res.json();
+      }catch(e){
         alert('Pricing JSON (services_pricing.json) yüklenemedi. Dosyayı reponun köküne ekleyin.');
-        pricingData = {};
+        pricingData={};
       }
       return pricingData;
     }
 
-    function initQuotesUI() {
+    function initQuotesUI(){
       updateQuoteCustomerDropdown();
-      const addBtn = document.getElementById('add-line-btn');
-      const clearBtn = document.getElementById('clear-quote-btn');
-      const saveBtn = document.getElementById('save-quote-btn');
-      if (addBtn) addBtn.onclick = addQuoteLine;
-      if (clearBtn) clearBtn.onclick = clearQuote;
-      if (saveBtn) saveBtn.onclick = saveQuote;
+      const addBtn=document.getElementById('add-line-btn');
+      const clearBtn=document.getElementById('clear-quote-btn');
+      const saveBtn=document.getElementById('save-quote-btn');
+      if(addBtn) addBtn.onclick=addQuoteLine;
+      if(clearBtn) clearBtn.onclick=clearQuote;
+      if(saveBtn) saveBtn.onclick=saveQuote;
     }
 
-    function updateQuoteCustomerDropdown() {
-      const sel = document.getElementById('quote-customer');
-      if (!sel) return;
-      const cur = sel.value;
-      sel.innerHTML = '<option value="">Select Customer</option>' + customersCache.map(c => `<option value="${c.id}">${esc(c.name||'')}</option>`).join('');
-      if (cur) sel.value = cur;
+    function updateQuoteCustomerDropdown(){
+      const sel=document.getElementById('quote-customer'); if(!sel) return;
+      const cur=sel.value;
+      sel.innerHTML='<option value="">Select Customer</option>'+customersCache.map(c=>`<option value="${c.id}">${esc(c.name||'')}</option>`).join('');
+      if(cur) sel.value=cur;
     }
 
-    async function addQuoteLine() {
+    async function addQuoteLine(){
       await loadPricingData();
-      const wrap = document.getElementById('quote-lines');
-      const idx = quoteLines.length;
+      const wrap=document.getElementById('quote-lines');
+      const idx=quoteLines.length;
 
-      const services = Object.keys(pricingData||{});
-      if (!services.length) { alert('Servis listesi boş. services_pricing.json içeriğini kontrol edin.'); return; }
-      const defaultService = services[0];
+      const services=Object.keys(pricingData||{});
+      if(!services.length){ alert('Servis listesi boş. services_pricing.json içeriğini kontrol edin.'); return; }
+      const defaultService=services[0];
 
-      const line = { service: defaultService, size: '', multipliers: {}, qty: 1, unit: 0, total: 0 };
+      const line={service:defaultService,size:'',multipliers:{},qty:1,unit:0,total:0};
       quoteLines.push(line);
 
-      const card = document.createElement('div');
-      card.className = 'customer-card';
-      card.dataset.idx = idx;
-
-      card.innerHTML = `
+      const card=document.createElement('div');
+      card.className='customer-card';
+      card.dataset.idx=idx;
+      card.innerHTML=`
         <div class="customer-header">
           <h3 class="customer-name">Service #${idx+1}</h3>
           <div class="customer-actions">
             <button class="btn btn-danger" title="Remove" onclick="removeQuoteLine(${idx})"><i class="fas fa-trash"></i></button>
           </div>
         </div>
-
         <div class="customer-info">
           <div class="info-item" style="flex:1 1 260px;">
             <i class="fas fa-tools"></i>
             <span>
               <label style="display:block;font-weight:600;">Service</label>
-              <select onchange="onServiceChange(${idx}, this.value)">${services.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('')}</select>
+              <select onchange="onServiceChange(${idx}, this.value)">${services.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('')}</select>
             </span>
           </div>
-
           <div class="info-item" style="flex:1 1 220px;">
             <i class="fas fa-ruler-combined"></i>
             <span>
@@ -586,7 +472,6 @@
               <select id="q-size-${idx}" onchange="onSizeChange(${idx}, this.value)"></select>
             </span>
           </div>
-
           <div class="info-item" style="flex:2 1 320px;">
             <i class="fas fa-sliders-h"></i>
             <span>
@@ -594,7 +479,6 @@
               <div id="q-mults-${idx}" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
             </span>
           </div>
-
           <div class="info-item" style="flex:0 0 140px;">
             <i class="fas fa-sort-numeric-up"></i>
             <span>
@@ -602,43 +486,39 @@
               <input type="number" min="1" value="1" style="width:100px" onchange="onQtyChange(${idx}, this.value)" />
             </span>
           </div>
-
           <div class="info-item" style="flex:0 0 160px;">
             <i class="fas fa-dollar-sign"></i>
             <span>Unit: $<span id="q-unit-${idx}">0.00</span></span>
           </div>
-
           <div class="info-item" style="flex:0 0 170px;">
             <i class="fas fa-file-invoice-dollar"></i>
             <span><strong>Total: $<span id="q-line-total-${idx}">0.00</span></strong></span>
           </div>
-        </div>
-      `;
-
+        </div>`;
       wrap.appendChild(card);
       populateSizesAndMultipliers(idx, defaultService);
       recalcQuote();
     }
 
-    function onServiceChange(idx, service) {
-      quoteLines[idx].service = service;
-      quoteLines[idx].size = '';
-      quoteLines[idx].multipliers = {};
+    function onServiceChange(idx, service){
+      quoteLines[idx].service=service;
+      quoteLines[idx].size='';
+      quoteLines[idx].multipliers={};
       populateSizesAndMultipliers(idx, service);
       recalcQuote();
     }
 
-    function populateSizesAndMultipliers(idx, service) {
-      const data = (pricingData||{})[service] || {};
-      const rows = (data.rows || []);
-      const sizeSel = document.getElementById(`q-size-${idx}`);
-      const multWrap = document.getElementById(`q-mults-${idx}`);
+    function populateSizesAndMultipliers(idx, service){
+      const data=(pricingData||{})[service]||{};
+      const rows=(data.rows||[]);
+      const sizeSel=document.getElementById(`q-size-${idx}`);
+      const multWrap=document.getElementById(`q-mults-${idx}`);
 
-      sizeSel.innerHTML = `<option value="">Select Size</option>` + rows.map(r => `<option value="${esc(r.size)}">${esc(r.size)}</option>`).join('');
+      sizeSel.innerHTML=`<option value="">Select Size</option>`+rows.map(r=>`<option value="${esc(r.size)}">${esc(r.size)}</option>`).join('');
 
-      const multCols = (data.multipliers || []);
-      multWrap.innerHTML = multCols.map(col => {
-        const id = `q-m-${idx}-${col.replace(/\s+/g, '_')}`;
+      const multCols=(data.multipliers||[]);
+      multWrap.innerHTML=multCols.map(col=>{
+        const id=`q-m-${idx}-${col.replace(/\s+/g,'_')}`;
         return `
           <label style="display:inline-flex;gap:6px;align-items:center;border:1px solid #ddd;padding:6px 10px;border-radius:16px;">
             <input type="checkbox" id="${id}" onchange="onMultiplierToggle(${idx}, '${col}', this.checked)"/>
@@ -647,128 +527,96 @@
       }).join('');
     }
 
-    function onSizeChange(idx, size) {
-      quoteLines[idx].size = size;
+    function onSizeChange(idx,size){ quoteLines[idx].size=size; recalcQuote(); }
+    function onMultiplierToggle(idx,col,checked){ quoteLines[idx].multipliers[col]=!!checked; recalcQuote(); }
+    function onQtyChange(idx,v){ quoteLines[idx].qty=Math.max(1,parseInt(v||'1',10)); recalcQuote(); }
+
+    function removeQuoteLine(idx){
+      const card=document.querySelector(`.customer-card[data-idx="${idx}"]`);
+      if(card) card.remove();
+      quoteLines[idx]=null;
       recalcQuote();
     }
 
-    function onMultiplierToggle(idx, col, checked) {
-      quoteLines[idx].multipliers[col] = !!checked;
-      recalcQuote();
-    }
+    function calcLine(idx){
+      const line=quoteLines[idx]; if(!line) return {unit:0,total:0};
+      const data=(pricingData||{})[line.service]||{};
+      const rows=data.rows||[];
+      const row=rows.find(r=>String(r.size)===String(line.size));
+      if(!row) return {unit:0,total:0};
 
-    function onQtyChange(idx, v) {
-      quoteLines[idx].qty = Math.max(1, parseInt(v||'1',10));
-      recalcQuote();
-    }
-
-    function removeQuoteLine(idx) {
-      const card = document.querySelector(`.customer-card[data-idx="${idx}"]`);
-      if (card) card.remove();
-      quoteLines[idx] = null;
-      recalcQuote();
-    }
-
-    function calcLine(idx) {
-      const line = quoteLines[idx];
-      if (!line) return { unit: 0, total: 0 };
-
-      const data = (pricingData||{})[line.service] || {};
-      const rows = data.rows || [];
-      const row = rows.find(r => String(r.size) === String(line.size));
-      if (!row) return { unit: 0, total: 0 };
-
-      let unit = Number(row.base) || 0;
-      const m = line.multipliers || {};
-      for (const col of (data.multipliers || [])) {
-        if (m[col]) {
-          const val = (row.multipliers && row.multipliers[col] != null) ? Number(row.multipliers[col]) : 1;
-          unit *= (val || 1);
+      let unit=Number(row.base)||0;
+      const m=line.multipliers||{};
+      for(const col of (data.multipliers||[])){
+        if(m[col]){
+          const val=(row.multipliers && row.multipliers[col]!=null) ? Number(row.multipliers[col]) : 1;
+          unit*= (val || 1);
         }
       }
-      const total = unit * (line.qty || 1);
+      const total = unit * (line.qty||1);
 
-      const uEl = document.getElementById(`q-unit-${idx}`);
-      const tEl = document.getElementById(`q-line-total-${idx}`);
-      if (uEl) uEl.textContent = unit.toFixed(2);
-      if (tEl) tEl.textContent = total.toFixed(2);
+      const uEl=document.getElementById(`q-unit-${idx}`);
+      const tEl=document.getElementById(`q-line-total-${idx}`);
+      if(uEl) uEl.textContent=unit.toFixed(2);
+      if(tEl) tEl.textContent=total.toFixed(2);
 
-      line.unit = unit;
-      line.total = total;
-      return { unit, total };
+      line.unit=unit; line.total=total;
+      return {unit,total};
     }
 
-    function recalcQuote() {
-      let subtotal = 0;
-      quoteLines.forEach((_, i) => {
-        if (quoteLines[i]) {
-          const { total } = calcLine(i);
-          subtotal += total;
-        }
-      });
-      const gst = subtotal * 0.10;
-      const grand = subtotal + gst;
-
-      document.getElementById('q-subtotal').textContent = subtotal.toFixed(2);
-      document.getElementById('q-gst').textContent = gst.toFixed(2);
-      document.getElementById('q-total').textContent = grand.toFixed(2);
+    function recalcQuote(){
+      let subtotal=0;
+      quoteLines.forEach((_,i)=>{ if(quoteLines[i]) subtotal+= calcLine(i).total; });
+      const gst=subtotal*0.10;
+      const grand=subtotal+gst;
+      document.getElementById('q-subtotal').textContent=subtotal.toFixed(2);
+      document.getElementById('q-gst').textContent=gst.toFixed(2);
+      document.getElementById('q-total').textContent=grand.toFixed(2);
     }
 
-    function clearQuote() {
-      quoteLines = [];
-      document.getElementById('quote-lines').innerHTML = '';
-      recalcQuote();
-    }
+    function clearQuote(){ quoteLines=[]; document.getElementById('quote-lines').innerHTML=''; recalcQuote(); }
 
-    async function saveQuote() {
-      const customerId = document.getElementById('quote-customer').value;
-      if (!customerId) { showQuoteMsg('Select a customer.', 'error'); return; }
-
-      const items = quoteLines.filter(Boolean).map((ln, i) => ({
-        idx: i+1,
-        service: ln.service,
-        size: ln.size,
-        multipliers: Object.keys(ln.multipliers||{}).filter(k => ln.multipliers[k]),
-        qty: ln.qty,
-        unit: Number(ln.unit||0),
-        total: Number(ln.total||0)
+    async function saveQuote(){
+      const customerId=document.getElementById('quote-customer').value;
+      if(!customerId){ showQuoteMsg('Select a customer.','error'); return; }
+      const items=quoteLines.filter(Boolean).map((ln,i)=>({
+        idx:i+1, service:ln.service, size:ln.size,
+        multipliers:Object.keys(ln.multipliers||{}).filter(k=>ln.multipliers[k]),
+        qty:ln.qty, unit:Number(ln.unit||0), total:Number(ln.total||0)
       }));
+      if(!items.length){ showQuoteMsg('Add at least one service.','error'); return; }
 
-      if (!items.length) { showQuoteMsg('Add at least one service.', 'error'); return; }
+      const subtotal=Number(document.getElementById('q-subtotal').textContent||'0');
+      const gst=Number(document.getElementById('q-gst').textContent||'0');
+      const total=Number(document.getElementById('q-total').textContent||'0');
+      const customer=customersCache.find(c=>c.id===customerId);
+      const title=(document.getElementById('quote-title').value||'').trim();
 
-      const subtotal = Number(document.getElementById('q-subtotal').textContent||'0');
-      const gst = Number(document.getElementById('q-gst').textContent||'0');
-      const total = Number(document.getElementById('q-total').textContent||'0');
-
-      const customer = customersCache.find(c => c.id === customerId);
-      const title = (document.getElementById('quote-title').value || '').trim();
-
-      const doc = {
-        customerId,
-        customerName: customer?.name || '',
+      const doc={
+        customerId, customerName: customer?.name || '',
         title: title || `Quote for ${customer?.name||''}`,
-        items,
-        subtotal, gst, total,
+        items, subtotal, gst, total,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         pricingVersion: 'services_pricing.json'
       };
 
-      try {
-        const ref = await db.collection('teklifler').add(doc);
-        showQuoteMsg(`Quote saved. ID: ${ref.id}`, 'success');
-      } catch (e) {
+      try{
+        const ref=await db.collection('teklifler').add(doc);
+        showQuoteMsg(`Quote saved. ID: ${ref.id}`,'success');
+      }catch(e){
         console.error(e);
-        showQuoteMsg('Save failed.', 'error');
+        showQuoteMsg('Save failed.','error');
       }
     }
 
-    function showQuoteMsg(text, type) {
-      const el = document.getElementById('quote-save-msg');
-      el.textContent = text;
-      el.className = `message ${type}`;
-      el.style.display = 'block';
-      setTimeout(() => el.style.display = 'none', 4000);
+    function showQuoteMsg(text,type){
+      const el=document.getElementById('quote-save-msg');
+      el.textContent=text; el.className=`message ${type}`; el.style.display='block';
+      setTimeout(()=>el.style.display='none',4000);
     }
+
+    // ===== Helpers =====
+    function esc(str){return String(str).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
   </script>
 </body>
 </html>
