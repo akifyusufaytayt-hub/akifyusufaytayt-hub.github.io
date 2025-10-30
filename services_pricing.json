@@ -1,0 +1,653 @@
+{
+  "lawn mowing": {
+    "size_col": "Bahçe Boyutu",
+    "base_price_col": "Standart Çim Biçimi",
+    "rows": [
+      {
+        "size": "xxs",
+        "base": 30.0,
+        "multipliers": {
+          "Overgrown Durum": 1.3,
+          "Weeding (ot temizleme)": 1.2,
+          "Edging": 1.2,
+          "Green waste removal": 1.2,
+          "Weeding": 1.3
+        }
+      },
+      {
+        "size": "xs",
+        "base": 40.0,
+        "multipliers": {
+          "Overgrown Durum": 1.3,
+          "Weeding (ot temizleme)": 1.2,
+          "Edging": 1.2,
+          "Green waste removal": 1.2,
+          "Weeding": 1.3
+        }
+      },
+      {
+        "size": "s",
+        "base": 55.0,
+        "multipliers": {
+          "Overgrown Durum": 1.3,
+          "Weeding (ot temizleme)": 1.2,
+          "Edging": 1.2,
+          "Green waste removal": 1.2,
+          "Weeding": 1.3
+        }
+      },
+      {
+        "size": "m",
+        "base": 75.0,
+        "multipliers": {
+          "Overgrown Durum": 1.3,
+          "Weeding (ot temizleme)": 1.2,
+          "Edging": 1.2,
+          "Green waste removal": 1.2,
+          "Weeding": 1.3
+        }
+      },
+      {
+        "size": "l",
+        "base": 100.0,
+        "multipliers": {
+          "Overgrown Durum": 1.3,
+          "Weeding (ot temizleme)": 1.2,
+          "Edging": 1.2,
+          "Green waste removal": 1.2,
+          "Weeding": 1.3
+        }
+      },
+      {
+        "size": "xl",
+        "base": 130.0,
+        "multipliers": {
+          "Overgrown Durum": 1.3,
+          "Weeding (ot temizleme)": 1.2,
+          "Edging": 1.2,
+          "Green waste removal": 1.2,
+          "Weeding": 1.3
+        }
+      },
+      {
+        "size": "xxl",
+        "base": 165.0,
+        "multipliers": {
+          "Overgrown Durum": 1.3,
+          "Weeding (ot temizleme)": 1.2,
+          "Edging": 1.2,
+          "Green waste removal": 1.2,
+          "Weeding": 1.3
+        }
+      }
+    ],
+    "multipliers": [
+      "Overgrown Durum",
+      "Weeding (ot temizleme)",
+      "Edging",
+      "Green waste removal",
+      "Weeding"
+    ]
+  },
+  "hedge trimming": {
+    "size_col": "Bahçe / Çit Boyutu",
+    "base_price_col": "Standart Fiyat (Well Maintained)",
+    "rows": [
+      {
+        "size": "XXS",
+        "base": 50.0,
+        "multipliers": {
+          "Uzunluk (yaklaşık)": 5.0,
+          "Overgrown (×1.3)": 1.3,
+          "Yükseklik (Height Factor) >2m": 1.3,
+          "Erişim Zorluğu (Accessibility)": 1.3,
+          "Green Waste Removal": 1.2
+        }
+      },
+      {
+        "size": "XS",
+        "base": 70.0,
+        "multipliers": {
+          "Uzunluk (yaklaşık)": 5.0,
+          "Overgrown (×1.3)": 1.3,
+          "Yükseklik (Height Factor) >2m": 1.3,
+          "Erişim Zorluğu (Accessibility)": 1.3,
+          "Green Waste Removal": 1.2
+        }
+      },
+      {
+        "size": "S",
+        "base": 100.0,
+        "multipliers": {
+          "Uzunluk (yaklaşık)": 10.0,
+          "Overgrown (×1.3)": 1.3,
+          "Yükseklik (Height Factor) >2m": 1.3,
+          "Erişim Zorluğu (Accessibility)": 1.3,
+          "Green Waste Removal": 1.2
+        }
+      },
+      {
+        "size": "M",
+        "base": 130.0,
+        "multipliers": {
+          "Uzunluk (yaklaşık)": 20.0,
+          "Overgrown (×1.3)": 1.3,
+          "Yükseklik (Height Factor) >2m": 1.3,
+          "Erişim Zorluğu (Accessibility)": 1.3,
+          "Green Waste Removal": 1.2
+        }
+      },
+      {
+        "size": "L",
+        "base": 170.0,
+        "multipliers": {
+          "Uzunluk (yaklaşık)": 30.0,
+          "Overgrown (×1.3)": 1.3,
+          "Yükseklik (Height Factor) >2m": 1.3,
+          "Erişim Zorluğu (Accessibility)": 1.3,
+          "Green Waste Removal": 1.2
+        }
+      },
+      {
+        "size": "XL",
+        "base": 220.0,
+        "multipliers": {
+          "Uzunluk (yaklaşık)": 50.0,
+          "Overgrown (×1.3)": 1.3,
+          "Yükseklik (Height Factor) >2m": 1.3,
+          "Erişim Zorluğu (Accessibility)": 1.3,
+          "Green Waste Removal": 1.2
+        }
+      },
+      {
+        "size": "XXL",
+        "base": 280.0,
+        "multipliers": {
+          "Uzunluk (yaklaşık)": 80.0,
+          "Overgrown (×1.3)": 1.3,
+          "Yükseklik (Height Factor) >2m": 1.3,
+          "Erişim Zorluğu (Accessibility)": 1.3,
+          "Green Waste Removal": 1.2
+        }
+      }
+    ],
+    "multipliers": [
+      "Uzunluk (yaklaşık)",
+      "Overgrown (×1.3)",
+      "Yükseklik (Height Factor) >2m",
+      "Erişim Zorluğu (Accessibility)",
+      "Green Waste Removal"
+    ]
+  },
+  "bush pruning": {
+    "size_col": null,
+    "base_price_col": null,
+    "rows": [],
+    "multipliers": [
+      "Kategori",
+      "Tanım",
+      "Önerilen Fiyat Aralığı (AUD)",
+      "Yoğun ve kalın dallı (2–3 m)",
+      "Overgrown",
+      "Erişim Faktörü (Accessibility)",
+      "Green Waste Removal (Atık Yönetimi)"
+    ]
+  },
+  "Leaves Clearing": {
+    "size_col": "Boyut",
+    "base_price_col": "Standart Fiyat (AUD)",
+    "rows": [
+      {
+        "size": "XXS",
+        "base": 35.0,
+        "multipliers": {
+          "Alan (m²)": 10.0,
+          "Yaprak Yoğunluğu (Leaf Volume Factor)": 1.4,
+          "Karışık yüzey (çim + beton)": 1.2,
+          "Erişim Faktörü (Accessibility)": 1.2,
+          "Green Waste (Atık Yönetimi)": 1.2
+        }
+      },
+      {
+        "size": "XS",
+        "base": 45.0,
+        "multipliers": {
+          "Alan (m²)": 10.0,
+          "Yaprak Yoğunluğu (Leaf Volume Factor)": 1.4,
+          "Karışık yüzey (çim + beton)": 1.2,
+          "Erişim Faktörü (Accessibility)": 1.2,
+          "Green Waste (Atık Yönetimi)": 1.2
+        }
+      },
+      {
+        "size": "S",
+        "base": 60.0,
+        "multipliers": {
+          "Alan (m²)": 30.0,
+          "Yaprak Yoğunluğu (Leaf Volume Factor)": 1.4,
+          "Karışık yüzey (çim + beton)": 1.2,
+          "Erişim Faktörü (Accessibility)": 1.2,
+          "Green Waste (Atık Yönetimi)": 1.2
+        }
+      },
+      {
+        "size": "M",
+        "base": 80.0,
+        "multipliers": {
+          "Alan (m²)": 50.0,
+          "Yaprak Yoğunluğu (Leaf Volume Factor)": 1.4,
+          "Karışık yüzey (çim + beton)": 1.2,
+          "Erişim Faktörü (Accessibility)": 1.2,
+          "Green Waste (Atık Yönetimi)": 1.2
+        }
+      },
+      {
+        "size": "L",
+        "base": 100.0,
+        "multipliers": {
+          "Alan (m²)": 70.0,
+          "Yaprak Yoğunluğu (Leaf Volume Factor)": 1.4,
+          "Karışık yüzey (çim + beton)": 1.2,
+          "Erişim Faktörü (Accessibility)": 1.2,
+          "Green Waste (Atık Yönetimi)": 1.2
+        }
+      },
+      {
+        "size": "XL",
+        "base": 130.0,
+        "multipliers": {
+          "Alan (m²)": 150.0,
+          "Yaprak Yoğunluğu (Leaf Volume Factor)": 1.4,
+          "Karışık yüzey (çim + beton)": 1.2,
+          "Erişim Faktörü (Accessibility)": 1.2,
+          "Green Waste (Atık Yönetimi)": 1.2
+        }
+      },
+      {
+        "size": "XXL",
+        "base": 160.0,
+        "multipliers": {
+          "Alan (m²)": 200.0,
+          "Yaprak Yoğunluğu (Leaf Volume Factor)": 1.4,
+          "Karışık yüzey (çim + beton)": 1.2,
+          "Erişim Faktörü (Accessibility)": 1.2,
+          "Green Waste (Atık Yönetimi)": 1.2
+        }
+      }
+    ],
+    "multipliers": [
+      "Alan (m²)",
+      "Yaprak Yoğunluğu (Leaf Volume Factor)",
+      "Karışık yüzey (çim + beton)",
+      "Erişim Faktörü (Accessibility)",
+      "Green Waste (Atık Yönetimi)"
+    ]
+  },
+  "Ivy Trimming": {
+    "size_col": "Boyut",
+    "base_price_col": "Standart Fiyat (AUD)",
+    "rows": [
+      {
+        "size": "XXS",
+        "base": 60.0,
+        "multipliers": {
+          "Uzunluk veya Alan": 5.0,
+          "Yükseklik (Height Factor)>3m": 1.6,
+          "Durum (Density / Overgrowth)": 1.6,
+          "Yüzey Tipi (Surface Type)": 1.4,
+          "Green Waste (Atık Yönetimi)": 1.2
+        }
+      },
+      {
+        "size": "XS",
+        "base": 90.0,
+        "multipliers": {
+          "Uzunluk veya Alan": 5.0,
+          "Yükseklik (Height Factor)>3m": 1.6,
+          "Durum (Density / Overgrowth)": 1.6,
+          "Yüzey Tipi (Surface Type)": 1.4,
+          "Green Waste (Atık Yönetimi)": 1.2
+        }
+      },
+      {
+        "size": "S",
+        "base": 130.0,
+        "multipliers": {
+          "Uzunluk veya Alan": 10.0,
+          "Yükseklik (Height Factor)>3m": 1.6,
+          "Durum (Density / Overgrowth)": 1.6,
+          "Yüzey Tipi (Surface Type)": 1.4,
+          "Green Waste (Atık Yönetimi)": 1.2
+        }
+      },
+      {
+        "size": "M",
+        "base": 170.0,
+        "multipliers": {
+          "Uzunluk veya Alan": 20.0,
+          "Yükseklik (Height Factor)>3m": 1.6,
+          "Durum (Density / Overgrowth)": 1.6,
+          "Yüzey Tipi (Surface Type)": 1.4,
+          "Green Waste (Atık Yönetimi)": 1.2
+        }
+      },
+      {
+        "size": "L",
+        "base": 220.0,
+        "multipliers": {
+          "Uzunluk veya Alan": 30.0,
+          "Yükseklik (Height Factor)>3m": 1.6,
+          "Durum (Density / Overgrowth)": 1.6,
+          "Yüzey Tipi (Surface Type)": 1.4,
+          "Green Waste (Atık Yönetimi)": 1.2
+        }
+      },
+      {
+        "size": "XL",
+        "base": 300.0,
+        "multipliers": {
+          "Uzunluk veya Alan": 50.0,
+          "Yükseklik (Height Factor)>3m": 1.6,
+          "Durum (Density / Overgrowth)": 1.6,
+          "Yüzey Tipi (Surface Type)": 1.4,
+          "Green Waste (Atık Yönetimi)": 1.2
+        }
+      },
+      {
+        "size": "XXL",
+        "base": 400.0,
+        "multipliers": {
+          "Uzunluk veya Alan": 80.0,
+          "Yükseklik (Height Factor)>3m": 1.6,
+          "Durum (Density / Overgrowth)": 1.6,
+          "Yüzey Tipi (Surface Type)": 1.4,
+          "Green Waste (Atık Yönetimi)": 1.2
+        }
+      }
+    ],
+    "multipliers": [
+      "Uzunluk veya Alan",
+      "Not",
+      "Yükseklik (Height Factor)>3m",
+      "Durum (Density / Overgrowth)",
+      "Yüzey Tipi (Surface Type)",
+      "Green Waste (Atık Yönetimi)"
+    ]
+  },
+  "Planting Flowers": {
+    "size_col": null,
+    "base_price_col": "Standart Fiyat (AUD)",
+    "rows": [
+      {
+        "size": "",
+        "base": 40.0,
+        "multipliers": {
+          "Açıklama": 1.0,
+          "Toprak Durumu (Soil Condition Factor)": 1.5,
+          "Bitki Türü (Plant Type Factor)": 1.3,
+          "Erişim Faktörü (Accessibility)": 1.3,
+          "Green Waste (Toprak / Ambalaj Atığı)": 1.2
+        }
+      },
+      {
+        "size": "",
+        "base": 60.0,
+        "multipliers": {
+          "Açıklama": 5.0,
+          "Toprak Durumu (Soil Condition Factor)": 1.5,
+          "Bitki Türü (Plant Type Factor)": 1.3,
+          "Erişim Faktörü (Accessibility)": 1.3,
+          "Green Waste (Toprak / Ambalaj Atığı)": 1.2
+        }
+      },
+      {
+        "size": "",
+        "base": 90.0,
+        "multipliers": {
+          "Açıklama": 10.0,
+          "Toprak Durumu (Soil Condition Factor)": 1.5,
+          "Bitki Türü (Plant Type Factor)": 1.3,
+          "Erişim Faktörü (Accessibility)": 1.3,
+          "Green Waste (Toprak / Ambalaj Atığı)": 1.2
+        }
+      },
+      {
+        "size": "",
+        "base": 120.0,
+        "multipliers": {
+          "Açıklama": 20.0,
+          "Toprak Durumu (Soil Condition Factor)": 1.5,
+          "Bitki Türü (Plant Type Factor)": 1.3,
+          "Erişim Faktörü (Accessibility)": 1.3,
+          "Green Waste (Toprak / Ambalaj Atığı)": 1.2
+        }
+      },
+      {
+        "size": "",
+        "base": 160.0,
+        "multipliers": {
+          "Açıklama": 40.0,
+          "Toprak Durumu (Soil Condition Factor)": 1.5,
+          "Bitki Türü (Plant Type Factor)": 1.3,
+          "Erişim Faktörü (Accessibility)": 1.3,
+          "Green Waste (Toprak / Ambalaj Atığı)": 1.2
+        }
+      },
+      {
+        "size": "",
+        "base": 210.0,
+        "multipliers": {
+          "Açıklama": 80.0,
+          "Toprak Durumu (Soil Condition Factor)": 1.5,
+          "Bitki Türü (Plant Type Factor)": 1.3,
+          "Erişim Faktörü (Accessibility)": 1.3,
+          "Green Waste (Toprak / Ambalaj Atığı)": 1.2
+        }
+      },
+      {
+        "size": "",
+        "base": 260.0,
+        "multipliers": {
+          "Açıklama": 150.0,
+          "Toprak Durumu (Soil Condition Factor)": 1.5,
+          "Bitki Türü (Plant Type Factor)": 1.3,
+          "Erişim Faktörü (Accessibility)": 1.3,
+          "Green Waste (Toprak / Ambalaj Atığı)": 1.2
+        }
+      }
+    ],
+    "multipliers": [
+      "Kategori",
+      "Açıklama",
+      "Toprak Durumu (Soil Condition Factor)",
+      "Bitki Türü (Plant Type Factor)",
+      "Erişim Faktörü (Accessibility)",
+      "Green Waste (Toprak / Ambalaj Atığı)"
+    ]
+  },
+  "Rubbish Removal (Atık Toplama)": {
+    "size_col": null,
+    "base_price_col": "Standart Fiyat (AUD)",
+    "rows": [
+      {
+        "size": "",
+        "base": 40.0,
+        "multipliers": {
+          "Hacim (yaklaşık)": 0.25,
+          "Mixed Waste": 1.5,
+          "Erişim Faktörü (Accessibility)": 1.3,
+          "Disposal / Tiping Fee (Döküm Ücreti)": 1.2,
+          "Ek Hizmet (Loading / Sorting)": 1.2
+        }
+      },
+      {
+        "size": "",
+        "base": 70.0,
+        "multipliers": {
+          "Hacim (yaklaşık)": 0.25,
+          "Açıklama": 2.0,
+          "Mixed Waste": 1.5,
+          "Erişim Faktörü (Accessibility)": 1.3,
+          "Disposal / Tiping Fee (Döküm Ücreti)": 1.2,
+          "Ek Hizmet (Loading / Sorting)": 1.2
+        }
+      },
+      {
+        "size": "",
+        "base": 100.0,
+        "multipliers": {
+          "Hacim (yaklaşık)": 0.5,
+          "Mixed Waste": 1.5,
+          "Erişim Faktörü (Accessibility)": 1.3,
+          "Disposal / Tiping Fee (Döküm Ücreti)": 1.2,
+          "Ek Hizmet (Loading / Sorting)": 1.2
+        }
+      },
+      {
+        "size": "",
+        "base": 150.0,
+        "multipliers": {
+          "Hacim (yaklaşık)": 1.0,
+          "Mixed Waste": 1.5,
+          "Erişim Faktörü (Accessibility)": 1.3,
+          "Disposal / Tiping Fee (Döküm Ücreti)": 1.2,
+          "Ek Hizmet (Loading / Sorting)": 1.2
+        }
+      },
+      {
+        "size": "",
+        "base": 200.0,
+        "multipliers": {
+          "Hacim (yaklaşık)": 2.0,
+          "Mixed Waste": 1.5,
+          "Erişim Faktörü (Accessibility)": 1.3,
+          "Disposal / Tiping Fee (Döküm Ücreti)": 1.2,
+          "Ek Hizmet (Loading / Sorting)": 1.2
+        }
+      },
+      {
+        "size": "",
+        "base": 250.0,
+        "multipliers": {
+          "Hacim (yaklaşık)": 3.0,
+          "Mixed Waste": 1.5,
+          "Erişim Faktörü (Accessibility)": 1.3,
+          "Disposal / Tiping Fee (Döküm Ücreti)": 1.2,
+          "Ek Hizmet (Loading / Sorting)": 1.2
+        }
+      },
+      {
+        "size": "",
+        "base": 300.0,
+        "multipliers": {
+          "Hacim (yaklaşık)": 4.0,
+          "Mixed Waste": 1.5,
+          "Erişim Faktörü (Accessibility)": 1.3,
+          "Disposal / Tiping Fee (Döküm Ücreti)": 1.2,
+          "Ek Hizmet (Loading / Sorting)": 1.2
+        }
+      }
+    ],
+    "multipliers": [
+      "Kategori",
+      "Hacim (yaklaşık)",
+      "Açıklama",
+      "Mixed Waste",
+      "Erişim Faktörü (Accessibility)",
+      "Disposal / Tiping Fee (Döküm Ücreti)",
+      "Ek Hizmet (Loading / Sorting)"
+    ]
+  },
+  "Gutter Cleaning": {
+    "size_col": null,
+    "base_price_col": "Standart Fiyat (AUD)",
+    "rows": [
+      {
+        "size": "",
+        "base": 70.0,
+        "multipliers": {
+          "Uzunluk (yaklaşık)": 10.0,
+          "Yükseklik Faktörü (Height Factor)>2": 1.6,
+          "Erişim Durumu (Accessibility)": 1.4,
+          "Tıkanıklık Durumu (Blockage / Condition Factor)": 1.4,
+          "Green Waste Disposal (Atık Yönetimi)": 1.2
+        }
+      },
+      {
+        "size": "",
+        "base": 100.0,
+        "multipliers": {
+          "Uzunluk (yaklaşık)": 10.0,
+          "Yükseklik Faktörü (Height Factor)>2": 1.6,
+          "Erişim Durumu (Accessibility)": 1.4,
+          "Tıkanıklık Durumu (Blockage / Condition Factor)": 1.4,
+          "Green Waste Disposal (Atık Yönetimi)": 1.2
+        }
+      },
+      {
+        "size": "",
+        "base": 130.0,
+        "multipliers": {
+          "Uzunluk (yaklaşık)": 20.0,
+          "Yükseklik Faktörü (Height Factor)>2": 1.6,
+          "Erişim Durumu (Accessibility)": 1.4,
+          "Tıkanıklık Durumu (Blockage / Condition Factor)": 1.4,
+          "Green Waste Disposal (Atık Yönetimi)": 1.2
+        }
+      },
+      {
+        "size": "",
+        "base": 160.0,
+        "multipliers": {
+          "Uzunluk (yaklaşık)": 30.0,
+          "Yükseklik Faktörü (Height Factor)>2": 1.6,
+          "Erişim Durumu (Accessibility)": 1.4,
+          "Tıkanıklık Durumu (Blockage / Condition Factor)": 1.4,
+          "Green Waste Disposal (Atık Yönetimi)": 1.2
+        }
+      },
+      {
+        "size": "",
+        "base": 200.0,
+        "multipliers": {
+          "Uzunluk (yaklaşık)": 40.0,
+          "Yükseklik Faktörü (Height Factor)>2": 1.6,
+          "Erişim Durumu (Accessibility)": 1.4,
+          "Tıkanıklık Durumu (Blockage / Condition Factor)": 1.4,
+          "Green Waste Disposal (Atık Yönetimi)": 1.2
+        }
+      },
+      {
+        "size": "",
+        "base": 250.0,
+        "multipliers": {
+          "Uzunluk (yaklaşık)": 60.0,
+          "Yükseklik Faktörü (Height Factor)>2": 1.6,
+          "Erişim Durumu (Accessibility)": 1.4,
+          "Tıkanıklık Durumu (Blockage / Condition Factor)": 1.4,
+          "Green Waste Disposal (Atık Yönetimi)": 1.2
+        }
+      },
+      {
+        "size": "",
+        "base": 300.0,
+        "multipliers": {
+          "Uzunluk (yaklaşık)": 80.0,
+          "Yükseklik Faktörü (Height Factor)>2": 1.6,
+          "Erişim Durumu (Accessibility)": 1.4,
+          "Tıkanıklık Durumu (Blockage / Condition Factor)": 1.4,
+          "Green Waste Disposal (Atık Yönetimi)": 1.2
+        }
+      }
+    ],
+    "multipliers": [
+      "Kategori",
+      "Uzunluk (yaklaşık)",
+      "Açıklama",
+      "Yükseklik Faktörü (Height Factor)>2",
+      "Erişim Durumu (Accessibility)",
+      "Tıkanıklık Durumu (Blockage / Condition Factor)",
+      "Green Waste Disposal (Atık Yönetimi)"
+    ]
+  }
+}
