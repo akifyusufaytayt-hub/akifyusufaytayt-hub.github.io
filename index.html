@@ -1,28 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Melbourne Lawn Care - Professional Lawn & Garden Services</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <link rel="icon" type="image/png" href="logo.png" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Melbourne Lawn Care - Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
 
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"LocalBusiness",
-    "name":"Melbourne Lawn Care",
-    "image":"https://www.melbournelawncare.com.au/logo.png",
-    "address":{"@type":"PostalAddress","streetAddress":"Murray Ct, Greenvale","addressLocality":"Melbourne","addressRegion":"VIC","postalCode":"3059","addressCountry":"AU"},
-    "telephone":"+61478733900",
-    "url":"https://www.melbournelawncare.com.au",
-    "openingHours":"Mo-Sa 09:00-18:00",
-    "priceRange":"$$",
-    "sameAs":["https://www.facebook.com/profile.php?id=61579606565810","https://www.instagram.com/melbournelawncare/"]
-  }
-  </script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Roboto',sans-serif;background:#f5f5f5;color:#333}
+    .container{max-width:1200px;margin:0 auto;padding:0 20px}
+    header{background:#2e7d32;color:#fff;text-align:center;padding:20px 0;box-shadow:0 2px 5px rgba(0,0,0,.1);position:relative}
+    .header-container{display:flex;align-items:center;justify-content:center;gap:15px;position:relative}
+    .logo{width:50px;height:50px;border-radius:50%}
+    h1{font-size:2rem;margin:0}.tagline{font-size:1rem;opacity:.9;margin-top:5px}
+    .user-section{position:absolute;right:20px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:15px}
+    .user-info{background:rgba(255,255,255,.1);padding:8px 15px;border-radius:20px;font-size:.9rem;display:flex;align-items:center;gap:8px}
+    .user-info i{color:#a5d6a7}
+    .logout-btn{background:linear-gradient(135deg,#f44336,#d32f2f);color:#fff;border:none;padding:10px 20px;border-radius:5px;cursor:pointer;font-size:14px;font-weight:500;transition:.3s;display:flex;align-items:center;gap:8px}
+    .logout-btn:hover{background:linear-gradient(135deg,#d32f2f,#c62828);transform:translateY(-2px);box-shadow:0 5px 15px rgba(244,67,54,.3)}
+    .nav-tabs{background:#fff;margin:20px 0;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);overflow:hidden}
+    .nav-tabs ul{list-style:none;display:flex}.nav-tabs li{flex:1}
+    .nav-tabs button{width:100%;padding:15px 20px;border:none;background:transparent;cursor:pointer;font-size:1rem;font-weight:500;color:#666;transition:.3s;border-bottom:3px solid transparent}
+    .nav-tabs button:hover{background:#f8f9fa;color:#2e7d32}
+    .nav-tabs button.active{color:#2e7d32;border-bottom-color:#2e7d32;background:#f8f9fa}
+    .content-section{display:none;background:#fff;border-radius:10px;padding:30px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+    .content-section.active{display:block}
+    .content-section h2{color:#2e7d32;margin-bottom:20px;font-size:1.8rem}
+    .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-bottom:20px}
+    .form-group{margin-bottom:15px}
+    .form-group label{display:block;margin-bottom:5px;font-weight:500;color:#333}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:1rem;transition:border-color .3s}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#2e7d32}
+    .btn{background:#2e7d32;color:#fff;padding:12px 25px;border:none;border-radius:8px;cursor:pointer;font-size:1rem;font-weight:500;transition:.3s;margin-right:10px}
+    .btn:hover{background:#1b5e20}.btn-secondary{background:#666}.btn-secondary:hover{background:#555}
+    .btn-danger{background:#d32f2f}.btn-danger:hover{background:#b71c1c}
+    .customer-grid{display:grid;gap:20px;margin-top:20px}
+    .customer-card{background:#f8f9fa;border:1px solid #ddd;border-radius:10px;padding:20px;transition:.3s}
+    .customer-card:hover{box-shadow:0 4px 15px rgba(0,0,0,.1);transform:translateY(-2px)}
+    .customer-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+    .customer-name{font-size:1.2rem;font-weight:700;color:#2e7d32;margin:0}
+    .customer-actions{display:flex;gap:10px}
+    .customer-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:15px}
+    .info-item{display:flex;align-items:center;gap:8px;color:#666}.info-item i{color:#2e7d32;width:16px}
+    .service-history{margin-top:15px;padding-top:15px;border-top:1px solid #ddd}
+    .service-item{background:#fff;padding:10px;border-radius:5px;margin-bottom:10px;border-left:4px solid #2e7d32}
+    .service-date{font-weight:600;color:#2e7d32}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-bottom:30px}
+    .stat-card{background:linear-gradient(135deg,#2e7d32,#4caf50);color:#fff;padding:25px;border-radius:10px;text-align:center;box-shadow:0 4px 15px rgba(46,125,50,.3)}
+    .stat-number{font-size:2.5rem;font-weight:700;margin-bottom:5px}.stat-label{font-size:1rem;opacity:.9}
+    .search-bar{background:#fff;padding:20px;border-radius:10px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+    .search-controls{display:flex;gap:15px;align-items:center;flex-wrap:wrap}
+    .search-controls input{flex:1;min-width:200px}
+    .message{padding:15px;border-radius:8px;margin-bottom:20px;display:none}
+    .message.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
+    .message.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
+    .modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.5)}
+    .modal-content{background:#fff;margin:5% auto;padding:30px;border-radius:10px;width:90%;max-width:600px;max-height:80vh;overflow-y:auto}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+    .close{font-size:24px;cursor:pointer;color:#666}.close:hover{color:#000}
+    @media(max-width:768px){.container{padding:0 15px}.header-container{flex-direction:column;gap:10px}.user-section{position:static;transform:none;margin-top:15px}.nav-tabs ul{flex-direction:column}.search-controls{flex-direction:column;align-items:stretch}.search-controls input{min-width:auto}.customer-actions{flex-direction:column}.form-grid{grid-template-columns:1fr}}
+  </style>
 
   <!-- Firebase compat SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
@@ -42,243 +81,694 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
   </script>
-
-  <style>
-    /* Centering */
-    .container { max-width: 960px; margin: 0 auto; padding: 0 16px; }
-    header .header-container { display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; }
-    nav .container ul { list-style:none; margin:0; padding:0; display:flex; justify-content:center; gap:24px; align-items:center; }
-    .section .container { text-align:center; }
-    .section h2, .section .tagline { text-align:center; margin-left:auto; margin-right:auto; }
-    .text-content, .section p { margin-left:auto; margin-right:auto; }
-    footer .container { text-align:center; }
-    /* Quote form centered card */
-    #quote form { max-width: 560px; margin: 0 auto; text-align:left; }
-    #contact .map-container { max-width: 960px; margin: 20px auto 0; }
-    .map-container iframe { width:100%; height:380px; border:0; }
-
-    /* CRM Modal */
-    .crm-modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,.5);animation:fadeIn .3s}
-    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-    .crm-modal-content{background:#fefefe;margin:10% auto;padding:0;border-radius:10px;width:90%;max-width:420px;box-shadow:0 5px 25px rgba(0,0,0,.2);animation:slideDown .3s}
-    @keyframes slideDown{from{transform:translateY(-50px);opacity:0}to{transform:translateY(0);opacity:1}}
-    .crm-modal-header{background:linear-gradient(135deg,#2e7d32,#4caf50);color:#fff;padding:20px;border-radius:10px 10px 0 0;position:relative}
-    .crm-modal-header h2{margin:0;font-size:22px}
-    .crm-close{color:#fff;position:absolute;right:20px;top:20px;font-size:26px;font-weight:700;cursor:pointer;transition:.3s}
-    .crm-close:hover{transform:rotate(90deg)}
-    .crm-modal-body{padding:24px}
-    .crm-form-group{margin-bottom:16px}
-    .crm-form-group label{display:block;margin-bottom:6px;color:#333;font-weight:500}
-    .crm-form-group input{width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:15px}
-    .crm-login-btn{width:100%;padding:12px;background:linear-gradient(135deg,#2e7d32,#4caf50);color:#fff;border:none;border-radius:6px;font-size:16px;font-weight:700;cursor:pointer}
-    .crm-error{display:none;background:#ffebee;color:#c62828;padding:10px;border-radius:6px;margin-bottom:12px;font-size:14px}
-
-    /* Discreet top-right CRM link */
-    .crm-toplink {
-      position: fixed;
-      top: 8px;
-      right: 10px;
-      z-index: 1100;
-      font-size: 12px;
-      letter-spacing: 1px;
-      opacity: .15;
-      transition: opacity .2s ease;
-      user-select: none;
-    }
-    .crm-toplink:focus-within,
-    .crm-toplink:hover { opacity: .9; }
-    .crm-toplink a{
-      text-decoration:none;
-      color:#2e7d32;
-      background:#e8f5e9;
-      border:1px solid #a5d6a7;
-      padding:6px 10px;
-      border-radius:16px;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-    }
-    .crm-toplink a:focus{ outline:2px solid #2e7d32; outline-offset:2px; }
-  </style>
 </head>
 <body>
-  <!-- Discreet CRM trigger (top-right) -->
-  <div class="crm-toplink" aria-hidden="false">
-    <a href="#" onclick="showCRMLogin()" aria-label="Open CRM login">
-      <i class="fas fa-user-shield" aria-hidden="true"></i> CRM
-    </a>
-  </div>
-
-  <a href="tel:+61478733900" class="fixed-phone-btn">
-    <i class="fas fa-phone"></i> +61 478 733 900
-  </a>
-
-  <!-- CRM Login Modal -->
-  <div id="crm-login-modal" class="crm-modal">
-    <div class="crm-modal-content">
-      <div class="crm-modal-header">
-        <span class="crm-close" onclick="closeCRMLogin()">&times;</span>
-        <h2><i class="fas fa-lock"></i> CRM Login</h2>
-      </div>
-      <div class="crm-modal-body">
-        <div id="crm-login-error" class="crm-error"></div>
-        <form id="crm-login-form">
-          <div class="crm-form-group">
-            <label for="crm-email">Email</label>
-            <input type="email" id="crm-email" name="email" required placeholder="Enter email" />
-          </div>
-          <div class="crm-form-group">
-            <label for="crm-password">Password</label>
-            <input type="password" id="crm-password" name="password" required placeholder="Enter password" />
-          </div>
-          <button type="submit" class="crm-login-btn">Login</button>
-        </form>
-      </div>
-    </div>
-  </div>
-
   <header>
-    <div class="container header-container">
-      <img src="logo.png" alt="Melbourne Lawn Care Logo" class="logo" />
-      <h1>Melbourne Lawn &amp; Gardening Care</h1>
-      <p class="tagline">Professional Lawn Care and Gardening Services</p>
+    <div class="container">
+      <div class="header-container">
+        <img src="logo.png" alt="Melbourne Lawn Care Logo" class="logo">
+        <div>
+          <h1>Melbourne Lawn Care</h1>
+          <p class="tagline">Admin Panel - Customer Management</p>
+        </div>
+        <div class="user-section">
+          <div class="user-info">
+            <i class="fas fa-user-circle"></i>
+            <span id="current-user-display">Admin</span>
+          </div>
+          <button onclick="logout()" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+          </button>
+        </div>
+      </div>
     </div>
   </header>
 
-  <nav>
-    <div class="container">
+  <div class="container">
+    <div class="nav-tabs">
       <ul>
-        <li><a href="#about">About</a></li>
-        <li><a href="#quote">Get Quote</a></li>
-        <li><a href="#contact">Contact</a></li>
-        <!-- CRM link nav'dan kaldırıldı -->
+        <li><button class="nav-btn active" data-section="dashboard"><i class="fas fa-chart-line"></i> Dashboard</button></li>
+        <li><button class="nav-btn" data-section="customers"><i class="fas fa-users"></i> Customers</button></li>
+        <li><button class="nav-btn" data-section="add-customer"><i class="fas fa-user-plus"></i> Add Customer</button></li>
+        <li><button class="nav-btn" data-section="services"><i class="fas fa-clipboard-list"></i> Services</button></li>
+        <!-- YENİ: Quotes sekmesi -->
+        <li><button class="nav-btn" data-section="quotes"><i class="fas fa-file-invoice-dollar"></i> Quotes</button></li>
       </ul>
     </div>
-  </nav>
 
-  <section id="hero-intro" class="section hero">
-    <div class="container">
-      <h2>Welcome to Melbourne's premier lawn &amp; gardening care service. We turn ordinary yards into neat, healthy outdoor spaces.</h2>
-      <p>Our team services homes across Melbourne with reliable, quality-focused lawn and garden care.</p>
-    </div>
-  </section>
+    <div id="message" class="message"></div>
 
-  <!-- ABOUT -->
-  <section id="about" class="section light-bg">
-    <div class="container">
-      <h2>About Us</h2>
-      <p style="max-width:720px;">
-        We provide <strong>end-to-end lawn mowing and full garden maintenance</strong>.
-        Services include mowing, edging, hedging, pruning, weeding, fertilising, lawn
-        repair and turf laying, seasonal clean-ups, green waste removal, irrigation checks,
-        and general garden tidy-ups. If it’s lawn or garden, we handle it.
-      </p>
-      <div class="notice" style="max-width:720px;">
-        <strong>Booking and quotes:</strong> Please submit your details <em>only</em> via the
-        <a href="#quote">“Get My Quote”</a> button so we capture your address and contact correctly.
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="content-section active">
+      <h2><i class="fas fa-chart-line"></i> Dashboard</h2>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-number" id="total-customers">0</div><div class="stat-label">Total Customers</div></div>
+        <div class="stat-card"><div class="stat-number" id="total-services">0</div><div class="stat-label">Total Services</div></div>
+        <div class="stat-card"><div class="stat-number" id="monthly-revenue">$0</div><div class="stat-label">This Month Revenue</div></div>
+        <div class="stat-card"><div class="stat-number" id="avg-service-value">$0</div><div class="stat-label">Avg Service Value</div></div>
+      </div>
+      <div style="background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);">
+        <h3 style="color:#2e7d32;margin-bottom:15px;">Recent Activities</h3>
+        <div id="recent-activities"></div>
       </div>
     </div>
-  </section>
 
-  <section id="getting-started" class="section">
-    <div class="container">
-      <h2>Getting Started is Easy</h2>
-      <ul style="display:inline-block; text-align:left;">
-        <li><strong>Free Quote:</strong> contact us for a no-obligation assessment</li>
-        <li><strong>Flexible Scheduling:</strong> pick a frequency that fits</li>
-        <li><strong>Professional Service:</strong> enjoy a well-kept lawn</li>
-        <li><strong>Satisfaction Guaranteed:</strong> we fix it if you’re not happy</li>
-      </ul>
+    <!-- CUSTOMERS -->
+    <div id="customers" class="content-section">
+      <h2><i class="fas fa-users"></i> Customer Management</h2>
+      <div class="search-bar">
+        <div class="search-controls">
+          <input type="text" id="search-customers" placeholder="Search customers by name, address, or phone...">
+          <select id="filter-frequency">
+            <option value="">All Frequencies</option>
+            <option value="weekly">Weekly</option>
+            <option value="fortnightly">Fortnightly</option>
+            <option value="monthly">Monthly</option>
+            <option value="one-off">One-off</option>
+          </select>
+          <button class="btn" onclick="exportCustomers()"><i class="fas fa-download"></i> Export</button>
+        </div>
+      </div>
+      <div id="customers-list" class="customer-grid"></div>
     </div>
-  </section>
 
-  <section id="quote" class="section">
-    <div class="container">
-      <h2>Request a Free Quote</h2>
-    <form id="quote-form" action="https://formspree.io/f/mvgqjyqg" method="POST" enctype="multipart/form-data">
-        <div class="form-group">
-          <label for="name">Full Name</label>
-          <input autocomplete="name" type="text" id="name" name="name" placeholder="Full name" required />
+    <!-- ADD CUSTOMER -->
+    <div id="add-customer" class="content-section">
+      <h2><i class="fas fa-user-plus"></i> Add New Customer</h2>
+      <form id="customer-form">
+        <div class="form-grid">
+          <div>
+            <div class="form-group"><label for="customer-name">Full Name *</label><input type="text" id="customer-name" name="name" required></div>
+            <div class="form-group"><label for="customer-email">Email *</label><input type="email" id="customer-email" name="email" required></div>
+            <div class="form-group"><label for="customer-phone">Phone *</label><input type="tel" id="customer-phone" name="phone" required></div>
+            <div class="form-group"><label for="customer-address">Address *</label><input type="text" id="customer-address" name="address" required></div>
+          </div>
+          <div>
+            <div class="form-group"><label for="customer-postcode">Postcode</label><input type="text" id="customer-postcode" name="postcode"></div>
+            <div class="form-group"><label for="lawn-size">Lawn Size</label>
+              <select id="lawn-size" name="lawnSize">
+                <option value="">Select Size</option>
+                <option value="small">Small (up to 300m²)</option>
+                <option value="medium">Medium (300-600m²)</option>
+                <option value="large">Large (600m²+)</option>
+              </select>
+            </div>
+            <div class="form-group"><label for="service-frequency">Service Frequency</label>
+              <select id="service-frequency" name="frequency">
+                <option value="">Select Frequency</option>
+                <option value="weekly">Weekly</option>
+                <option value="fortnightly">Fortnightly</option>
+                <option value="monthly">Monthly</option>
+                <option value="one-off">One-off</option>
+              </select>
+            </div>
+            <div class="form-group"><label for="customer-notes">Notes</label><textarea id="customer-notes" name="notes" rows="3" placeholder="Special instructions, gate access, etc."></textarea></div>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input autocomplete="email" type="email" id="email" name="email" placeholder="you@example.com" required />
-        </div>
-        <div class="form-group">
-          <label for="phone">Phone</label>
-          <input autocomplete="tel" inputmode="tel" type="tel" id="phone" name="phone" placeholder="+61 ..." required />
-        </div>
-        <div class="form-group">
-          <label for="address">Address</label>
-          <input autocomplete="street-address" type="text" id="address" name="address" placeholder="Street address, suburb, VIC" required />
-        </div>
-        <div class="form-group">
-          <label for="notes">Additional Notes (Optional)</label>
-          <textarea id="notes" name="notes" rows="4" placeholder="e.g., hedge trim as well"></textarea>
-        </div>
-        <div id="success-message" style="display:none;margin-top:20px;text-align:center;">
-          <p><strong>✅ Your request has been sent successfully!</strong></p>
-          <p>We will get back to you as soon as possible.</p>
-        </div>
-        <div style="text-align:center;">
-          <button type="submit" class="btn">Get My Quote</button>
-        </div>
+        <button type="submit" class="btn"><i class="fas fa-save"></i> Save Customer</button>
+        <button type="button" class="btn btn-secondary" onclick="clearForm()"><i class="fas fa-times"></i> Clear Form</button>
       </form>
     </div>
-  </section>
 
-  <section id="contact" class="section">
-    <div class="container">
-      <h2>Contact Us</h2>
-      <p>Reach us by form, email, or phone.</p>
-      <p><strong>Phone:</strong> +61 478 733 900</p>
-      <p><strong>Email:</strong> <a href="mailto:melbournelawncareau@gmail.com">melbournelawncareau@gmail.com</a></p>
-      <p><strong>Address:</strong> Murray Ct, Greenvale VIC 3059</p>
-
-      <div class="google-profile-link" style="margin-top:20px;">
-        <p>Reviews and business profile on Google:
-          <a href="https://maps.google.com/?cid=5143709882782240015&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNl" target="_blank" style="text-decoration:none;color:#4285F4;font-weight:bold;">Click here</a>.
-        </p>
+    <!-- SERVICES -->
+    <div id="services" class="content-section">
+      <h2><i class="fas fa-clipboard-list"></i> Service Management</h2>
+      <div style="background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);margin-bottom:20px;">
+        <h3 style="color:#2e7d32;margin-bottom:15px;">Add New Service</h3>
+        <form id="service-form">
+          <div class="form-grid">
+            <div>
+              <div class="form-group"><label for="service-customer">Customer *</label>
+                <select id="service-customer" name="customerId" required><option value="">Select Customer</option></select>
+              </div>
+              <div class="form-group"><label for="service-date">Service Date *</label><input type="date" id="service-date" name="date" required></div>
+            </div>
+            <div>
+              <div class="form-group"><label for="service-type">Service Type *</label>
+                <select id="service-type" name="type" required>
+                  <option value="">Select Service</option>
+                  <option value="standard-mowing">Standard Mowing</option>
+                  <option value="mowing-edging">Mowing + Edge Trimming</option>
+                  <option value="full-service">Full Service + Green Waste</option>
+                  <option value="hedge-trimming">Hedge Trimming</option>
+                  <option value="garden-weeding">Garden Bed Weeding</option>
+                </select>
+              </div>
+              <div class="form-group"><label for="service-amount">Amount ($) *</label><input type="number" id="service-amount" name="amount" step="0.01" required></div>
+            </div>
+          </div>
+          <div class="form-group"><label for="service-notes">Service Notes</label><textarea id="service-notes" name="notes" rows="2" placeholder="Additional details about the service..."></textarea></div>
+          <button type="submit" class="btn"><i class="fas fa-plus"></i> Add Service</button>
+        </form>
       </div>
-
-      <div class="map-container">
-        <iframe title="Melbourne Lawn Care on Google Maps" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d59528.808760094435!2d144.92619921553668!3d-37.65244146241169!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xc6021f732e6171b%3A0x476220e2c6e6cd0f!2sMelbourne%20Lawn%20Care!5e0!3m2!1sen!2sau!4v1755915976310!5m2!1sen!2sau" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <div style="background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);">
+        <h3 style="color:#2e7d32;margin-bottom:15px;">Recent Services</h3>
+        <div id="recent-services"></div>
       </div>
     </div>
-  </section>
 
-  <footer>
-    <div class="container">
-      <div class="social-links" style="margin-bottom:8px;">
-        <a href="https://www.facebook.com/profile.php?id=61579606565810" target="_blank"><i class="fab fa-facebook-f"></i></a>
-        <a href="https://www.instagram.com/melbournelawncare/" target="_blank" style="margin-left:12px;"><i class="fab fa-instagram"></i></a>
+    <!-- YENİ: QUOTES -->
+    <div id="quotes" class="content-section">
+      <h2><i class="fas fa-file-invoice-dollar"></i> Create Quote</h2>
+
+      <div class="search-bar" style="margin-bottom:20px;">
+        <div class="search-controls">
+          <select id="quote-customer" required>
+            <option value="">Select Customer</option>
+          </select>
+          <input type="text" id="quote-title" placeholder="Quote title (optional)"/>
+          <button class="btn" id="add-line-btn"><i class="fas fa-plus"></i> Add Service</button>
+          <button class="btn btn-secondary" id="clear-quote-btn"><i class="fas fa-eraser"></i> Clear</button>
+        </div>
       </div>
-      <img src="logo.png" alt="Melbourne Lawn Care Logo" class="footer-logo" />
-      <p>© 2025 Melbourne Lawn Care. All rights reserved.</p>
-      <div style="text-align:center;margin-top:15px;opacity:.3;transition:opacity .3s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.3'">
-        <a href="admin.html" style="color:#666;font-size:.7rem;text-decoration:none;letter-spacing:1px;">ADMIN</a>
+
+      <div id="quote-lines" class="customer-grid"></div>
+
+      <div class="customer-card" style="margin-top:20px;">
+        <div class="customer-header">
+          <h3 class="customer-name">Totals</h3>
+        </div>
+        <div class="customer-info">
+          <div class="info-item"><i class="fas fa-receipt"></i><span>Subtotal: $<span id="q-subtotal">0.00</span></span></div>
+          <div class="info-item"><i class="fas fa-percent"></i><span>GST (10%): $<span id="q-gst">0.00</span></span></div>
+          <div class="info-item"><i class="fas fa-dollar-sign"></i><span><strong>Total: $<span id="q-total">0.00</span></strong></span></div>
+        </div>
+        <div style="margin-top:12px;">
+          <button class="btn" id="save-quote-btn"><i class="fas fa-save"></i> Save Quote</button>
+        </div>
+        <div id="quote-save-msg" class="message" style="margin-top:12px;"></div>
       </div>
     </div>
-  </footer>
+  </div>
+
+  <!-- CUSTOMER DETAILS MODAL -->
+  <div id="customer-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-customer-name"></h3>
+        <span class="close" onclick="closeModal()">&#215;</span>
+      </div>
+      <div id="modal-customer-details"></div>
+    </div>
+  </div>
 
   <script>
-    function showCRMLogin(){const m=document.getElementById('crm-login-modal');if(m){m.style.display='block';document.body.style.overflow='hidden';}}
-    function closeCRMLogin(){const m=document.getElementById('crm-login-modal');if(m){m.style.display='none';document.body.style.overflow='auto';const f=document.getElementById('crm-login-form');const e=document.getElementById('crm-login-error');if(f)f.reset();if(e)e.style.display='none';}}
-    async function handleCRMLogin(e){
-      e.preventDefault();
-      const email=document.getElementById('crm-email').value;
-      const password=document.getElementById('crm-password').value;
-      const err=document.getElementById('crm-login-error');
-      try{ await auth.signInWithEmailAndPassword(email,password); window.location.href='admin.html'; }
-      catch(error){ if(err){err.textContent=error.message;err.style.display='block';} }
-    }
-    document.addEventListener('DOMContentLoaded',function(){
-      const f=document.getElementById('crm-login-form'); if(f){f.addEventListener('submit',handleCRMLogin);}
-      window.addEventListener('click',e=>{const m=document.getElementById('crm-login-modal');if(e.target===m)closeCRMLogin();});
-      document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCRMLogin();});
-      const qf=document.getElementById('quote-form');const ok=document.getElementById('success-message');
-      if(qf&&ok){qf.addEventListener('submit',async ev=>{ev.preventDefault();const r=await fetch(qf.action,{method:'POST',body:new FormData(qf),headers:{'Accept':'application/json'}});if(r.ok){ok.style.display='block';qf.reset();}else{alert('Form submission failed.');}});}
+    let customersCache=[];let servicesCache=[];let currentEditingId=null;
+
+    auth.onAuthStateChanged(async user=>{
+      if(!user){window.location.href="index.html";return;}
+      document.getElementById('current-user-display').textContent=user.email||'Admin';
+      await loadCustomers();await loadServices();updateDashboard();updateCustomerDropdown();
     });
+
+    function logout(){auth.signOut();}
+
+    document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>showSection(b.dataset.section)));
+    function showSection(id){
+      document.querySelectorAll('.content-section').forEach(s=>s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelector(`.nav-btn[data-section="${id}"]`).classList.add('active');
+      if(id==='services') updateCustomerDropdown();
+      if(id==='quotes') initQuotesUI(); /* YENİ */
+    }
+
+    function showMessage(text,type){const el=document.getElementById('message');el.textContent=text;el.className=`message ${type}`;el.style.display='block';setTimeout(()=>el.style.display='none',3000);}
+
+    /* CUSTOMERS */
+    document.getElementById('customer-form').addEventListener('submit',saveCustomer);
+
+    async function saveCustomer(e){
+      e.preventDefault();
+      const data={
+        name:val('customer-name'),email:val('customer-email'),phone:val('customer-phone'),
+        address:val('customer-address'),postcode:val('customer-postcode'),
+        lawnSize:val('lawn-size'),frequency:val('service-frequency'),notes:val('customer-notes'),
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+      };
+      if(currentEditingId){
+        await db.collection('musteriler').doc(currentEditingId).update(data);
+        currentEditingId=null;
+        document.querySelector('#add-customer h2').innerHTML='<i class="fas fa-user-plus"></i> Add New Customer';
+        showMessage('Customer updated successfully!','success');
+      }else{
+        await db.collection('musteriler').add({...data,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        showMessage('Customer added successfully!','success');
+      }
+      clearForm();await loadCustomers();updateDashboard();updateCustomerDropdown();updateQuoteCustomerDropdown(); /* YENİ */
+    }
+    function val(id){return (document.getElementById(id).value||'').trim();}
+    function clearForm(){document.getElementById('customer-form').reset();}
+
+    async function loadCustomers(){
+      const snap=await db.collection('musteriler').orderBy('createdAt','desc').get();
+      customersCache=snap.docs.map(d=>({id:d.id,...d.data()}));
+      renderCustomers(customersCache);
+    }
+
+    function renderCustomers(list){
+      const wrap=document.getElementById('customers-list');wrap.innerHTML='';
+      if(!list.length){wrap.innerHTML='<p style="text-align:center;color:#666;padding:40px;">No customers found. Add your first customer to get started!</p>';return;}
+      list.forEach(c=>wrap.appendChild(createCustomerCard(c)));
+    }
+
+    function createCustomerCard(c){
+      const cServices=servicesCache.filter(s=>s.customerId===c.id);
+      const totalServices=cServices.length;
+      const totalRevenue=cServices.reduce((sum,s)=>sum+(parseFloat(s.amount)||0),0);
+      const lastService=cServices.sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+
+      const card=document.createElement('div');card.className='customer-card';
+      card.innerHTML=`
+        <div class="customer-header">
+          <h3 class="customer-name">${esc(c.name||'')}</h3>
+          <div class="customer-actions">
+            <button class="btn" title="View Details" onclick="viewCustomer('${c.id}')"><i class="fas fa-eye"></i></button>
+            <button class="btn btn-secondary" title="Edit" onclick="editCustomer('${c.id}')"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-danger" title="Delete" onclick="deleteCustomer('${c.id}')"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+        <div class="customer-info">
+          <div class="info-item"><i class="fas fa-envelope"></i><span>${esc(c.email||'')}</span></div>
+          <div class="info-item"><i class="fas fa-phone"></i><span>${esc(c.phone||'')}</span></div>
+          <div class="info-item"><i class="fas fa-map-marker-alt"></i><span>${esc(c.address||'')}</span></div>
+          <div class="info-item"><i class="fas fa-calendar"></i><span>${esc(c.frequency||'Not set')}</span></div>
+          <div class="info-item"><i class="fas fa-chart-line"></i><span>${totalServices} services</span></div>
+          <div class="info-item"><i class="fas fa-dollar-sign"></i><span>$${totalRevenue.toFixed(2)} total</span></div>
+        </div>
+        ${ lastService ? `
+          <div class="service-history">
+            <strong>Last Service:</strong>
+            <div class="service-item">
+              <span class="service-date">${esc(lastService.date||'')}</span> •
+              <span>${esc(lastService.type||'')}</span> •
+              <span>$${Number(lastService.amount||0).toFixed(2)}</span>
+            </div>
+          </div>` : ``}
+      `;
+      return card;
+    }
+
+    function editCustomer(id){
+      const c=customersCache.find(x=>x.id===id);if(!c)return;
+      currentEditingId=id;
+      setV('customer-name',c.name);setV('customer-email',c.email);setV('customer-phone',c.phone);
+      setV('customer-address',c.address);setV('customer-postcode',c.postcode);
+      setV('lawn-size',c.lawnSize);setV('service-frequency',c.frequency);setV('customer-notes',c.notes);
+      document.querySelector('#add-customer h2').innerHTML='<i class="fas fa-user-plus"></i> Edit Customer';
+      showSection('add-customer');
+    }
+    function setV(id,v){const el=document.getElementById(id);if(el)el.value=v||'';}
+
+    async function deleteCustomer(id){
+      if(!confirm('Delete this customer?')) return;
+      const sSnap=await db.collection('hizmetler').where('customerId','==',id).get();
+      const batch=db.batch();sSnap.forEach(doc=>batch.delete(doc.ref));
+      batch.delete(db.collection('musteriler').doc(id));
+      await batch.commit();
+      await loadCustomers();await loadServices();updateDashboard();updateCustomerDropdown();updateQuoteCustomerDropdown(); /* YENİ */
+      showMessage('Customer deleted.','success');
+    }
+
+    function viewCustomer(id){
+      const c=customersCache.find(x=>x.id===id);if(!c)return;
+      const modal=document.getElementById('customer-modal');
+      const nameEl=document.getElementById('modal-customer-name');
+      const details=document.getElementById('modal-customer-details');
+      const cServices=servicesCache.filter(s=>s.customerId===id).sort((a,b)=>new Date(b.date)-new Date(a.date));
+      nameEl.textContent=c.name||'Customer';
+      details.innerHTML=`
+        <p><strong>Email:</strong> ${esc(c.email||'')}</p>
+        <p><strong>Phone:</strong> ${esc(c.phone||'')}</p>
+        <p><strong>Address:</strong> ${esc(c.address||'')}</p>
+        <p><strong>Frequency:</strong> ${esc(c.frequency||'')}</p>
+        <p><strong>Notes:</strong> ${esc(c.notes||'')}</p>
+        <div class="service-history" style="margin-top:10px;">
+          <h4 style="margin:10px 0;color:#2e7d32;">Service History</h4>
+          ${ cServices.length ? cServices.map(s=>(
+              `<div class="service-item">
+                 <span class="service-date">${esc(s.date||'')}</span> •
+                 <span>${esc(s.type||'')}</span> •
+                 <span>$${Number(s.amount||0).toFixed(2)}</span>
+                 ${s.notes?`<div style="color:#666;margin-top:5px">${esc(s.notes)}</div>`:''}
+               </div>`
+            )).join('') : '<p>No services yet.</p>'}
+        </div>`;
+      modal.style.display='block';
+      window.onclick=(e)=>{if(e.target===modal)closeModal();};
+      document.onkeydown=(e)=>{if(e.key==='Escape')closeModal();};
+    }
+    function closeModal(){const m=document.getElementById('customer-modal');m.style.display='none';window.onclick=null;document.onkeydown=null;}
+
+    document.getElementById('search-customers').addEventListener('input',filterCustomers);
+    document.getElementById('filter-frequency').addEventListener('change',filterCustomers);
+    function filterCustomers(){
+      const q=document.getElementById('search-customers').value.toLowerCase();
+      const freq=document.getElementById('filter-frequency').value;
+      const list=customersCache.filter(c=>{
+        const text=`${c.name||''} ${c.address||''} ${c.phone||''}`.toLowerCase();
+        const okText=!q||text.includes(q);
+        const okFreq=!freq||(c.frequency||'')===freq;
+        return okText&&okFreq;
+      });
+      renderCustomers(list);
+    }
+
+    function exportCustomers(){
+      if(!customersCache.length){showMessage('No data to export.','error');return;}
+      const rows=[['Name','Email','Phone','Address','Postcode','LawnSize','Frequency','Notes'],
+        ...customersCache.map(c=>[c.name||'',c.email||'',c.phone||'',c.address||'',c.postcode||'',c.lawnSize||'',c.frequency||'',(c.notes||'').replace(/\n/g,' ')])];
+      const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download='customers.csv';a.click();URL.revokeObjectURL(url);
+    }
+
+    /* SERVICES */
+    document.getElementById('service-form').addEventListener('submit',saveService);
+    async function saveService(e){
+      e.preventDefault();
+      const data={
+        customerId:document.getElementById('service-customer').value,
+        date:document.getElementById('service-date').value,
+        type:document.getElementById('service-type').value,
+        amount:parseFloat(document.getElementById('service-amount').value||'0'),
+        notes:(document.getElementById('service-notes').value||'').trim(),
+        createdAt:firebase.firestore.FieldValue.serverTimestamp()
+      };
+      if(!data.customerId){showMessage('Select a customer.','error');return;}
+      await db.collection('hizmetler').add(data);
+      document.getElementById('service-form').reset();
+      await loadServices();updateDashboard();showMessage('Service added.','success');
+    }
+
+    async function loadServices(){
+      const snap=await db.collection('hizmetler').orderBy('createdAt','desc').limit(50).get();
+      servicesCache=snap.docs.map(d=>({id:d.id,...d.data()}));
+      renderRecentServices();renderCustomers(customersCache);
+    }
+
+    function renderRecentServices(){
+      const wrap=document.getElementById('recent-services');
+      wrap.innerHTML = servicesCache.length ? servicesCache.slice(0,10).map(s=>{
+        const c=customersCache.find(x=>x.id===s.customerId);
+        return `<div class="service-item">
+                  <span class="service-date">${esc(s.date||'')}</span> •
+                  <strong>${esc(c?.name||'Unknown')}</strong> •
+                  ${esc(s.type||'')} • $${Number(s.amount||0).toFixed(2)}
+                  ${s.notes?`<div style="color:#666;margin-top:5px">${esc(s.notes)}</div>`:''}
+                </div>`;
+      }).join('') : '<p>No services recorded yet.</p>';
+    }
+
+    function updateCustomerDropdown(){
+      const sel=document.getElementById('service-customer');if(!sel)return;
+      const cur=sel.value;
+      sel.innerHTML='<option value="">Select Customer</option>'+customersCache.map(c=>`<option value="${c.id}">${esc(c.name||'')}</option>`).join('');
+      if(cur) sel.value=cur;
+    }
+
+    function updateDashboard(){
+      document.getElementById('total-customers').textContent=customersCache.length;
+      document.getElementById('total-services').textContent=servicesCache.length;
+
+      const now=new Date(); const ym=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+      const thisMonth=ym(now);
+      const monthServices=servicesCache.filter(s=>s.date && ym(new Date(s.date))===thisMonth);
+      const monthRevenue=monthServices.reduce((sum,s)=>sum+(parseFloat(s.amount)||0),0);
+      const avg=servicesCache.length?servicesCache.reduce((sum,s)=>sum+(parseFloat(s.amount)||0),0)/servicesCache.length:0;
+
+      document.getElementById('monthly-revenue').textContent=`$${monthRevenue.toFixed(2)}`;
+      document.getElementById('avg-service-value').textContent=`$${avg.toFixed(2)}`;
+
+      const act=document.getElementById('recent-activities');
+      const latest=[...servicesCache].slice(0,5).map(s=>{
+        const c=customersCache.find(x=>x.id===s.customerId);
+        return `<div>- ${esc(s.date||'')} • ${esc(s.type||'')} • ${esc(c?.name||'Unknown')} • $${Number(s.amount||0).toFixed(2)}</div>`;
+      }).join('');
+      act.innerHTML=latest||'<p>No recent activity.</p>';
+    }
+
+    function esc(str){return String(str).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
+    /* =======================
+       QUOTES (Teklif) Bölümü
+       ======================= */
+    let pricingData = null;
+    let quoteLines = [];
+
+    async function loadPricingData() {
+      if (pricingData) return pricingData;
+      try {
+        const res = await fetch('services_pricing.json', { cache: 'no-store' });
+        pricingData = await res.json();
+      } catch (e) {
+        alert('Pricing JSON (services_pricing.json) yüklenemedi. Dosyayı reponun köküne ekleyin.');
+        pricingData = {};
+      }
+      return pricingData;
+    }
+
+    function initQuotesUI() {
+      updateQuoteCustomerDropdown();
+      const addBtn = document.getElementById('add-line-btn');
+      const clearBtn = document.getElementById('clear-quote-btn');
+      const saveBtn = document.getElementById('save-quote-btn');
+      if (addBtn) addBtn.onclick = addQuoteLine;
+      if (clearBtn) clearBtn.onclick = clearQuote;
+      if (saveBtn) saveBtn.onclick = saveQuote;
+    }
+
+    function updateQuoteCustomerDropdown() {
+      const sel = document.getElementById('quote-customer');
+      if (!sel) return;
+      const cur = sel.value;
+      sel.innerHTML = '<option value="">Select Customer</option>' + customersCache.map(c => `<option value="${c.id}">${esc(c.name||'')}</option>`).join('');
+      if (cur) sel.value = cur;
+    }
+
+    async function addQuoteLine() {
+      await loadPricingData();
+      const wrap = document.getElementById('quote-lines');
+      const idx = quoteLines.length;
+
+      const services = Object.keys(pricingData||{});
+      if (!services.length) { alert('Servis listesi boş. services_pricing.json içeriğini kontrol edin.'); return; }
+      const defaultService = services[0];
+
+      const line = { service: defaultService, size: '', multipliers: {}, qty: 1, unit: 0, total: 0 };
+      quoteLines.push(line);
+
+      const card = document.createElement('div');
+      card.className = 'customer-card';
+      card.dataset.idx = idx;
+
+      card.innerHTML = `
+        <div class="customer-header">
+          <h3 class="customer-name">Service #${idx+1}</h3>
+          <div class="customer-actions">
+            <button class="btn btn-danger" title="Remove" onclick="removeQuoteLine(${idx})"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+
+        <div class="customer-info">
+          <div class="info-item" style="flex:1 1 260px;">
+            <i class="fas fa-tools"></i>
+            <span>
+              <label style="display:block;font-weight:600;">Service</label>
+              <select onchange="onServiceChange(${idx}, this.value)">${services.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('')}</select>
+            </span>
+          </div>
+
+          <div class="info-item" style="flex:1 1 220px;">
+            <i class="fas fa-ruler-combined"></i>
+            <span>
+              <label style="display:block;font-weight:600;">Size</label>
+              <select id="q-size-${idx}" onchange="onSizeChange(${idx}, this.value)"></select>
+            </span>
+          </div>
+
+          <div class="info-item" style="flex:2 1 320px;">
+            <i class="fas fa-sliders-h"></i>
+            <span>
+              <label style="display:block;font-weight:600;">Difficulty / Extras</label>
+              <div id="q-mults-${idx}" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+            </span>
+          </div>
+
+          <div class="info-item" style="flex:0 0 140px;">
+            <i class="fas fa-sort-numeric-up"></i>
+            <span>
+              <label style="display:block;font-weight:600;">Qty</label>
+              <input type="number" min="1" value="1" style="width:100px" onchange="onQtyChange(${idx}, this.value)" />
+            </span>
+          </div>
+
+          <div class="info-item" style="flex:0 0 160px;">
+            <i class="fas fa-dollar-sign"></i>
+            <span>Unit: $<span id="q-unit-${idx}">0.00</span></span>
+          </div>
+
+          <div class="info-item" style="flex:0 0 170px;">
+            <i class="fas fa-file-invoice-dollar"></i>
+            <span><strong>Total: $<span id="q-line-total-${idx}">0.00</span></strong></span>
+          </div>
+        </div>
+      `;
+
+      wrap.appendChild(card);
+      populateSizesAndMultipliers(idx, defaultService);
+      recalcQuote();
+    }
+
+    function onServiceChange(idx, service) {
+      quoteLines[idx].service = service;
+      quoteLines[idx].size = '';
+      quoteLines[idx].multipliers = {};
+      populateSizesAndMultipliers(idx, service);
+      recalcQuote();
+    }
+
+    function populateSizesAndMultipliers(idx, service) {
+      const data = (pricingData||{})[service] || {};
+      const rows = (data.rows || []);
+      const sizeSel = document.getElementById(`q-size-${idx}`);
+      const multWrap = document.getElementById(`q-mults-${idx}`);
+
+      sizeSel.innerHTML = `<option value="">Select Size</option>` + rows.map(r => `<option value="${esc(r.size)}">${esc(r.size)}</option>`).join('');
+
+      const multCols = (data.multipliers || []);
+      multWrap.innerHTML = multCols.map(col => {
+        const id = `q-m-${idx}-${col.replace(/\s+/g, '_')}`;
+        return `
+          <label style="display:inline-flex;gap:6px;align-items:center;border:1px solid #ddd;padding:6px 10px;border-radius:16px;">
+            <input type="checkbox" id="${id}" onchange="onMultiplierToggle(${idx}, '${col}', this.checked)"/>
+            <span>${esc(col)}</span>
+          </label>`;
+      }).join('');
+    }
+
+    function onSizeChange(idx, size) {
+      quoteLines[idx].size = size;
+      recalcQuote();
+    }
+
+    function onMultiplierToggle(idx, col, checked) {
+      quoteLines[idx].multipliers[col] = !!checked;
+      recalcQuote();
+    }
+
+    function onQtyChange(idx, v) {
+      quoteLines[idx].qty = Math.max(1, parseInt(v||'1',10));
+      recalcQuote();
+    }
+
+    function removeQuoteLine(idx) {
+      const card = document.querySelector(`.customer-card[data-idx="${idx}"]`);
+      if (card) card.remove();
+      quoteLines[idx] = null;
+      recalcQuote();
+    }
+
+    function calcLine(idx) {
+      const line = quoteLines[idx];
+      if (!line) return { unit: 0, total: 0 };
+
+      const data = (pricingData||{})[line.service] || {};
+      const rows = data.rows || [];
+      const row = rows.find(r => String(r.size) === String(line.size));
+      if (!row) return { unit: 0, total: 0 };
+
+      let unit = Number(row.base) || 0;
+      const m = line.multipliers || {};
+      for (const col of (data.multipliers || [])) {
+        if (m[col]) {
+          const val = (row.multipliers && row.multipliers[col] != null) ? Number(row.multipliers[col]) : 1;
+          unit *= (val || 1);
+        }
+      }
+      const total = unit * (line.qty || 1);
+
+      const uEl = document.getElementById(`q-unit-${idx}`);
+      const tEl = document.getElementById(`q-line-total-${idx}`);
+      if (uEl) uEl.textContent = unit.toFixed(2);
+      if (tEl) tEl.textContent = total.toFixed(2);
+
+      line.unit = unit;
+      line.total = total;
+      return { unit, total };
+    }
+
+    function recalcQuote() {
+      let subtotal = 0;
+      quoteLines.forEach((_, i) => {
+        if (quoteLines[i]) {
+          const { total } = calcLine(i);
+          subtotal += total;
+        }
+      });
+      const gst = subtotal * 0.10;
+      const grand = subtotal + gst;
+
+      document.getElementById('q-subtotal').textContent = subtotal.toFixed(2);
+      document.getElementById('q-gst').textContent = gst.toFixed(2);
+      document.getElementById('q-total').textContent = grand.toFixed(2);
+    }
+
+    function clearQuote() {
+      quoteLines = [];
+      document.getElementById('quote-lines').innerHTML = '';
+      recalcQuote();
+    }
+
+    async function saveQuote() {
+      const customerId = document.getElementById('quote-customer').value;
+      if (!customerId) { showQuoteMsg('Select a customer.', 'error'); return; }
+
+      const items = quoteLines.filter(Boolean).map((ln, i) => ({
+        idx: i+1,
+        service: ln.service,
+        size: ln.size,
+        multipliers: Object.keys(ln.multipliers||{}).filter(k => ln.multipliers[k]),
+        qty: ln.qty,
+        unit: Number(ln.unit||0),
+        total: Number(ln.total||0)
+      }));
+
+      if (!items.length) { showQuoteMsg('Add at least one service.', 'error'); return; }
+
+      const subtotal = Number(document.getElementById('q-subtotal').textContent||'0');
+      const gst = Number(document.getElementById('q-gst').textContent||'0');
+      const total = Number(document.getElementById('q-total').textContent||'0');
+
+      const customer = customersCache.find(c => c.id === customerId);
+      const title = (document.getElementById('quote-title').value || '').trim();
+
+      const doc = {
+        customerId,
+        customerName: customer?.name || '',
+        title: title || `Quote for ${customer?.name||''}`,
+        items,
+        subtotal, gst, total,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        pricingVersion: 'services_pricing.json'
+      };
+
+      try {
+        const ref = await db.collection('teklifler').add(doc);
+        showQuoteMsg(`Quote saved. ID: ${ref.id}`, 'success');
+      } catch (e) {
+        console.error(e);
+        showQuoteMsg('Save failed.', 'error');
+      }
+    }
+
+    function showQuoteMsg(text, type) {
+      const el = document.getElementById('quote-save-msg');
+      el.textContent = text;
+      el.className = `message ${type}`;
+      el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 4000);
+    }
   </script>
 </body>
 </html>
