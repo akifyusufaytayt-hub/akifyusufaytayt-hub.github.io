@@ -44,7 +44,7 @@ const db = firebase.firestore();
 </script>
 
 <style>
-/* Layout helpers (senin düzenine dokunmadan) */
+/* mevcut düzenine dokunmadan küçük yardımcı stiller */
 .container { max-width: 960px; margin: 0 auto; padding: 0 16px; }
 header .header-container { display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; }
 nav .container ul { list-style:none; margin:0; padding:0; display:flex; justify-content:center; gap:24px; align-items:center; }
@@ -55,7 +55,7 @@ footer .container { text-align:center; }
 #contact .map-container { max-width: 960px; margin: 20px auto 0; }
 .map-container iframe { width:100%; height:380px; border:0; }
 
-/* CRM Modal (senin mevcut modalın) */
+/* CRM modal (mevcut) */
 .crm-modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,.5);animation:fadeIn .3s}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .crm-modal-content{background:#fefefe;margin:10% auto;padding:0;border-radius:10px;width:90%;max-width:420px;box-shadow:0 5px 25px rgba(0,0,0,.2);animation:slideDown .3s}
@@ -69,9 +69,9 @@ footer .container { text-align:center; }
 .crm-form-group label{display:block;margin-bottom:6px;color:#333;font-weight:500}
 .crm-form-group input{width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:15px}
 .crm-login-btn{width:100%;padding:12px;background:linear-gradient(135deg,#2e7d32,#4caf50);color:#fff;border:none;border-radius:6px;font-size:16px;font-weight:700;cursor:pointer}
-.crm-error{display:none;background:#ffebee;color:#c62828;padding:10px;border-radius:6px;margin-bottom:12px;font-size:14px}
+.crm-error{display:none;background:#ffebee;color:#c62828;padding:10px;border-radius:6px;margin-bottom:12px}
 
-/* Discreet top-right CRM link */
+/* sağ üst crm */
 .crm-toplink {
   position: fixed; top: 8px; right: 10px; z-index: 1100;
   font-size: 12px; letter-spacing: 1px; opacity: .15; transition: opacity .2s ease; user-select: none;
@@ -83,16 +83,15 @@ footer .container { text-align:center; }
 }
 .crm-toplink a:focus{ outline:2px solid #2e7d32; outline-offset:2px; }
 
-/* Services grid/kart */
-.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:20px}
+/* SERVICES grid/kart */
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:18px}
 .service-card{background:#fff;border:1px solid #e6e6e6;border-radius:12px;padding:16px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 2px 8px rgba(0,0,0,.04)}
 .service-card i{font-size:22px;color:#2e7d32;margin-top:2px}
 .service-card h3{margin:0;font-size:16px}
-.notice { display:inline-block; text-align:left; background:#f1f8e9; border:1px solid #c5e1a5; padding:14px 16px; border-radius:8px; margin-top:10px;}
 </style>
 </head>
 <body>
-  <!-- Sağ üst gizli CRM butonu -->
+  <!-- gizli CRM butonu -->
   <div class="crm-toplink" aria-hidden="false">
     <a href="#" onclick="showCRMLogin()" aria-label="Open CRM login">
       <i class="fas fa-user-shield" aria-hidden="true"></i> CRM
@@ -130,7 +129,6 @@ footer .container { text-align:center; }
 <header>
   <div class="container header-container">
     <img src="logo.png" alt="Melbourne Lawn Care Logo" class="logo" />
-    <!-- ÇİFT BAŞLIK DÜZELTİLDİ: yalnızca bir H1 -->
     <h1>Melbourne Lawn &amp; Gardening Care</h1>
     <p class="tagline">Professional Lawn Care and Gardening Services</p>
   </div>
@@ -140,45 +138,50 @@ footer .container { text-align:center; }
   <div class="container">
     <ul>
       <li><a href="#about">About</a></li>
+      <li><a href="#services">Services</a></li>
       <li><a href="#quote">Get Quote</a></li>
       <li><a href="#contact">Contact</a></li>
-      <!-- CRM nav’dan kaldırıldı -->
+      <!-- CRM nav’da yok -->
     </ul>
   </div>
 </nav>
 
 <section id="hero-intro" class="section hero">
   <div class="container">
-    <!-- ÇİFT AÇIKLAMA DÜZELTİLDİ: yalnızca bir H2 -->
     <h2>Welcome to Melbourne's premier lawn &amp; gardening care service. We turn ordinary yards into neat, healthy outdoor spaces.</h2>
     <p>Our team services homes across Melbourne with reliable, quality-focused lawn and garden care.</p>
   </div>
 </section>
 
-<!-- ABOUT -->
+<!-- ABOUT (hizmet listesi buradan kaldırıldı) -->
 <section id="about" class="section light-bg">
   <div class="container">
     <h2>About Us</h2>
     <p style="max-width:720px;">
       We provide <strong>end-to-end lawn mowing and full garden maintenance</strong>. If it’s lawn or garden, we handle it.
     </p>
+  </div>
+</section>
 
-    <!-- SADECE EXCEL’DEKİ HİZMETLER: grid/kart + ikon -->
+<!-- YENİ: SERVICES -->
+<section id="services" class="section">
+  <div class="container">
+    <h2>Services</h2>
+    <p style="max-width:780px;margin-left:auto;margin-right:auto;">
+      We provide a wide range of lawn care and garden maintenance solutions — from mowing and trimming to planting and rubbish removal.
+      Whatever your outdoor needs are, we’re here to help make your lawn and garden look their best.
+    </p>
+
     <div class="services-grid">
       <div class="service-card"><i class="fas fa-seedling"></i><div><h3>Lawn Mowing &amp; Edging</h3></div></div>
       <div class="service-card"><i class="fas fa-scissors"></i><div><h3>Hedge Trimming</h3></div></div>
-      <div class="service-card"><i class="fas fa-leaf"></i><div><h3>Bush Pruning</h3></div></div>
+      <div class="service-card"><i class="fas fa-cut"></i><div><h3>Bush Pruning</h3></div></div>
       <div class="service-card"><i class="fas fa-broom"></i><div><h3>Weeding &amp; Garden Bed Maintenance</h3></div></div>
       <div class="service-card"><i class="fas fa-leaf"></i><div><h3>Leaves Clearing</h3></div></div>
       <div class="service-card"><i class="fas fa-spa"></i><div><h3>Ivy Trimming</h3></div></div>
       <div class="service-card"><i class="fas fa-seedling"></i><div><h3>Planting Flowers</h3></div></div>
       <div class="service-card"><i class="fas fa-trash-can"></i><div><h3>Rubbish Removal</h3></div></div>
       <div class="service-card"><i class="fas fa-water"></i><div><h3>Gutter Cleaning</h3></div></div>
-    </div>
-
-    <div class="notice" style="max-width:720px;">
-      <strong>Booking and quotes:</strong> Please submit your details via the
-      <a href="#quote">“Get My Quote”</a> button so we capture your address and contact correctly.
     </div>
   </div>
 </section>
@@ -198,7 +201,6 @@ footer .container { text-align:center; }
 <section id="quote" class="section">
   <div class="container">
     <h2>Request a Free Quote</h2>
-    <!-- ÇİFT <form> SATIRI KALDIRILDI — TEK FORM -->
     <form id="quote-form" action="https://formspree.io/f/mvgqjyqg" method="POST" enctype="multipart/form-data">
       <div class="form-group">
         <label for="name">Full Name</label>
@@ -248,7 +250,6 @@ footer .container { text-align:center; }
     </div>
 
     <div class="map-container">
-      <!-- ORİJİNAL UZUN EMBED SRC GERİ KONDU -->
       <iframe title="Melbourne Lawn Care on Google Maps" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d59528.808760094435!2d144.92619921553668!3d-37.65244146241169!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xc6021f732e6171b%3A0x476220e2c6e6cd0f!2sMelbourne%20Lawn%20Care!5e0!3m2!1sen!2sau!4v1755915976310!5m2!1sen!2sau" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     </div>
   </div>
