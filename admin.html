@@ -66,7 +66,7 @@
     .message.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
 
     .modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.5)}
-    .modal-content{background:#fff;margin:5% auto;padding:30px;border-radius:10px;width:90%;max-width:850px;max-height:80vh;overflow-y:auto}
+    .modal-content{background:#fff;margin:5% auto;padding:30px;border-radius:10px;width:90%;max-width:900px;max-height:80vh;overflow-y:auto}
     .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
     .close{font-size:24px;cursor:pointer;color:#666}.close:hover{color:#000}
     .split-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -74,6 +74,11 @@
     .chip{display:inline-block;background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;padding:2px 8px;border-radius:12px;font-size:.85rem}
     .quote-row{background:#fff;border:1px solid #eee;border-left:4px solid #2e7d32;border-radius:8px;padding:8px 10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:12px}
 
+    /* edit services grid inside modal */
+    .svc-row{display:grid;grid-template-columns:130px 1fr 120px 1fr auto;gap:8px;align-items:center;background:#fafafa;border:1px solid #eee;border-radius:8px;padding:8px;margin-bottom:8px}
+    .svc-row input{width:100%;padding:8px;border:1.5px solid #ddd;border-radius:6px}
+    .svc-actions{display:flex;gap:6px;justify-content:flex-end}
+    @media(max-width:920px){ .svc-row{grid-template-columns:1fr 1fr} }
     @media(max-width:768px){
       .container{padding:0 15px}
       .header-container{flex-direction:column;gap:10px}
@@ -198,7 +203,7 @@
       </form>
     </div>
 
-    <!-- SERVICES (NEW) -->
+    <!-- SERVICES -->
     <div id="services" class="content-section">
       <h2><i class="fas fa-briefcase"></i> Services</h2>
       <form id="service-form">
@@ -355,10 +360,17 @@
               <div class="form-group"><label>Notes</label><textarea id="e-notes" rows="3"></textarea></div>
             </div>
           </div>
+
           <div style="margin:8px 0 14px;">
             <h4 style="color:#2e7d32;margin-bottom:8px;">Quotes (delete)</h4>
             <div id="e-quotes"></div>
           </div>
+
+          <div style="margin:8px 0 14px;">
+            <h4 style="color:#2e7d32;margin-bottom:8px;">Services (edit / delete)</h4>
+            <div id="e-services"></div>
+          </div>
+
           <div>
             <button type="submit" class="btn"><i class="fas fa-save"></i> Save</button>
             <button type="button" class="btn btn-secondary" onclick="toggleEdit(false)"><i class="fas fa-times"></i> Cancel</button>
@@ -555,6 +567,8 @@
       document.getElementById('modal-customer-name').textContent = (c.name||'Customer') + ' — Edit';
       // Quotes (with delete)
       renderEditQuotes();
+      // Services (edit/delete)
+      renderEditServices();
       document.getElementById('customer-modal').style.display='block';
     }
 
@@ -585,22 +599,60 @@
       showMessage('Quote deleted.','success');
     }
 
+    function renderEditServices(){
+      const wrap=document.getElementById('e-services');
+      const list = servicesCache
+        .filter(s=>s.customerId===modalCustomerId)
+        .sort((a,b)=> new Date(b.date) - new Date(a.date));
+      if(!list.length){ wrap.innerHTML = '<p class="muted">No services for this customer.</p>'; return; }
+
+      wrap.innerHTML = list.map(s=>`
+        <div class="svc-row" id="svc-${s.id}">
+          <input type="date" id="svdate-${s.id}" value="${esc(s.date||'')}" />
+          <input type="text" id="svtype-${s.id}" placeholder="Type" value="${esc(s.type||'')}" />
+          <input type="number" id="svamt-${s.id}" step="0.01" min="0" value="${Number(s.amount||0).toFixed(2)}" />
+          <input type="text" id="svnote-${s.id}" placeholder="Notes" value="${esc(s.notes||'')}" />
+          <div class="svc-actions">
+            <button class="btn btn-ghost" title="Save" onclick="saveServiceEdit('${s.id}')"><i class="fas fa-save"></i></button>
+            <button class="btn btn-danger btn-ghost" title="Delete" onclick="deleteServiceItem('${s.id}')"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function saveServiceEdit(serviceId){
+      const date  = document.getElementById(`svdate-${serviceId}`).value.trim();
+      const type  = document.getElementById(`svtype-${serviceId}`).value.trim();
+      const amount= parseFloat(document.getElementById(`svamt-${serviceId}`).value||'0');
+      const notes = document.getElementById(`svnote-${serviceId}`).value.trim();
+
+      if(!date || !type || isNaN(amount)){ showMessage('Please fill required service fields.','error'); return; }
+
+      await db.collection('hizmetler').doc(serviceId).update({
+        date, type, amount, notes,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      await loadServices();
+      renderEditServices();
+      renderCustomers(customersCache);
+      updateDashboard();
+      showMessage('Service updated.','success');
+    }
+
+    async function deleteServiceItem(serviceId){
+      if(!confirm('Delete this service?')) return;
+      await db.collection('hizmetler').doc(serviceId).delete();
+      await loadServices();
+      renderEditServices();
+      renderCustomers(customersCache);
+      updateDashboard();
+      showMessage('Service deleted.','success');
+    }
+
     function toggleEdit(isEdit){
       document.getElementById('modal-view').style.display = isEdit ? 'none' : 'block';
       document.getElementById('modal-edit').style.display = isEdit ? 'block' : 'none';
-    }
-
-    async function saveCustomerEdits(){
-      if(!modalCustomerId) return;
-      const payload={
-        name:val('e-name'), email:val('e-email'), phone:val('e-phone'), address:val('e-address'),
-        postcode:val('e-postcode'), lawnSize:val('e-lawn'), frequency:val('e-frequency'), notes:val('e-notes'),
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      };
-      await db.collection('musteriler').doc(modalCustomerId).update(payload);
-      showMessage('Customer updated.','success');
-      await loadCustomers(); // refresh cards
-      viewCustomer(modalCustomerId); // back to view
     }
 
     function closeModal(){
@@ -610,7 +662,7 @@
       modalCustomerId=null;
     }
 
-    // ===== Services =====
+    // ===== Services (tab) =====
     async function loadServices(){
       const snap=await db.collection('hizmetler').orderBy('createdAt','desc').limit(200).get();
       servicesCache=snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -646,11 +698,10 @@
       const amount=parseFloat(val('service-amount')||'0');
       const notes=val('service-notes');
 
-      if(!customerId || !type || !date || !amount){ showMessage('Please fill all required fields.','error'); return; }
+      if(!customerId || !type || !date || isNaN(amount)){ showMessage('Please fill all required fields.','error'); return; }
 
       await db.collection('hizmetler').add({
-        customerId, type, date, amount,
-        notes,
+        customerId, type, date, amount, notes,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
@@ -674,7 +725,7 @@
       const av=document.getElementById('avg-service-value'); if(av) av.textContent=`$${avg.toFixed(2)}`;
     }
 
-    // ===== Quotes (PRICING + BUILDER, Qty YOK) =====
+    // ===== Quotes (builder) - Qty yok =====
     let pricingData=null;
     let quoteLines=[];
 
