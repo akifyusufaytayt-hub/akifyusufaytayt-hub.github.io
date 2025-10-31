@@ -5,48 +5,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Melbourne Lawn Care - Admin Panel</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
 
   <style>
-    *{box-sizing:border-box}body{font-family:Roboto,system-ui,-apple-system,Segoe UI,Arial,sans-serif;margin:0;background:#f5f6f7;color:#223}
-    header{background:#2e7d32;color:#fff;padding:14px 16px}
-    header .bar{display:flex;align-items:center;gap:14px}
-    header img{width:28px;height:28px}
-    header h1{font-size:18px;margin:0;font-weight:700}
-    .top{display:flex;gap:10px;align-items:center;margin-left:auto}
-    .top .user{background:#1d5f22;padding:6px 10px;border-radius:999px;font-size:13px}
-    .top button{background:#c62828;color:#fff;border:0;padding:8px 10px;border-radius:6px;cursor:pointer}
-    nav{background:#225f2b;color:#cfe8d0}
-    nav .tabs{display:flex;gap:8px;max-width:1200px;margin:0 auto;padding:0 12px}
-    nav .tabs button{appearance:none;border:0;background:transparent;color:#cfe8d0;padding:12px 14px;cursor:pointer;border-bottom:3px solid transparent;font-weight:600}
-    nav .tabs button.active{color:#fff;border-bottom-color:#fff}
-    .wrap{max-width:1200px;margin:18px auto;padding:0 12px}
-    .card{background:#fff;border:1px solid #e6e6e6;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.05);margin-bottom:16px}
-    .card .head{padding:12px 16px;border-bottom:1px solid #eee;font-weight:700;display:flex;justify-content:space-between;align-items:center}
-    .card .body{padding:16px}
-    .grid{display:grid;gap:14px}
-    .grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
-    .btn{background:#2e7d32;color:#fff;border:0;border-radius:8px;padding:10px 14px;cursor:pointer}
-    .btn.secondary{background:#607d8b}
-    .btn.danger{background:#d32f2f}
-    .muted{color:#607d8b}
-    .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid #e0e0e0;border-radius:999px;padding:6px 10px;background:#fafafa}
-    .list{display:grid;gap:12px}
-    .row{border:1px solid #e9e9e9;border-radius:10px;padding:12px;display:grid;gap:8px}
-    .row .line{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
-    .input{display:flex;flex-direction:column;gap:6px}
-    input,select,textarea{width:100%;padding:10px;border:1px solid #d5d7da;border-radius:8px;font:inherit}
-    textarea{min-height:160px}
-    .tag{display:inline-flex;align-items:center;gap:6px;background:#e8f5e9;border:1px solid #a5d6a7;color:#1b5e20;border-radius:999px;padding:4px 8px;font-size:12px}
-    .empty{padding:12px;color:#607d8b}
-    .right{margin-left:auto}
-    .flex{display:flex;gap:10px;align-items:center}
-    .hidden{display:none}
-    /* modal */
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;padding-top:4vh;z-index:1000}
-    .modal .box{background:#fff;border-radius:12px;max-width:860px;width:92%;max-height:90vh;overflow:auto;box-shadow:0 10px 30px rgba(0,0,0,.25)}
-    .box .head{position:sticky;top:0;background:#fff;z-index:2}
-    .danger-link{color:#c62828;cursor:pointer}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Roboto',sans-serif;background:#f5f5f5;color:#333}
+    .container{max-width:1200px;margin:0 auto;padding:0 20px}
+    header{background:#2e7d32;color:#fff;text-align:center;padding:20px 0;box-shadow:0 2px 5px rgba(0,0,0,.1);position:relative}
+    .header-container{display:flex;align-items:center;justify-content:center;gap:15px;position:relative}
+    .logo{width:50px;height:50px;border-radius:50%}
+    h1{font-size:2rem;margin:0}.tagline{font-size:1rem;opacity:.9;margin-top:5px}
+    .user-section{position:absolute;right:20px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:15px}
+    .user-info{background:rgba(255,255,255,.1);padding:8px 15px;border-radius:20px;font-size:.9rem;display:flex;align-items:center;gap:8px}
+    .user-info i{color:#a5d6a7}
+    .logout-btn{background:linear-gradient(135deg,#f44336,#d32f2f);color:#fff;border:none;padding:10px 20px;border-radius:5px;cursor:pointer;font-size:14px;font-weight:500;transition:.3s;display:flex;align-items:center;gap:8px}
+    .logout-btn:hover{background:linear-gradient(135deg,#d32f2f,#c62828);transform:translateY(-2px);box-shadow:0 5px 15px rgba(244,67,54,.3)}
+
+    .nav-tabs{background:#fff;margin:20px 0;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);overflow:hidden}
+    .nav-tabs ul{list-style:none;display:flex}.nav-tabs li{flex:1}
+    .nav-tabs button{width:100%;padding:15px 20px;border:none;background:transparent;cursor:pointer;font-size:1rem;font-weight:500;color:#666;transition:.3s;border-bottom:3px solid transparent}
+    .nav-tabs button:hover{background:#f8f9fa;color:#2e7d32}
+    .nav-tabs button.active{color:#2e7d32;border-bottom-color:#2e7d32;background:#f8f9fa}
+
+    .content-section{display:none;background:#fff;border-radius:10px;padding:30px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+    .content-section.active{display:block}
+    .content-section h2{color:#2e7d32;margin-bottom:20px;font-size:1.8rem}
+
+    .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-bottom:20px}
+    .form-group{margin-bottom:15px}
+    .form-group label{display:block;margin-bottom:5px;font-weight:500;color:#333}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:1rem;transition:border-color .3s}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#2e7d32}
+
+    .btn{background:#2e7d32;color:#fff;padding:12px 25px;border:none;border-radius:8px;cursor:pointer;font-size:1rem;font-weight:500;transition:.3s;margin-right:10px}
+    .btn:hover{background:#1b5e20}
+    .btn-secondary{background:#666}.btn-secondary:hover{background:#555}
+    .btn-danger{background:#d32f2f}.btn-danger:hover{background:#b71c1c}
+    .btn-ghost{background:#edf2ee;color:#2e7d32;border:1px solid #cfe3d1}
+    .btn-ghost:hover{background:#e3eee4}
+
+    .customer-grid{display:grid;gap:20px;margin-top:20px}
+    .customer-card{background:#f8f9fa;border:1px solid #ddd;border-radius:10px;padding:20px;transition:.3s}
+    .customer-card:hover{box-shadow:0 4px 15px rgba(0,0,0,.1);transform:translateY(-2px)}
+    .customer-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+    .customer-name{font-size:1.2rem;font-weight:700;color:#2e7d32;margin:0}
+    .customer-actions{display:flex;gap:10px}
+    .customer-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:15px}
+    .info-item{display:flex;align-items:center;gap:8px;color:#666}
+    .info-item i{color:#2e7d32;width:16px}
+    .service-history{margin-top:15px;padding-top:15px;border-top:1px solid #ddd}
+    .service-item{background:#fff;padding:10px;border-radius:5px;margin-bottom:10px;border-left:4px solid #2e7d32}
+    .service-date{font-weight:600;color:#2e7d32}
+
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-bottom:30px}
+    .stat-card{background:linear-gradient(135deg,#2e7d32,#4caf50);color:#fff;padding:25px;border-radius:10px;text-align:center;box-shadow:0 4px 15px rgba(46,125,50,.3)}
+    .stat-number{font-size:2.5rem;font-weight:700;margin-bottom:5px}.stat-label{font-size:1rem;opacity:.9}
+
+    .message{padding:15px;border-radius:8px;margin-bottom:20px;display:none}
+    .message.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
+    .message.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
+
+    /* Modal (View/Edit Customer) */
+    .modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.5)}
+    .modal-content{background:#fff;margin:3% auto;padding:24px;border-radius:10px;width:92%;max-width:900px;max-height:88vh;overflow-y:auto}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .close{font-size:24px;cursor:pointer;color:#666}.close:hover{color:#000}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    @media(max-width:860px){.two-col{grid-template-columns:1fr}}
+
+    /* Quotes mini chips in Mail */
+    #quote-item-list .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid #ddd;padding:8px 12px;border-radius:20px;background:#fff}
+    #quote-item-list .pill input{transform:translateY(1px)}
+    .muted{color:#777;font-size:.95rem}
+
+    /* Calendar */
+    .cal-wrap{display:grid;grid-template-columns:260px 1fr;gap:16px}
+    @media(max-width:980px){.cal-wrap{grid-template-columns:1fr}}
+    .cal-panel{background:#f8f9fa;border:1px solid #e4e4e4;border-radius:10px;padding:14px}
+    .cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .cal-header h3{margin:0;color:#2e7d32}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+    .cal-dayname{font-weight:700;text-align:center;color:#2e7d32;margin:8px 0 6px}
+    .cal-cell{min-height:90px;background:#fff;border:1px solid #eee;border-radius:8px;padding:6px;position:relative}
+    .cal-cell .d{font-weight:700;color:#2e7d32}
+    .cal-badge{display:inline-block;margin-top:6px;font-size:.8rem;background:#e3f2e6;color:#2e7d32;border:1px solid #cfe3d1;border-radius:12px;padding:2px 8px}
+    .cal-cell button{all:unset;display:block;cursor:pointer}
+    .day-detail{margin-top:12px}
+    .day-item{background:#fff;border:1px solid #eee;border-left:4px solid #2e7d32;border-radius:8px;padding:8px;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px}
+    .day-item small{color:#666}
   </style>
 
   <!-- Firebase compat SDK -->
@@ -65,463 +111,798 @@
     };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-    const db   = firebase.firestore();
+    const db = firebase.firestore();
   </script>
 </head>
 <body>
-
-<header>
-  <div class="bar">
-    <img src="logo.png" alt="logo"/>
-    <h1>Melbourne Lawn Care</h1>
-    <span class="muted">Admin Panel - Customer Management</span>
-    <div class="top">
-      <span id="topUser" class="user">admin</span>
-      <button id="btnLogout"><i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap</button>
-    </div>
-  </div>
-</header>
-
-<nav>
-  <div class="tabs">
-    <button class="tab active" data-tab="customers"><i class="fa-solid fa-users"></i> Customers</button>
-    <button class="tab" data-tab="addCustomer"><i class="fa-solid fa-user-plus"></i> Add Customer</button>
-    <button class="tab" data-tab="quotes"><i class="fa-solid fa-file-invoice-dollar"></i> Quotes</button>
-    <button class="tab" data-tab="services"><i class="fa-solid fa-screwdriver-wrench"></i> Services</button>
-    <button class="tab" data-tab="mail"><i class="fa-solid fa-envelope"></i> Mail</button>
-  </div>
-</nav>
-
-<main class="wrap">
-  <!-- CUSTOMERS -->
-  <section id="customers" class="card">
-    <div class="head">Customer Management</div>
-    <div class="body">
-      <div id="customersList" class="list"></div>
-    </div>
-  </section>
-
-  <!-- ADD CUSTOMER -->
-  <section id="addCustomer" class="card hidden">
-    <div class="head">Add Customer</div>
-    <div class="body">
-      <form id="customerForm" class="grid cols-2">
-        <div class="input"><label>Full Name *</label><input required id="c-name"/></div>
-        <div class="input"><label>Email *</label><input required type="email" id="c-email"/></div>
-        <div class="input"><label>Phone *</label><input required id="c-phone"/></div>
-        <div class="input"><label>Address *</label><input required id="c-address"/></div>
-        <div class="input"><label>Frequency</label>
-          <select id="c-frequency"><option value="">Select</option><option>weekly</option><option>fortnightly</option><option>monthly</option><option>one-off</option></select>
+  <header>
+    <div class="container">
+      <div class="header-container">
+        <img src="logo.png" alt="Melbourne Lawn Care Logo" class="logo">
+        <div>
+          <h1>Melbourne Lawn Care</h1>
+          <p class="tagline">Admin Panel - Customer Management</p>
         </div>
-        <div class="input"><label>Notes</label><textarea id="c-notes"></textarea></div>
-        <div class="input"><button class="btn" type="submit">Save Customer</button></div>
-      </form>
-    </div>
-  </section>
-
-  <!-- QUOTES (builder mevcut haliyle – burada değişiklik yok) -->
-  <section id="quotes" class="card hidden">
-    <div class="head">Quotes</div>
-    <div class="body">
-      <div id="quoteBuilderInfo" class="empty">Quote builder with service multipliers will appear here.</div>
-    </div>
-  </section>
-
-  <!-- SERVICES (sadece iskelet; mevcut veriyi bozmaz) -->
-  <section id="services" class="card hidden">
-    <div class="head">Services</div>
-    <div class="body">
-      <div class="grid cols-2">
-        <div class="card">
-          <div class="head">Add Service Booking</div>
-          <div class="body grid">
-            <div class="input"><label>Customer</label><select id="svc-customer"></select></div>
-            <div class="input"><label>Service Title</label><input id="svc-title" placeholder="e.g., Fortnightly mowing"/></div>
-            <div class="input"><label>Date</label><input id="svc-date" type="date"/></div>
-            <div class="input"><label>Amount ($)</label><input id="svc-amount" type="number" step="0.01"/></div>
-            <div><button id="svc-save" class="btn">Save Booking</button></div>
+        <div class="user-section">
+          <div class="user-info">
+            <i class="fas fa-user-circle"></i>
+            <span id="current-user-display">Admin</span>
           </div>
-        </div>
-        <div class="card">
-          <div class="head">Upcoming / Recent</div>
-          <div class="body">
-            <div id="svc-list" class="list"></div>
-          </div>
+          <button onclick="logout()" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+          </button>
         </div>
       </div>
     </div>
-  </section>
+  </header>
 
-  <!-- MAIL -->
-  <section id="mail" class="card hidden">
-    <div class="head">Mail Templates</div>
-    <div class="body grid">
-      <div class="grid cols-2">
-        <div class="input">
-          <label>Mail Type</label>
-          <select id="mail-type">
-            <option value="quote">Mail 1 — Quote</option>
-            <option value="booking">Mail 2 — Booking</option>
-            <option value="approve">Mail 3 — Approve</option>
-            <option value="regular">Mail 4 — Regular Service</option>
+  <div class="container">
+    <div class="nav-tabs">
+      <ul>
+        <li><button class="nav-btn active" data-section="dashboard"><i class="fas fa-chart-line"></i> Dashboard</button></li>
+        <li><button class="nav-btn" data-section="customers"><i class="fas fa-users"></i> Customers</button></li>
+        <li><button class="nav-btn" data-section="add-customer"><i class="fas fa-user-plus"></i> Add Customer</button></li>
+        <li><button class="nav-btn" data-section="services"><i class="fas fa-wrench"></i> Services</button></li>
+        <li><button class="nav-btn" data-section="quotes"><i class="fas fa-file-invoice-dollar"></i> Quotes</button></li>
+        <li><button class="nav-btn" data-section="mail"><i class="fas fa-envelope"></i> Mail</button></li>
+      </ul>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="content-section active">
+      <h2><i class="fas fa-chart-line"></i> Dashboard</h2>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-number" id="total-customers">0</div><div class="stat-label">Total Customers</div></div>
+        <div class="stat-card"><div class="stat-number" id="total-services">0</div><div class="stat-label">Total Services</div></div>
+        <div class="stat-card"><div class="stat-number" id="monthly-revenue">$0</div><div class="stat-label">This Month Revenue</div></div>
+        <div class="stat-card"><div class="stat-number" id="avg-service-value">$0</div><div class="stat-label">Avg Service Value</div></div>
+      </div>
+      <div style="background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);">
+        <h3 style="color:#2e7d32;margin-bottom:15px;">Recent Activities</h3>
+        <div id="recent-activities"></div>
+      </div>
+    </div>
+
+    <!-- CUSTOMERS -->
+    <div id="customers" class="content-section">
+      <h2><i class="fas fa-users"></i> Customer Management</h2>
+      <div id="customers-list" class="customer-grid"></div>
+    </div>
+
+    <!-- ADD CUSTOMER -->
+    <div id="add-customer" class="content-section">
+      <h2><i class="fas fa-user-plus"></i> Add New Customer</h2>
+      <form id="customer-form">
+        <div class="form-grid">
+          <div>
+            <div class="form-group"><label for="customer-name">Full Name *</label><input type="text" id="customer-name" name="name" required></div>
+            <div class="form-group"><label for="customer-email">Email *</label><input type="email" id="customer-email" name="email" required></div>
+            <div class="form-group"><label for="customer-phone">Phone *</label><input type="tel" id="customer-phone" name="phone" required></div>
+            <div class="form-group"><label for="customer-address">Address *</label><input type="text" id="customer-address" name="address" required></div>
+          </div>
+          <div>
+            <div class="form-group"><label for="customer-postcode">Postcode</label><input type="text" id="customer-postcode" name="postcode"></div>
+            <div class="form-group"><label for="lawn-size">Lawn Size</label>
+              <select id="lawn-size" name="lawnSize">
+                <option value="">Select Size</option>
+                <option value="small">Small (up to 300m²)</option>
+                <option value="medium">Medium (300-600m²)</option>
+                <option value="large">Large (600m²+)</option>
+              </select>
+            </div>
+            <div class="form-group"><label for="service-frequency">Service Frequency</label>
+              <select id="service-frequency" name="frequency">
+                <option value="">Select Frequency</option>
+                <option value="weekly">Weekly</option>
+                <option value="fortnightly">Fortnightly</option>
+                <option value="monthly">Monthly</option>
+                <option value="one-off">One-off</option>
+              </select>
+            </div>
+            <div class="form-group"><label for="customer-notes">Notes</label><textarea id="customer-notes" name="notes" rows="3" placeholder="Special instructions, gate access, etc."></textarea></div>
+          </div>
+        </div>
+        <button type="submit" class="btn"><i class="fas fa-save"></i> Save Customer</button>
+        <button type="button" class="btn btn-secondary" onclick="clearForm()"><i class="fas fa-times"></i> Clear Form</button>
+      </form>
+    </div>
+
+    <!-- SERVICES (booking + calendar + history) -->
+    <div id="services" class="content-section">
+      <h2><i class="fas fa-wrench"></i> Services</h2>
+
+      <div class="cal-wrap">
+        <!-- Left: booking form + selected day details -->
+        <div>
+          <div class="cal-panel" style="margin-bottom:16px;">
+            <h3 style="color:#2e7d32;margin-bottom:10px;">Add Booking</h3>
+            <div class="form-group">
+              <label>Customer</label>
+              <select id="svc-customer">
+                <option value="">Select Customer</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Service Type</label>
+              <input id="svc-type" placeholder="e.g., Lawn mowing & edging">
+            </div>
+            <div class="two-col">
+              <div class="form-group">
+                <label>Date</label>
+                <input id="svc-date" type="date">
+              </div>
+              <div class="form-group">
+                <label>Amount ($)</label>
+                <input id="svc-amount" type="number" step="0.01" min="0" placeholder="0.00">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Notes (optional)</label>
+              <textarea id="svc-notes" rows="2" placeholder="Any notes..."></textarea>
+            </div>
+            <button class="btn" onclick="addBooking()"><i class="fas fa-plus"></i> Add Booking</button>
+          </div>
+
+          <div class="cal-panel">
+            <h3 style="color:#2e7d32;margin-bottom:10px;">Selected Day</h3>
+            <div id="day-title" class="muted">Pick a day on the calendar</div>
+            <div class="day-detail" id="day-detail"></div>
+          </div>
+        </div>
+
+        <!-- Right: Calendar -->
+        <div class="cal-panel">
+          <div class="cal-header">
+            <button class="btn btn-ghost" onclick="prevMonth()"><i class="fas fa-chevron-left"></i></button>
+            <h3 id="cal-title">Calendar</h3>
+            <button class="btn btn-ghost" onclick="nextMonth()"><i class="fas fa-chevron-right"></i></button>
+          </div>
+
+          <div class="cal-grid" id="cal-daynames">
+            <div class="cal-dayname">Mon</div><div class="cal-dayname">Tue</div><div class="cal-dayname">Wed</div><div class="cal-dayname">Thu</div><div class="cal-dayname">Fri</div><div class="cal-dayname">Sat</div><div class="cal-dayname">Sun</div>
+          </div>
+          <div class="cal-grid" id="calendar"></div>
+        </div>
+      </div>
+
+      <div class="cal-panel" style="margin-top:16px;">
+        <h3 style="color:#2e7d32;margin-bottom:10px;">History (latest 50)</h3>
+        <div id="services-log"></div>
+      </div>
+    </div>
+
+    <!-- QUOTES -->
+    <div id="quotes" class="content-section">
+      <h2><i class="fas fa-file-invoice-dollar"></i> Create Quote</h2>
+
+      <div class="customer-card" style="margin-bottom:16px;">
+        <div class="customer-info" style="align-items:flex-end;">
+          <div class="info-item" style="flex:1 1 280px;">
+            <i class="fas fa-user"></i>
+            <span style="width:100%;">
+              <label style="display:block;font-weight:600;">Customer</label>
+              <select id="quote-customer" style="width:100%;">
+                <option value="">Select Customer</option>
+              </select>
+            </span>
+          </div>
+          <div class="info-item" style="flex:2 1 420px;">
+            <i class="fas fa-heading"></i>
+            <span style="width:100%;">
+              <label style="display:block;font-weight:600;">Quote Title (optional)</label>
+              <input type="text" id="quote-title" placeholder="e.g., Regular mowing + hedging (Fortnightly)"/>
+            </span>
+          </div>
+          <div class="info-item" style="flex:0 0 auto;gap:10px;">
+            <button class="btn" id="add-line-btn"><i class="fas fa-plus"></i> Add Service</button>
+            <button class="btn btn-secondary" id="clear-quote-btn"><i class="fas fa-eraser"></i> Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="quote-lines" class="customer-grid"></div>
+
+      <div class="customer-card" style="margin-top:20px;">
+        <div class="customer-header">
+          <h3 class="customer-name">Totals</h3>
+        </div>
+        <div class="customer-info">
+          <div class="info-item"><i class="fas fa-receipt"></i><span>Subtotal: $<span id="q-subtotal">0.00</span></span></div>
+          <div class="info-item"><i class="fas fa-percent"></i><span>GST (10%): $<span id="q-gst">0.00</span></span></div>
+          <div class="info-item"><i class="fas fa-dollar-sign"></i><span><strong>Total: $<span id="q-total">0.00</span></strong></span></div>
+        </div>
+        <div style="margin-top:12px;">
+          <button class="btn" id="save-quote-btn"><i class="fas fa-save"></i> Save Quote</button>
+        </div>
+        <div id="quote-save-msg" class="message" style="margin-top:12px;"></div>
+      </div>
+    </div>
+
+    <!-- MAIL -->
+    <div id="mail" class="content-section">
+      <h2><i class="fas fa-envelope"></i> Mail Templates</h2>
+
+      <div class="customer-card" style="margin-bottom:16px;">
+        <div class="customer-info" style="align-items:flex-end;">
+          <div class="info-item" style="flex:0 0 220px;">
+            <i class="fas fa-layer-group"></i>
+            <span style="width:100%;">
+              <label style="display:block;font-weight:600;">Mail Type</label>
+              <select id="mail-type">
+                <option value="quote">Mail 1 — Quote</option>
+                <option value="booking">Mail 2 — Booking</option>
+                <option value="approve">Mail 3 — Approve</option>
+                <option value="regular">Mail 4 — Regular Service</option>
+              </select>
+            </span>
+          </div>
+
+          <div class="info-item" style="flex:1 1 320px;">
+            <i class="fas fa-user"></i>
+            <span style="width:100%;">
+              <label style="display:block;font-weight:600;">Customer</label>
+              <select id="mail-customer">
+                <option value="">Select Customer</option>
+              </select>
+            </span>
+          </div>
+
+          <div class="info-item" id="mail-date-wrap" style="flex:0 0 260px; display:none;">
+            <i class="fas fa-calendar-alt"></i>
+            <span style="width:100%;">
+              <label style="display:block;font-weight:600;">Booking Date / Time</label>
+              <input id="mail-date" placeholder="e.g., Tue 12 Nov, 1:00–3:00 PM">
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div id="quote-pick" class="customer-card" style="display:none;margin-bottom:16px;">
+        <div class="customer-header">
+          <h3 class="customer-name">Select services & prices to include</h3>
+          <div class="customer-actions">
+            <button class="btn btn-ghost" id="select-all-quote-items"><i class="fas fa-check-double"></i> Select All</button>
+            <button class="btn btn-ghost" id="clear-quote-items"><i class="fas fa-ban"></i> Clear</button>
+          </div>
+        </div>
+        <div id="quote-item-list" class="customer-info" style="row-gap:10px;"></div>
+        <p class="muted" id="quote-none" style="display:none;margin-top:8px;">No quote items found for this customer.</p>
+      </div>
+
+      <div class="customer-card">
+        <div class="form-grid">
+          <div>
+            <div class="form-group">
+              <label>Subject</label>
+              <input id="mail-subject">
+            </div>
+          </div>
+          <div>
+            <div class="form-group">
+              <label>Greeting (optional)</label>
+              <input id="mail-greeting" placeholder="Hi John,">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Mail Body</label>
+          <textarea id="mail-body" rows="14" style="width:100%;"></textarea>
+        </div>
+
+        <div>
+          <button class="btn" id="copy-subject"><i class="fas fa-copy"></i> Copy Subject</button>
+          <button class="btn" id="copy-body"><i class="fas fa-copy"></i> Copy Body</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOMER MODAL (View/Edit + service list with edit/delete) -->
+  <div id="customer-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-customer-name"></h3>
+        <span class="close" onclick="closeModal()">&times;</span>
+      </div>
+
+      <!-- Edit form -->
+      <h4 style="margin-bottom:8px;color:#2e7d32;">Edit Customer</h4>
+      <div class="two-col" style="margin-bottom:10px;">
+        <div class="form-group"><label>Name</label><input id="edit-name"></div>
+        <div class="form-group"><label>Email</label><input id="edit-email" type="email"></div>
+        <div class="form-group"><label>Phone</label><input id="edit-phone"></div>
+        <div class="form-group"><label>Address</label><input id="edit-address"></div>
+        <div class="form-group"><label>Postcode</label><input id="edit-postcode"></div>
+        <div class="form-group"><label>Frequency</label>
+          <select id="edit-frequency">
+            <option value="">Select Frequency</option>
+            <option value="weekly">Weekly</option>
+            <option value="fortnightly">Fortnightly</option>
+            <option value="monthly">Monthly</option>
+            <option value="one-off">One-off</option>
           </select>
         </div>
-        <div class="input">
-          <label>Customer</label>
-          <select id="mail-customer"></select>
-        </div>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea id="edit-notes" rows="2"></textarea></div>
+      <div style="margin-bottom:16px;">
+        <button class="btn" onclick="saveCustomerEdit()"><i class="fas fa-save"></i> Save Changes</button>
       </div>
 
-      <!-- Quote seçim alanı -->
-      <div id="quote-picker" class="card hidden">
-        <div class="head">Select quotes to include</div>
-        <div class="body" id="mail-quotes"></div>
-      </div>
-
-      <div class="grid cols-2">
-        <div class="input"><label>Subject</label><input id="mail-subject"/></div>
-        <div class="input"><label>Greeting (auto)</label><input id="mail-greeting"/></div>
-      </div>
-
-      <div class="input">
-        <label>Mail Body</label>
-        <textarea id="mail-body"></textarea>
-      </div>
-
-      <div class="flex">
-        <button id="mail-copy" class="btn"><i class="fa-regular fa-copy"></i> Copy to clipboard</button>
-        <span class="muted">Paste into your email client.</span>
-      </div>
-    </div>
-  </section>
-</main>
-
-<!-- EDIT CUSTOMER MODAL -->
-<div id="edit-modal" class="modal">
-  <div class="box">
-    <div class="head flex">
-      <strong>Edit Customer</strong>
-      <span class="right"></span>
-      <button id="edit-close" class="btn secondary">Close</button>
-    </div>
-    <div class="body">
-      <form id="edit-form" class="grid cols-2">
-        <input type="hidden" id="e-id"/>
-        <div class="input"><label>Name</label><input id="e-name"/></div>
-        <div class="input"><label>Email</label><input id="e-email" type="email"/></div>
-        <div class="input"><label>Phone</label><input id="e-phone"/></div>
-        <div class="input"><label>Address</label><input id="e-address"/></div>
-        <div class="input"><label>Frequency</label>
-          <select id="e-frequency"><option value="">Select</option><option>weekly</option><option>fortnightly</option><option>monthly</option><option>one-off</option></select>
-        </div>
-        <div class="input" style="grid-column:1/-1"><label>Notes</label><textarea id="e-notes"></textarea></div>
-        <div><button class="btn" id="e-save" type="submit">Save</button></div>
-      </form>
-
-      <div class="card" style="margin-top:10px">
-        <div class="head">Quotes for this Customer</div>
-        <div class="body" id="e-quotes"></div>
-      </div>
+      <!-- Services for customer -->
+      <h4 style="margin:12px 0;color:#2e7d32;">Service History</h4>
+      <div id="modal-service-list"></div>
     </div>
   </div>
-</div>
 
-<script>
-  // ====== Auth & basic nav ======
-  document.getElementById('btnLogout').onclick = ()=>auth.signOut().then(()=>location.replace('index.html'));
-  auth.onAuthStateChanged(u=>{
-    if(!u){location.replace('index.html');return;}
-    document.getElementById('topUser').textContent = u.email||'Admin';
-    // initial loads
-    loadCustomers();
-    fillCustomerSelects();
-    loadServicesList();
-  });
+  <script>
+    // ===== Auth guard =====
+    let _redirectedOnce=false;
+    auth.onAuthStateChanged(async user=>{
+      if(_redirectedOnce) return;
+      if(!user){_redirectedOnce=true;window.location.replace('index.html');return;}
+      document.getElementById('current-user-display').textContent=user.email||'Admin';
 
-  // Tab switch
-  document.querySelectorAll('.tab').forEach(b=>{
-    b.addEventListener('click',()=>{
-      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      const id=b.dataset.tab;
-      document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
+      await loadCustomers();
+      await loadServices();
+      await loadQuotes();
+
+      updateDashboard();
+      updateQuoteCustomerDropdown();
+      updateMailDropdowns();
+      renderServicesLog();
+      initCalendarState();
+      renderCalendar();
+      updateServiceCustomerDropdown();
+      initQuotesUI();
+      initMailUI();
     });
-  });
 
-  // ====== Data caches ======
-  let customersCache=[];
-  let quotesCache=[];   // all quotes
-  let servicesCache=[]; // bookings/services
-
-  // ====== Customers ======
-  async function loadCustomers(){
-    const snap = await db.collection('musteriler').orderBy('createdAt','desc').get();
-    customersCache = snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderCustomers();
-    fillCustomerSelects();
-  }
-  function renderCustomers(){
-    const wrap=document.getElementById('customersList');
-    wrap.innerHTML='';
-    if(!customersCache.length){ wrap.innerHTML='<div class="empty">No customers.</div>'; return; }
-    customersCache.forEach(c=>{
-      const row=document.createElement('div'); row.className='row';
-      row.innerHTML=`
-        <div class="line">
-          <strong>${esc(c.name||'')}</strong>
-          <span class="pill"><i class="fa-regular fa-envelope"></i> ${esc(c.email||'')}</span>
-          <span class="pill"><i class="fa-solid fa-phone"></i> ${esc(c.phone||'')}</span>
-          <span class="pill"><i class="fa-solid fa-location-dot"></i> ${esc(c.address||'')}</span>
-          <span class="pill"><i class="fa-regular fa-calendar"></i> ${esc(c.frequency||'')}</span>
-          <button class="btn secondary right" onclick="openEdit('${c.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
-        </div>`;
-      wrap.appendChild(row);
-    });
-  }
-
-  // Add customer
-  document.getElementById('customerForm').addEventListener('submit',async(e)=>{
-    e.preventDefault();
-    const data={
-      name:gid('c-name').value.trim(),
-      email:gid('c-email').value.trim(),
-      phone:gid('c-phone').value.trim(),
-      address:gid('c-address').value.trim(),
-      frequency:gid('c-frequency').value,
-      notes:gid('c-notes').value.trim(),
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    await db.collection('musteriler').add(data);
-    e.target.reset();
-    loadCustomers();
-    alert('Saved.');
-  });
-
-  // ====== Edit customer + Quotes listing/deleting ======
-  const editModal = gid('edit-modal');
-  gid('edit-close').onclick=()=>editModal.style.display='none';
-  async function openEdit(id){
-    const c=customersCache.find(x=>x.id===id);
-    if(!c) return;
-    gid('e-id').value=id;
-    gid('e-name').value=c.name||'';
-    gid('e-email').value=c.email||'';
-    gid('e-phone').value=c.phone||'';
-    gid('e-address').value=c.address||'';
-    gid('e-frequency').value=c.frequency||'';
-    gid('e-notes').value=c.notes||'';
-    // load quotes of this customer
-    const snap = await db.collection('teklifler').where('customerId','==',id).orderBy('createdAt','desc').get();
-    const list = snap.docs.map(d=>({id:d.id,...d.data()}));
-    const box = gid('e-quotes'); box.innerHTML='';
-    if(!list.length){ box.innerHTML='<div class="empty">No quotes for this customer.</div>'; }
-    list.forEach(q=>{
-      const div=document.createElement('div'); div.className='line';
-      div.innerHTML=`
-        <span class="tag"><i class="fa-solid fa-receipt"></i> ${esc(q.title||'Quote')}</span>
-        <span class="muted">$${Number(q.total||0).toFixed(2)}</span>
-        <span class="muted">(${(q.items||[]).length} items)</span>
-        <span class="right danger-link" onclick="deleteQuote('${q.id}')"><i class="fa-solid fa-trash"></i> Delete</span>`;
-      box.appendChild(div);
-    });
-    editModal.style.display='flex';
-  }
-  async function deleteQuote(id){
-    if(!confirm('Delete this quote?')) return;
-    await db.collection('teklifler').doc(id).delete();
-    // refresh both edit list & mail picker if open
-    const cid = gid('e-id').value;
-    if(cid) openEdit(cid);
-    if(!gid('mail').classList.contains('hidden')) onMailCustomerChange();
-  }
-  gid('edit-form').addEventListener('submit',async(e)=>{
-    e.preventDefault();
-    const id=gid('e-id').value;
-    const data={
-      name:gid('e-name').value.trim(),
-      email:gid('e-email').value.trim(),
-      phone:gid('e-phone').value.trim(),
-      address:gid('e-address').value.trim(),
-      frequency:gid('e-frequency').value,
-      notes:gid('e-notes').value.trim(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    await db.collection('musteriler').doc(id).update(data);
-    await loadCustomers();
-    alert('Updated.');
-  });
-
-  // ====== Services (simple list + add) ======
-  function fillCustomerSelects(){
-    const cSel = gid('svc-customer');
-    const mSel = gid('mail-customer');
-    const opts = ['<option value="">Select Customer</option>']
-      .concat(customersCache.map(c=>`<option value="${c.id}">${esc(c.name||'')}</option>`));
-    if(cSel) cSel.innerHTML = opts.join('');
-    if(mSel) mSel.innerHTML = opts.join('');
-    // auto greeting if already on Mail
-    if(!gid('mail').classList.contains('hidden')) autoGreeting();
-  }
-
-  gid('svc-save').onclick = async ()=>{
-    const cid = gid('svc-customer').value;
-    if(!cid){ alert('Select a customer'); return; }
-    const data={
-      customerId: cid,
-      title: gid('svc-title').value.trim() || 'Service',
-      date: gid('svc-date').value || null,
-      amount: Number(gid('svc-amount').value||0),
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    await db.collection('hizmetler').add(data);
-    gid('svc-title').value=''; gid('svc-date').value=''; gid('svc-amount').value='';
-    loadServicesList();
-    alert('Booking saved.');
-  };
-
-  async function loadServicesList(){
-    const snap=await db.collection('hizmetler').orderBy('createdAt','desc').limit(30).get();
-    servicesCache=snap.docs.map(d=>({id:d.id,...d.data()}));
-    const wrap=gid('svc-list'); wrap.innerHTML='';
-    if(!servicesCache.length){ wrap.innerHTML='<div class="empty">No services yet.</div>'; return; }
-    servicesCache.forEach(s=>{
-      const c = customersCache.find(x=>x.id===s.customerId);
-      const row=document.createElement('div'); row.className='line';
-      row.innerHTML=`
-        <strong>${esc(s.title||'Service')}</strong>
-        <span class="pill"><i class="fa-regular fa-user"></i> ${esc(c?.name||'Unknown')}</span>
-        <span class="pill"><i class="fa-regular fa-calendar"></i> ${esc(s.date||'-')}</span>
-        <span class="pill"><i class="fa-solid fa-dollar-sign"></i> ${Number(s.amount||0).toFixed(2)}</span>`;
-      wrap.appendChild(row);
-    });
-  }
-
-  // ====== Mail ======
-  const mailTypeSel = gid('mail-type');
-  const mailCustomerSel = gid('mail-customer');
-  mailTypeSel.addEventListener('change',refreshMailTemplate);
-  mailCustomerSel.addEventListener('change',()=>{onMailCustomerChange(); autoGreeting();});
-
-  function firstNameOf(id){
-    const c = customersCache.find(x=>x.id===id);
-    const name = (c?.name||'').trim();
-    return name.split(' ')[0]||'there';
-  }
-  function autoGreeting(){
-    const cid = mailCustomerSel.value;
-    gid('mail-greeting').value = `Hi, ${firstNameOf(cid)}`;
-  }
-
-  async function onMailCustomerChange(){
-    const cid = mailCustomerSel.value;
-    // load that customer's quotes
-    if(!cid){ gid('quote-picker').classList.add('hidden'); return; }
-    const snap = await db.collection('teklifler').where('customerId','==',cid).orderBy('createdAt','desc').get();
-    const list = snap.docs.map(d=>({id:d.id,...d.data()}));
-    const box = gid('mail-quotes'); box.innerHTML='';
-    if(!list.length){
-      box.innerHTML='<div class="empty">No quotes found for this customer.</div>';
-      gid('quote-picker').classList.remove('hidden');
-      return;
+    function logout(){
+      auth.signOut().then(()=>{
+        sessionStorage.setItem('loggedOut','1');
+        window.location.replace('index.html');
+      }).catch(err=>alert('Logout failed: '+err.message));
     }
-    list.forEach(q=>{
-      const id = `qpick-${q.id}`;
-      const div=document.createElement('label'); div.className='line'; div.style.alignItems='center';
-      div.innerHTML = `
-        <input type="checkbox" id="${id}" data-title="${esc(q.title||'Quote')}" data-total="${Number(q.total||0).toFixed(2)}" style="margin-right:10px"/>
-        <strong>${esc(q.title||'Quote')}</strong>
-        <span class="pill"><i class="fa-solid fa-dollar-sign"></i> ${Number(q.total||0).toFixed(2)}</span>
-        <span class="muted">(${(q.items||[]).length} items)</span>`;
-      box.appendChild(div);
+
+    // ===== UI Tabs =====
+    document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>showSection(b.dataset.section)));
+    function showSection(id){
+      document.querySelectorAll('.content-section').forEach(s=>s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelector(`.nav-btn[data-section="${id}"]`).classList.add('active');
+      if(id==='quotes') initQuotesUI();
+      if(id==='mail') initMailUI();
+      if(id==='services'){ renderCalendar(); renderServicesLog(); updateServiceCustomerDropdown(); }
+    }
+    function showMessage(text,type){const el=document.getElementById('message');el.textContent=text;el.className=`message ${type}`;el.style.display='block';setTimeout(()=>el.style.display='none',3000);}
+
+    // ===== Data caches =====
+    let customersCache=[]; let servicesCache=[]; let quotesCache=[];
+    let activeCustomerIdForEdit=null;
+
+    // ===== Helpers =====
+    function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+    function val(id){return (document.getElementById(id)?.value||'').trim();}
+    function setV(id,v){const el=document.getElementById(id); if(el) el.value=v||'';}
+
+    // ===== Customers =====
+    document.addEventListener('submit',e=>{
+      if(e.target && e.target.id==='customer-form'){e.preventDefault();saveCustomer();}
     });
-    gid('quote-picker').classList.remove('hidden');
-    refreshMailTemplate(); // rebuild body with selection state
-    // listen changes to rebuild body quickly
-    box.querySelectorAll('input[type="checkbox"]').forEach(ch=>ch.addEventListener('change',refreshMailTemplate));
-  }
 
-  function refreshMailTemplate(){
-    const type = mailTypeSel.value;
-    const cid  = mailCustomerSel.value;
-    autoGreeting();
+    async function saveCustomer(){
+      const data={
+        name:val('customer-name'), email:val('customer-email'), phone:val('customer-phone'),
+        address:val('customer-address'), postcode:val('customer-postcode'),
+        lawnSize:val('lawn-size'), frequency:val('service-frequency'), notes:val('customer-notes'),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      await db.collection('musteriler').add(data);
+      showMessage('Customer added successfully!','success');
+      clearForm();
+      await loadCustomers(); updateDashboard(); updateQuoteCustomerDropdown(); updateMailDropdowns(); updateServiceCustomerDropdown();
+    }
+    function clearForm(){document.getElementById('customer-form').reset();}
 
-    if(type==='quote'){
-      gid('mail-subject').value = 'Your Quote from Melbourne Lawn & Garden Care';
-      // Build selected quotes table
-      const picks = Array.from(gid('mail-quotes').querySelectorAll('input[type="checkbox"]:checked'))
-                    .map(ch=>({title:ch.dataset.title,total:ch.dataset.total}));
-      const lines = picks.length? picks.map(p=>`• ${p.title} — $${p.total}`).join('\n') : '• (select quotes above)';
-      gid('mail-body').value =
-`We’d be happy to help with your lawn & garden.
+    async function loadCustomers(){
+      const snap=await db.collection('musteriler').orderBy('createdAt','desc').get();
+      customersCache=snap.docs.map(d=>({id:d.id,...d.data()}));
+      renderCustomers(customersCache);
+    }
 
-Here is your quote:
+    function renderCustomers(list){
+      const wrap=document.getElementById('customers-list'); wrap.innerHTML='';
+      if(!list.length){wrap.innerHTML='<p style="text-align:center;color:#666;padding:40px;">No customers found.</p>';return;}
+      list.forEach(c=>wrap.appendChild(customerCard(c)));
+    }
+
+    function customerCard(c){
+      const cServices=servicesCache.filter(s=>s.customerId===c.id);
+      const totalServices=cServices.length;
+      const totalRevenue=cServices.reduce((sum,s)=>sum+(parseFloat(s.amount)||0),0);
+      const lastService=cServices.sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+
+      const card=document.createElement('div'); card.className='customer-card';
+      card.innerHTML=`
+        <div class="customer-header">
+          <h3 class="customer-name">${esc(c.name||'')}</h3>
+          <div class="customer-actions">
+            <button class="btn btn-ghost" title="Edit" onclick="openEditCustomer('${c.id}')"><i class="fas fa-pen"></i></button>
+            <button class="btn" title="View" onclick="viewCustomer('${c.id}')"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+        <div class="customer-info">
+          <div class="info-item"><i class="fas fa-envelope"></i><span>${esc(c.email||'')}</span></div>
+          <div class="info-item"><i class="fas fa-phone"></i><span>${esc(c.phone||'')}</span></div>
+          <div class="info-item"><i class="fas fa-map-marker-alt"></i><span>${esc(c.address||'')}</span></div>
+          <div class="info-item"><i class="fas fa-calendar"></i><span>${esc(c.frequency||'Not set')}</span></div>
+          <div class="info-item"><i class="fas fa-chart-line"></i><span>${totalServices} services</span></div>
+          <div class="info-item"><i class="fas fa-dollar-sign"></i><span>$${totalRevenue.toFixed(2)} total</span></div>
+        </div>
+        ${ lastService ? `<div class="service-history"><strong>Last Service:</strong>
+            <div class="service-item"><span class="service-date">${esc(lastService.date||'')}</span> •
+            <span>${esc(lastService.type||'')}</span> •
+            <span>$${Number(lastService.amount||0).toFixed(2)}</span></div></div>` : ``}
+      `;
+      return card;
+    }
+
+    function viewCustomer(id){
+      const c=customersCache.find(x=>x.id===id); if(!c) return;
+      activeCustomerIdForEdit=id;
+      document.getElementById('modal-customer-name').textContent=c.name||'Customer';
+
+      // Fill edit form
+      setV('edit-name',c.name); setV('edit-email',c.email); setV('edit-phone',c.phone);
+      setV('edit-address',c.address); setV('edit-postcode',c.postcode); setV('edit-frequency',c.frequency);
+      setV('edit-notes',c.notes);
+
+      // Service list for that customer with edit/delete
+      renderCustomerServices(id);
+
+      openModal();
+    }
+
+    function openEditCustomer(id){ viewCustomer(id); } // same modal (with edit enabled)
+
+    async function saveCustomerEdit(){
+      if(!activeCustomerIdForEdit) return;
+      const data={
+        name:val('edit-name'), email:val('edit-email'), phone:val('edit-phone'),
+        address:val('edit-address'), postcode:val('edit-postcode'),
+        frequency:val('edit-frequency'), notes:val('edit-notes'),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      await db.collection('musteriler').doc(activeCustomerIdForEdit).update(data);
+      showMessage('Customer updated.','success');
+      await loadCustomers(); updateQuoteCustomerDropdown(); updateMailDropdowns(); updateServiceCustomerDropdown();
+    }
+
+    function renderCustomerServices(customerId){
+      const wrap=document.getElementById('modal-service-list');
+      const list=servicesCache.filter(s=>s.customerId===customerId).sort((a,b)=>new Date(b.date)-new Date(a.date));
+      if(!list.length){wrap.innerHTML='<p class="muted">No services yet.</p>'; return;}
+      wrap.innerHTML=list.map(s=>`
+        <div class="day-item">
+          <div>
+            <div><b>${esc(s.type||'')}</b> — $${Number(s.amount||0).toFixed(2)}</div>
+            <small>${esc(s.date||'')}</small>
+            ${s.notes?`<div class="muted" style="margin-top:4px">${esc(s.notes)}</div>`:''}
+          </div>
+          <div>
+            <button class="btn btn-ghost" onclick="editServicePrompt('${s.id}')"><i class="fas fa-pen"></i></button>
+            <button class="btn btn-danger" onclick="deleteService('${s.id}')"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function editServicePrompt(id){
+      const s=servicesCache.find(x=>x.id===id); if(!s) return;
+      const type=prompt('Service type:', s.type||''); if(type===null) return;
+      const amountStr=prompt('Amount ($):', String(s.amount||0)); if(amountStr===null) return;
+      const date=prompt('Date (YYYY-MM-DD):', s.date||''); if(date===null) return;
+      const notes=prompt('Notes:', s.notes||''); if(notes===null) return;
+
+      await db.collection('hizmetler').doc(id).update({type, amount:Number(amountStr||0), date, notes});
+      showMessage('Service updated.','success');
+      await loadServices(); renderCustomerServices(activeCustomerIdForEdit); renderCalendar(); renderServicesLog(); updateDashboard();
+    }
+
+    async function deleteService(id){
+      if(!confirm('Delete this service?')) return;
+      await db.collection('hizmetler').doc(id).delete();
+      showMessage('Service deleted.','success');
+      await loadServices(); renderCustomerServices(activeCustomerIdForEdit); renderCalendar(); renderServicesLog(); updateDashboard();
+    }
+
+    function openModal(){const m=document.getElementById('customer-modal'); m.style.display='block'; window.onclick=(e)=>{if(e.target===m)closeModal();}; document.onkeydown=(e)=>{if(e.key==='Escape')closeModal();};}
+    function closeModal(){const m=document.getElementById('customer-modal'); m.style.display='none'; window.onclick=null; document.onkeydown=null;}
+
+    // ===== Services (Bookings) =====
+    async function loadServices(){
+      const snap=await db.collection('hizmetler').orderBy('createdAt','desc').limit(200).get();
+      servicesCache=snap.docs.map(d=>({id:d.id,...d.data()}));
+      renderRecentServices();
+      renderCustomers(customersCache);
+    }
+
+    function renderRecentServices(){
+      const act=document.getElementById('recent-activities');
+      if(!act) return;
+      const latest=[...servicesCache].slice(0,5).map(s=>{
+        const c=customersCache.find(x=>x.id===s.customerId);
+        return `<div>- ${esc(s.date||'')} • ${esc(s.type||'')} • ${esc(c?.name||'Unknown')} • $${Number(s.amount||0).toFixed(2)}</div>`;
+      }).join('');
+      act.innerHTML=latest||'<p>No recent activity.</p>';
+    }
+    function renderServicesLog(){
+      const el=document.getElementById('services-log'); if(!el) return;
+      el.innerHTML = servicesCache.slice(0,50).map(s=>{
+        const c=customersCache.find(x=>x.id===s.customerId);
+        return `<div class="day-item"><div><b>${esc(s.type||'')}</b> — $${Number(s.amount||0).toFixed(2)}<div class="muted">${esc(s.date||'')}</div><div class="muted">${esc(c?.name||'')}</div></div>
+          <div><button class="btn btn-ghost" onclick="editServicePrompt('${s.id}')"><i class="fas fa-pen"></i></button>
+          <button class="btn btn-danger" onclick="deleteService('${s.id}')"><i class="fas fa-trash"></i></button></div></div>`
+      }).join('') || '<p class="muted">No service entries.</p>';
+    }
+    function updateServiceCustomerDropdown(){
+      const sel=document.getElementById('svc-customer'); if(!sel) return;
+      const cur=sel.value;
+      sel.innerHTML='<option value="">Select Customer</option>'+customersCache.map(c=>`<option value="${c.id}">${esc(c.name||'')}</option>`).join('');
+      if(cur) sel.value=cur;
+    }
+    async function addBooking(){
+      const customerId=val('svc-customer'); const type=val('svc-type'); const date=val('svc-date'); const amount=Number(val('svc-amount')||0); const notes=val('svc-notes');
+      if(!customerId||!type||!date){showMessage('Customer, type and date required.','error');return;}
+      await db.collection('hizmetler').add({customerId,type,date,amount,notes,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      showMessage('Booking added.','success');
+      setV('svc-type',''); setV('svc-date',''); setV('svc-amount',''); setV('svc-notes','');
+      await loadServices(); renderCalendar(); renderServicesLog(); updateDashboard();
+    }
+
+    // ===== Calendar =====
+    let calYear, calMonth; // 0-based month
+    function initCalendarState(){const d=new Date(); calYear=d.getFullYear(); calMonth=d.getMonth();}
+    function prevMonth(){calMonth--; if(calMonth<0){calMonth=11; calYear--;} renderCalendar();}
+    function nextMonth(){calMonth++; if(calMonth>11){calMonth=0; calYear++;} renderCalendar();}
+    function ymd(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+    function renderCalendar(){
+      if(calYear==null) initCalendarState();
+      const title=document.getElementById('cal-title');
+      const cal=document.getElementById('calendar'); if(!cal) return;
+      title.textContent=new Date(calYear,calMonth,1).toLocaleString(undefined,{month:'long',year:'numeric'});
+      cal.innerHTML='';
+
+      const first=new Date(calYear,calMonth,1);
+      const startDay=(first.getDay()+6)%7; // Mon=0
+      const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+
+      const counts={}; servicesCache.forEach(s=>{ if(!s.date) return; counts[s.date]=(counts[s.date]||0)+1; });
+
+      // fill leading blanks
+      for(let i=0;i<startDay;i++){ cal.appendChild(blankCell()); }
+
+      for(let d=1; d<=daysInMonth; d++){
+        const dateStr=ymd(new Date(calYear,calMonth,d));
+        const n=counts[dateStr]||0;
+        const cell=document.createElement('div'); cell.className='cal-cell';
+        cell.innerHTML=`
+          <button onclick="selectDay('${dateStr}')">
+            <div class="d">${d}</div>
+            ${ n? `<span class="cal-badge">${n} booking</span>`:''}
+          </button>`;
+        cal.appendChild(cell);
+      }
+    }
+    function blankCell(){const c=document.createElement('div'); c.className='cal-cell'; return c;}
+    function selectDay(dateStr){
+      document.getElementById('day-title').textContent=dateStr;
+      const wrap=document.getElementById('day-detail'); const list=servicesCache.filter(s=>s.date===dateStr).sort((a,b)=>a.type.localeCompare(b.type));
+      if(!list.length){wrap.innerHTML='<p class="muted">No bookings.</p>'; return;}
+      wrap.innerHTML=list.map(s=>{
+        const c=customersCache.find(x=>x.id===s.customerId);
+        return `<div class="day-item"><div><b>${esc(s.type||'')}</b> — $${Number(s.amount||0).toFixed(2)}<div class="muted">${esc(c?.name||'')}</div></div>
+          <div><button class="btn btn-ghost" onclick="editServicePrompt('${s.id}')"><i class="fas fa-pen"></i></button>
+          <button class="btn btn-danger" onclick="deleteService('${s.id}')"><i class="fas fa-trash"></i></button></div></div>`;
+      }).join('');
+    }
+
+    // ===== Quotes (unchanged core) =====
+    let pricingData=null; let quoteLines=[];
+    async function loadPricingData(){
+      if(pricingData) return pricingData;
+      try{const res=await fetch('services_pricing.json',{cache:'no-store'}); pricingData=await res.json();}
+      catch(e){alert('Pricing JSON (services_pricing.json) yok / yüklenemedi.'); pricingData={};}
+      return pricingData;
+    }
+    function initQuotesUI(){
+      const addBtn=document.getElementById('add-line-btn');
+      const clearBtn=document.getElementById('clear-quote-btn');
+      const saveBtn=document.getElementById('save-quote-btn');
+      if(addBtn) addBtn.onclick=addQuoteLine;
+      if(clearBtn) clearBtn.onclick=clearQuote;
+      if(saveBtn) saveBtn.onclick=saveQuote;
+      updateQuoteCustomerDropdown();
+    }
+    function updateQuoteCustomerDropdown(){
+      const sel=document.getElementById('quote-customer'); if(!sel) return;
+      const cur=sel.value;
+      sel.innerHTML='<option value="">Select Customer</option>'+customersCache.map(c=>`<option value="${c.id}">${esc(c.name||'')}</option>`).join('');
+      if(cur) sel.value=cur;
+    }
+    async function addQuoteLine(){
+      await loadPricingData();
+      const wrap=document.getElementById('quote-lines');
+      const idx=quoteLines.length;
+      const services=Object.keys(pricingData||{}); if(!services.length){alert('Servis listesi boş.');return;}
+      const line={service:services[0],size:'',multipliers:{},qty:1,unit:0,total:0}; quoteLines.push(line);
+      const card=document.createElement('div'); card.className='customer-card'; card.dataset.idx=idx;
+      card.innerHTML=`
+        <div class="customer-header"><h3 class="customer-name">Service #${idx+1}</h3>
+          <div class="customer-actions"><button class="btn btn-danger" onclick="removeQuoteLine(${idx})"><i class="fas fa-trash"></i></button></div></div>
+        <div class="customer-info">
+          <div class="info-item" style="flex:1 1 260px;">
+            <i class="fas fa-tools"></i><span><label style="display:block;font-weight:600;">Service</label>
+            <select onchange="onServiceChange(${idx}, this.value)">${services.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('')}</select></span></div>
+          <div class="info-item" style="flex:1 1 220px;">
+            <i class="fas fa-ruler-combined"></i><span><label style="display:block;font-weight:600;">Size</label>
+            <select id="q-size-${idx}" onchange="onSizeChange(${idx}, this.value)"></select></span></div>
+          <div class="info-item" style="flex:2 1 320px;">
+            <i class="fas fa-sliders-h"></i><span><label style="display:block;font-weight:600;">Difficulty / Extras</label>
+            <div id="q-mults-${idx}" style="display:flex;flex-wrap:wrap;gap:8px;"></div></span></div>
+          <div class="info-item" style="flex:0 0 160px;"><i class="fas fa-dollar-sign"></i><span>Unit: $<span id="q-unit-${idx}">0.00</span></span></div>
+          <div class="info-item" style="flex:0 0 170px;"><i class="fas fa-file-invoice-dollar"></i><span><strong>Total: $<span id="q-line-total-${idx}">0.00</span></strong></span></div>
+        </div>`;
+      wrap.appendChild(card);
+      populateSizesAndMultipliers(idx, services[0]);
+      recalcQuote();
+    }
+    function onServiceChange(idx,service){quoteLines[idx].service=service;quoteLines[idx].size='';quoteLines[idx].multipliers={};populateSizesAndMultipliers(idx,service);recalcQuote();}
+    function populateSizesAndMultipliers(idx,service){
+      const data=(pricingData||{})[service]||{}; const rows=(data.rows||[]);
+      const sizeSel=document.getElementById(`q-size-${idx}`); const multWrap=document.getElementById(`q-mults-${idx}`);
+      sizeSel.innerHTML=`<option value="">Select Size</option>`+rows.map(r=>`<option value="${esc(r.size)}">${esc(r.size)}</option>`).join('');
+      const multCols=(data.multipliers||[]);
+      multWrap.innerHTML=multCols.map(col=>{const id=`q-m-${idx}-${col.replace(/\s+/g,'_')}`;
+        return `<label style="display:inline-flex;gap:6px;align-items:center;border:1px solid #ddd;padding:6px 10px;border-radius:16px;">
+          <input type="checkbox" id="${id}" onchange="onMultiplierToggle(${idx}, '${col}', this.checked)"/><span>${esc(col)}</span></label>`}).join('');
+    }
+    function onSizeChange(idx,size){quoteLines[idx].size=size; recalcQuote();}
+    function onMultiplierToggle(idx,col,checked){quoteLines[idx].multipliers[col]=!!checked; recalcQuote();}
+    function removeQuoteLine(idx){const card=document.querySelector(`.customer-card[data-idx="${idx}"]`); if(card) card.remove(); quoteLines[idx]=null; recalcQuote();}
+    function calcLine(idx){
+      const line=quoteLines[idx]; if(!line) return {unit:0,total:0};
+      const data=(pricingData||{})[line.service]||{}; const rows=data.rows||[]; const row=rows.find(r=>String(r.size)===String(line.size)); if(!row) return {unit:0,total:0};
+      let unit=Number(row.base||0); const m=line.multipliers||{};
+      for(const col of (data.multipliers||[])){ if(m[col]){ const k=(row.multipliers && row.multipliers[col]!=null)?Number(row.multipliers[col]):1; unit*= (k||1); } }
+      const total=unit; document.getElementById(`q-unit-${idx}`).textContent=unit.toFixed(2); document.getElementById(`q-line-total-${idx}`).textContent=total.toFixed(2);
+      line.unit=unit; line.total=total; return {unit,total};
+    }
+    function recalcQuote(){let subtotal=0; quoteLines.forEach((_,i)=>{if(quoteLines[i]) subtotal+=calcLine(i).total;}); const gst=subtotal*0.10; const grand=subtotal+gst;
+      setText('q-subtotal',subtotal); setText('q-gst',gst); setText('q-total',grand);}
+    function setText(id,num){const el=document.getElementById(id); if(el) el.textContent=Number(num||0).toFixed(2);}
+    function clearQuote(){quoteLines=[]; document.getElementById('quote-lines').innerHTML=''; recalcQuote();}
+    async function saveQuote(){
+      const customerId=val('quote-customer'); if(!customerId){showQuoteMsg('Select a customer.','error');return;}
+      const items=quoteLines.filter(Boolean).map((ln,i)=>({idx:i+1, service:ln.service, size:ln.size, multipliers:Object.keys(ln.multipliers||{}).filter(k=>ln.multipliers[k]), unit:Number(ln.unit||0), total:Number(ln.total||0)}));
+      if(!items.length){showQuoteMsg('Add at least one service.','error');return;}
+      const subtotal=Number(document.getElementById('q-subtotal').textContent||'0'); const gst=Number(document.getElementById('q-gst').textContent||'0'); const total=Number(document.getElementById('q-total').textContent||'0');
+      const customer=customersCache.find(c=>c.id===customerId); const title=(val('quote-title')||`Quote for ${customer?.name||''}`);
+      try{await db.collection('teklifler').add({customerId, customerName:customer?.name||'', title, items, subtotal, gst, total, createdAt:firebase.firestore.FieldValue.serverTimestamp(), pricingVersion:'services_pricing.json'});
+        showQuoteMsg('Quote saved.','success'); await loadQuotes();}
+      catch(e){console.error(e); showQuoteMsg('Save failed.','error');}
+    }
+    function showQuoteMsg(text,type){const el=document.getElementById('quote-save-msg'); el.textContent=text; el.className=`message ${type}`; el.style.display='block'; setTimeout(()=>el.style.display='none',4000);}
+    async function loadQuotes(){const snap=await db.collection('teklifler').orderBy('createdAt','desc').limit(100).get(); quotesCache=snap.docs.map(d=>({id:d.id,...d.data()}));}
+
+    // ===== Mail =====
+    function firstNameOf(full){const s=(full||'').trim(); return s? s.split(' ')[0] : '';}
+    function currency(n){return `$${Number(n||0).toFixed(2)}`;}
+    function updateMailDropdowns(){const sel=document.getElementById('mail-customer'); if(!sel) return; const prev=sel.value;
+      sel.innerHTML='<option value="">Select Customer</option>'+customersCache.map(c=>`<option value="${c.id}">${esc(c.name||'')}</option>`).join(''); if(prev) sel.value=prev;}
+    function initMailUI(){
+      const typeSel=document.getElementById('mail-type'); const custSel=document.getElementById('mail-customer'); const dateWrap=document.getElementById('mail-date-wrap');
+      if(!typeSel) return;
+      const onChange=()=>buildMailPreview();
+      typeSel.onchange=()=>{ const v=typeSel.value; dateWrap.style.display=(v==='booking'||v==='approve')?'flex':'none'; document.getElementById('quote-pick').style.display=(v==='quote')?'block':'none'; buildQuotePickList(); buildMailPreview(); };
+      custSel.onchange=()=>{ buildQuotePickList(); buildMailPreview(); };
+      document.getElementById('mail-date').oninput=onChange; document.getElementById('mail-greeting').oninput=onChange;
+      document.getElementById('copy-subject').onclick=()=>navigator.clipboard.writeText(val('mail-subject')); document.getElementById('copy-body').onclick=()=>navigator.clipboard.writeText(val('mail-body'));
+      document.getElementById('select-all-quote-items').onclick=()=>{document.querySelectorAll('.mail-qi').forEach(i=>i.checked=true);buildMailPreview();};
+      document.getElementById('clear-quote-items').onclick=()=>{document.querySelectorAll('.mail-qi').forEach(i=>i.checked=false);buildMailPreview();};
+      buildQuotePickList(); buildMailPreview();
+    }
+    function buildQuotePickList(){
+      const wrap=document.getElementById('quote-item-list'); const none=document.getElementById('quote-none'); const typeSel=document.getElementById('mail-type');
+      const customerId=val('mail-customer'); if(!wrap||typeSel.value!=='quote'||!customerId){ if(wrap) wrap.innerHTML=''; if(none) none.style.display='none'; return;}
+      const items=[]; quotesCache.filter(q=>q.customerId===customerId).forEach(q=>{(q.items||[]).forEach(it=>items.push({service:it.service,total:Number(it.total||0)}));});
+      if(!items.length){wrap.innerHTML=''; none.style.display='block'; return;} none.style.display='none';
+      const latestByService={}; items.forEach(it=>latestByService[it.service]=it);
+      wrap.innerHTML=Object.values(latestByService).map(it=>`
+        <label class="pill"><input type="checkbox" class="mail-qi" data-service="${esc(it.service)}" data-total="${it.total}" onchange="buildMailPreview()">
+        <span><b>${esc(it.service)}</b> — ${currency(it.total)}</span></label>`).join('');
+    }
+    function buildMailPreview(){
+      const type=val('mail-type'); const customerId=val('mail-customer'); const customer=customersCache.find(c=>c.id===customerId)||{};
+      const fname=firstNameOf(customer.name); const greetDefault=fname?`Hi ${fname},`:'Hi,'; const greeting=(val('mail-greeting')||greetDefault);
+      const whenTxt=val('mail-date');
+
+      let subject='', body='';
+      if(type==='quote'){
+        subject=`Service Quote — ${customer.name||'Customer'}`;
+        const selected=Array.from(document.querySelectorAll('.mail-qi')).filter(i=>i.checked).map(i=>({service:i.dataset.service,total:Number(i.dataset.total||0)}));
+        const lines=selected.map(s=>`• ${s.service} — ${currency(s.total)}`).join('\n') || '• (please select services above)';
+        body=
+`${greeting}
+
+Thanks for getting in touch with Melbourne Lawn & Garden Care.
+Based on your request, here are the quote options for your property:
+
 ${lines}
 
-If you’re happy to proceed, reply “Approve” and we’ll book you in.
-Need changes? Just reply with details and we’ll update it.
+If you’d like to proceed, just reply “Approve” and we’ll arrange your booking right away.
+(Prices are for the listed services; we can adjust the scope or combine services as needed.)
 
 Kind regards,
 Melbourne Lawn & Garden Care
 +61 478 733 900`;
-      gid('quote-picker').classList.remove('hidden');
-      return;
+      } else if(type==='booking'){
+        subject=`Booking Availability — ${customer.name||'Customer'}`;
+        body=
+`${greeting}
+
+We can schedule your lawn & garden service on the following date/time:
+
+${whenTxt||'[your preferred date & time here]'}
+
+Please let us know if this works for you. If not, feel free to suggest another time
+and we’ll do our best to accommodate. To confirm, please reply “Approve”.
+
+Kind regards,
+Melbourne Lawn & Garden Care
++61 478 733 900`;
+      } else if(type==='approve'){
+        subject=`Booking Confirmed — ${customer.name||'Customer'}`;
+        body=
+`${greeting}
+
+Your booking has been confirmed. Here are the details:
+
+Date/Time: ${whenTxt||'[confirmed date & time]'}
+Address: ${customer.address||'[your address]'}
+Service: Lawn & garden maintenance (as discussed)
+
+In case of severe weather or any unexpected situation, we’ll contact you in advance.
+If you need to reschedule, please let us know and we’ll find a suitable time.
+
+We look forward to providing a great service.
+
+Kind regards,
+Melbourne Lawn & Garden Care
++61 478 733 900`;
+      } else {
+        subject=`Regular Service Offer — 10% off`;
+        body=
+`${greeting}
+
+We’d be happy to look after your lawn and garden on a regular schedule.
+If you choose a regular maintenance plan (weekly, fortnightly, or monthly),
+you’ll receive **10% off** all ongoing services.
+
+This helps keep your garden consistently neat and healthy — and saves you money.
+If you’re interested, just reply and we’ll set up the plan that suits you best.
+
+Kind regards,
+Melbourne Lawn & Garden Care
++61 478 733 900`;
+      }
+      setV('mail-subject',subject); setV('mail-body',body); if(!val('mail-greeting')) setV('mail-greeting',greeting);
     }
-
-    if(type==='booking'){
-      gid('mail-subject').value='Booking Availability — Customer';
-      gid('mail-body').value=
-`We can schedule your lawn & garden service on the following date/time:
-
-[your preferred date & time here]
-
-Please let us know if this works for you. If not, feel free to suggest another time and we’ll do our best to accommodate. To confirm, please reply “Approve”.
-
-Kind regards,
-Melbourne Lawn & Garden Care
-+61 478 733 900`;
-      gid('quote-picker').classList.add('hidden');
-      return;
-    }
-
-    if(type==='approve'){
-      gid('mail-subject').value='Your Booking is Confirmed';
-      gid('mail-body').value=
-`Great news — your lawn & garden booking has been approved and confirmed.
-
-If anything unexpected comes up (e.g., severe weather), we’ll contact you in advance to reschedule at a convenient time.
-
-See you soon!
-
-Kind regards,
-Melbourne Lawn & Garden Care
-+61 478 733 900`;
-      gid('quote-picker').classList.add('hidden'); return;
-    }
-
-    // regular
-    gid('mail-subject').value='Save 10% with Regular Service';
-    gid('mail-body').value=
-`We’d love to look after your lawn & garden on a regular basis.
-
-If you choose a regular service plan (weekly/fortnightly/monthly), you’ll receive **10% off** all ongoing services, and we’ll keep your garden looking great year-round.
-
-Reply “Regular” if you’d like to switch and we’ll set it up.
-
-Kind regards,
-Melbourne Lawn & Garden Care
-+61 478 733 900`;
-    gid('quote-picker').classList.add('hidden');
-  }
-  gid('mail-copy').onclick=()=>{
-    const txt = `${gid('mail-subject').value}\n\n${gid('mail-greeting').value}\n\n${gid('mail-body').value}`;
-    navigator.clipboard.writeText(txt).then(()=>alert('Copied.'));
-  };
-
-  // ===== helpers =====
-  function gid(id){return document.getElementById(id)}
-  function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-</script>
+  </script>
 </body>
 </html>
