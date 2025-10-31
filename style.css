@@ -17,14 +17,13 @@ body {
     padding: 0;
     color: var(--text-color);
     background: url('logo.png') no-repeat center center fixed;
-    background-size: 500px; /* Logonun boyutunu ayarlayın */
-    background-color: var(--light-bg); /* Resim yüklenene kadar görünen renk */
+    background-size: 500px;
+    background-color: var(--light-bg);
     min-height: 100vh;
     overflow-x: hidden;
-    position: relative; /* ::before için gerekli */
+    position: relative;
 }
 
-/* Saydam katman (metnin okunurluğunu artırır) */
 body::before {
     content: '';
     position: fixed;
@@ -32,7 +31,7 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.7); /* Beyaz ve yarı saydam */
+    background-color: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(5px);
     z-index: -1;
 }
@@ -50,7 +49,7 @@ body::before {
 
 h1, h2, h3 {
     margin-bottom: 20px;
-    color: #000000; /* Siyah başlık rengi */
+    color: #000000;
     text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
@@ -61,7 +60,7 @@ p {
 /* Header ve Navigasyon */
 header {
     background: linear-gradient(135deg, rgba(135, 206, 235, 0.9) 0%, rgba(255, 248, 220, 0.9) 100%);
-    color: #000000; /* Siyah metin */
+    color: #000000;
     padding: 20px 0;
     text-align: center;
     border-bottom-left-radius: 15px;
@@ -136,7 +135,7 @@ nav ul li a:hover {
     background: linear-gradient(rgba(255, 248, 220, 0.8), rgba(230, 243, 255, 0.8));
     border-bottom: 1px solid #e9ecef;
     text-align: center;
-    color: #000000; /* Siyah metin */
+    color: #000000;
 }
 
 /* Fiyat Menüsü Tasarımı */
@@ -178,15 +177,15 @@ nav ul li a:hover {
 }
 
 .price {
-    font-size: 1.4rem; /* Daha büyük font boyutu */
-    font-weight: 700; /* Daha kalın font ağırlığı */
-    color: var(--accent-color); /* Vurgu rengi */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Hafif gölge ekleyin */
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .price-detail {
-    font-weight: 700; /* Daha kalın font */
-    color: var(--dark-bg); /* Koyu yeşil renk */
+    font-weight: 700;
+    color: var(--dark-bg);
 }
 
 .size-list, .extra-services {
@@ -209,7 +208,7 @@ nav ul li a:hover {
     color: var(--secondary-color);
 }
 
-/* Öne Çıkan Menü Öğesi (İndirim Teklifi) */
+/* Öne Çıkan Menü Öğesi */
 .menu-item.highlight {
     background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
     color: #fff;
@@ -236,7 +235,7 @@ nav ul li a:hover {
     display: block;
 }
 
-/* Form Tasarımı (Güncellenmiş Bölüm) */
+/* Form Tasarımı */
 #quote-form {
     max-width: 600px;
     margin: 0 auto;
@@ -257,14 +256,14 @@ nav ul li a:hover {
 #quote-form label {
     margin-bottom: 8px;
     font-weight: bold;
-    color: #000000; /* Siyah etiket rengi */
+    color: #000000;
 }
 
 #quote-form input,
 #quote-form textarea {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ccc; /* Daha yumuşak bir kenar çizgisi */
+    border: 1px solid #ccc;
     border-radius: 8px;
     box-sizing: border-box;
     font-size: 1rem;
@@ -273,8 +272,8 @@ nav ul li a:hover {
 
 #quote-form input:focus,
 #quote-form textarea:focus {
-    border-color: var(--accent-color); /* Vurgu rengi */
-    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.25); /* Yeşil gölge */
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.25);
     outline: none;
 }
 
@@ -288,7 +287,7 @@ nav ul li a:hover {
     font-weight: bold;
     border-radius: 50px;
     transition: background-color 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Hafif gölge ekleyin */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Harita ve İletişim */
@@ -346,85 +345,56 @@ footer {
 /* İçerik ve Görseli Yan Yana Hizalama */
 .content-with-image {
     display: flex;
-    flex-direction: row; /* Varsayılan olarak yan yana */
-    align-items: center; /* Dikeyde ortala */
-    gap: 30px; /* İçerik ve görsel arasında boşluk */
-    text-align: left; /* İçerik solda hizalı olsun */
+    flex-direction: row;
+    align-items: center;
+    gap: 30px;
+    text-align: left;
 }
 
 .content-with-image .text-content {
-    flex: 1; /* Metin içeriği esnek bir şekilde yer kaplasın */
+    flex: 1;
 }
 
 .content-with-image .image-content {
-    flex-shrink: 0; /* Görsel içeriği küçülmesin */
-    width: 400px; /* Sabit genişlik veya istediğiniz genişlik */
-    max-width: 100%; /* Mobil uyumluluk için */
+    flex-shrink: 0;
+    width: 400px;
+    max-width: 100%;
 }
 
 .content-with-image .image-content img {
     width: 100%;
     height: auto;
     display: block;
-    border-radius: 10px; /* Hafif yuvarlatılmış köşeler */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Hafif gölge */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Mobil Cihazlar İçin (768px'den küçük ekranlar) */
+/* Mobil Cihazlar */
 @media (max-width: 768px) {
-    .header-container {
-        padding: 15px;
-    }
-
-    .hero {
-        padding: 60px 0;
-    }
-
-    nav ul {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    nav ul li a {
-        display: block;
-        padding: 10px;
-        background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .logo, .section-logo, .footer-logo {
-        max-width: 40px;
-        width: 40px;
-    }
-
-    /* Fiyat menüsü mobil görünüm */
-    .menu-item.highlight {
-        transform: scale(1);
-    }
-    
-    .content-with-image {
-        flex-direction: column; /* Mobil cihazlarda alt alta yığılsın */
-        text-align: center; /* Metin ortada hizalı olsun */
-    }
-
-    .content-with-image .image-content {
-        width: 100%; /* Görsel tam genişlikte olsun */
-        margin-top: 20px; /* Metin ile görsel arasında boşluk */
-    }
+    .header-container { padding: 15px; }
+    .hero { padding: 60px 0; }
+    nav ul { flex-direction: column; gap: 10px; }
+    nav ul li a { display: block; padding: 10px; background-color: rgba(255,255,255,0.1); }
+    .logo, .section-logo, .footer-logo { max-width: 40px; width: 40px; }
+    .menu-item.highlight { transform: scale(1); }
+    .content-with-image { flex-direction: column; text-align: center; }
+    .content-with-image .image-content { width: 100%; margin-top: 20px; }
 }
+
 /* Sabit Telefon Numarası Butonu */
 .fixed-phone-btn {
-    position: fixed; /* Ekranın belirli bir noktasına sabitler */
-    top: 20px; /* Ekranın üst kenarından 20 piksel aşağıda */
-    right: 20px; /* Ekranın sağ kenarından 20 piksel solda */
-    background-color: var(--accent-color); /* Vurgu rengiyle arka plan */
-    color: #fff; /* Beyaz metin rengi */
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--accent-color);
+    color: #fff;
     padding: 15px 25px;
-    border-radius: 50px; /* Yuvarlak hatlı bir buton görünümü */
+    border-radius: 50px;
     font-size: 1.1rem;
     font-weight: bold;
     text-decoration: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Hafif gölge */
-    z-index: 1000; /* Diğer tüm içeriklerin üzerinde görünmesini sağlar */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
     transition: transform 0.3s ease, background-color 0.3s ease;
     display: flex;
     align-items: center;
@@ -432,11 +402,10 @@ footer {
 }
 
 .fixed-phone-btn:hover {
-    background-color: #218838; /* Üzerine gelindiğinde rengi koyulaştırır */
-    transform: scale(1.05); /* Üzerine gelindiğinde hafifçe büyütür */
+    background-color: #218838;
+    transform: scale(1.05);
 }
 
-/* Mobil cihazlar için daha küçük buton boyutu */
 @media (max-width: 768px) {
     .fixed-phone-btn {
         font-size: 1rem;
@@ -446,3 +415,17 @@ footer {
     }
 }
 
+/* === About Us ortalama düzeltmesi === */
+#about .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+#about p {
+    max-width: 780px;
+    margin: 8px auto;
+    text-align: center;
+    line-height: 1.6;
+}
