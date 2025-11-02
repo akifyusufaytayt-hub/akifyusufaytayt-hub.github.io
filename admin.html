@@ -65,7 +65,6 @@
     .message.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
     .message.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
 
-    /* Modal (View/Edit Customer) */
     .modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.5)}
     .modal-content{background:#fff;margin:3% auto;padding:24px;border-radius:10px;width:92%;max-width:900px;max-height:88vh;overflow-y:auto}
     .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
@@ -359,6 +358,7 @@
         </div>
       </div>
 
+      <!-- QUOTE PICKER (all quotes of customer, group + check items) -->
       <div id="quote-pick" class="customer-card" style="display:none;margin-bottom:16px;">
         <div class="customer-header">
           <h3 class="customer-name">Select services & prices to include</h3>
@@ -368,7 +368,7 @@
           </div>
         </div>
         <div id="quote-item-list" class="customer-info" style="row-gap:10px;"></div>
-        <p class="muted" id="quote-none" style="display:none;margin-top:8px;">No quote items found for this customer.</p>
+        <p class="muted" id="quote-none" style="display:none;margin-top:8px;">No quotes found for this customer.</p>
       </div>
 
       <div class="customer-card">
@@ -400,7 +400,7 @@
     </div>
   </div>
 
-  <!-- CUSTOMER MODAL (View/Edit + service list with edit/delete) -->
+  <!-- CUSTOMER MODAL (View/Edit + Services + Quotes) -->
   <div id="customer-modal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -434,6 +434,10 @@
       <!-- Services for customer -->
       <h4 style="margin:12px 0;color:#2e7d32;">Service History</h4>
       <div id="modal-service-list"></div>
+
+      <!-- Quotes for customer -->
+      <h4 style="margin:16px 0;color:#2e7d32;">Quotes</h4>
+      <div id="modal-quote-list"></div>
     </div>
   </div>
 
@@ -461,10 +465,8 @@
     });
 
     function logout(){
-      auth.signOut().then(()=>{
-        sessionStorage.setItem('loggedOut','1');
-        window.location.replace('index.html');
-      }).catch(err=>alert('Logout failed: '+err.message));
+      auth.signOut().then(()=>{sessionStorage.setItem('loggedOut','1');window.location.replace('index.html');})
+      .catch(err=>alert('Logout failed: '+err.message));
     }
 
     // ===== UI Tabs =====
@@ -562,8 +564,9 @@
       setV('edit-address',c.address); setV('edit-postcode',c.postcode); setV('edit-frequency',c.frequency);
       setV('edit-notes',c.notes);
 
-      // Service list for that customer with edit/delete
+      // Services & Quotes for that customer
       renderCustomerServices(id);
+      renderCustomerQuotes(id);
 
       openModal();
     }
@@ -619,6 +622,45 @@
       await db.collection('hizmetler').doc(id).delete();
       showMessage('Service deleted.','success');
       await loadServices(); renderCustomerServices(activeCustomerIdForEdit); renderCalendar(); renderServicesLog(); updateDashboard();
+    }
+
+    // ---- Quotes Management in Customer Modal ----
+    function renderCustomerQuotes(customerId){
+      const wrap=document.getElementById('modal-quote-list');
+      const list=quotesCache.filter(q=>q.customerId===customerId).sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0));
+      if(!list.length){wrap.innerHTML='<p class="muted">No quotes yet.</p>'; return;}
+
+      wrap.innerHTML=list.map(q=>{
+        const items=(q.items||[]).map(it=>`<div class="muted">• ${esc(it.service)} — $${Number(it.total||0).toFixed(2)}</div>`).join('');
+        const cid=`qitems-${q.id}`;
+        return `
+        <div class="day-item">
+          <div style="min-width:0">
+            <div><b>${esc(q.title||'Quote')}</b> — <b>$${Number(q.total||0).toFixed(2)}</b></div>
+            <small>${q.createdAt? new Date(q.createdAt.toMillis()).toLocaleString(): ''}</small>
+            <div id="${cid}" style="display:none;margin-top:6px">${items||'<div class="muted">No items</div>'}</div>
+          </div>
+          <div>
+            <button class="btn btn-ghost" onclick="toggleQuoteItems('${cid}')"><i class="fas fa-eye"></i></button>
+            <button class="btn btn-ghost" onclick="editQuoteTitle('${q.id}')"><i class="fas fa-pen"></i></button>
+            <button class="btn btn-danger" onclick="deleteQuote('${q.id}')"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+    function toggleQuoteItems(id){const el=document.getElementById(id); if(el) el.style.display=(el.style.display==='none'||!el.style.display)?'block':'none';}
+    async function editQuoteTitle(id){
+      const q=quotesCache.find(x=>x.id===id); if(!q) return;
+      const t=prompt('New quote title:', q.title||''); if(t===null) return;
+      await db.collection('teklifler').doc(id).update({title:t});
+      showMessage('Quote title updated.','success');
+      await loadQuotes(); renderCustomerQuotes(activeCustomerIdForEdit);
+    }
+    async function deleteQuote(id){
+      if(!confirm('Delete this quote?')) return;
+      await db.collection('teklifler').doc(id).delete();
+      showMessage('Quote deleted.','success');
+      await loadQuotes(); renderCustomerQuotes(activeCustomerIdForEdit);
     }
 
     function openModal(){const m=document.getElementById('customer-modal'); m.style.display='block'; window.onclick=(e)=>{if(e.target===m)closeModal();}; document.onkeydown=(e)=>{if(e.key==='Escape')closeModal();};}
@@ -684,9 +726,7 @@
 
       const counts={}; servicesCache.forEach(s=>{ if(!s.date) return; counts[s.date]=(counts[s.date]||0)+1; });
 
-      // fill leading blanks
       for(let i=0;i<startDay;i++){ cal.appendChild(blankCell()); }
-
       for(let d=1; d<=daysInMonth; d++){
         const dateStr=ymd(new Date(calYear,calMonth,d));
         const n=counts[dateStr]||0;
@@ -712,7 +752,7 @@
       }).join('');
     }
 
-    // ===== Quotes (unchanged core) =====
+    // ===== Quotes (create) =====
     let pricingData=null; let quoteLines=[];
     async function loadPricingData(){
       if(pricingData) return pricingData;
@@ -798,18 +838,7 @@
       catch(e){console.error(e); showQuoteMsg('Save failed.','error');}
     }
     function showQuoteMsg(text,type){const el=document.getElementById('quote-save-msg'); el.textContent=text; el.className=`message ${type}`; el.style.display='block'; setTimeout(()=>el.style.display='none',4000);}
-    async function loadQuotes(){const snap=await db.collection('teklifler').orderBy('createdAt','desc').limit(100).get(); quotesCache=snap.docs.map(d=>({id:d.id,...d.data()}));}
-
-    // ===== Dashboard smalls =====
-    function updateDashboard(){
-      document.getElementById('total-customers').textContent=customersCache.length;
-      document.getElementById('total-services').textContent=servicesCache.length;
-      const thisMonth=new Date().toISOString().slice(0,7);
-      const monthSum=servicesCache.filter(s=>(s.date||'').startsWith(thisMonth)).reduce((a,b)=>a+(Number(b.amount)||0),0);
-      document.getElementById('monthly-revenue').textContent='$'+monthSum.toFixed(2);
-      const avg=servicesCache.length? (servicesCache.reduce((a,b)=>a+(Number(b.amount)||0),0)/servicesCache.length):0;
-      document.getElementById('avg-service-value').textContent='$'+avg.toFixed(2);
-    }
+    async function loadQuotes(){const snap=await db.collection('teklifler').orderBy('createdAt','desc').limit(200).get(); quotesCache=snap.docs.map(d=>({id:d.id,...d.data()}));}
 
     // ===== Mail =====
     function firstNameOf(full){const s=(full||'').trim(); return s? s.split(' ')[0] : '';}
@@ -828,15 +857,28 @@
       document.getElementById('clear-quote-items').onclick=()=>{document.querySelectorAll('.mail-qi').forEach(i=>i.checked=false);buildMailPreview();};
       buildQuotePickList(); buildMailPreview();
     }
+    // Build list of ALL saved quotes for selected customer (each item selectable)
     function buildQuotePickList(){
       const wrap=document.getElementById('quote-item-list'); const none=document.getElementById('quote-none'); const typeSel=document.getElementById('mail-type');
-      const customerId=val('mail-customer'); if(!wrap||typeSel.value!=='quote'||!customerId){ if(wrap) wrap.innerHTML=''; if(none) none.style.display='none'; return;}
-      const items=[]; quotesCache.filter(q=>q.customerId===customerId).forEach(q=>{(q.items||[]).forEach(it=>items.push({service:it.service,total:Number(it.total||0)}));});
-      if(!items.length){wrap.innerHTML=''; none.style.display='block'; return;} none.style.display='none';
-      const latestByService={}; items.forEach(it=>latestByService[it.service]=it);
-      wrap.innerHTML=Object.values(latestByService).map(it=>`
-        <label class="pill"><input type="checkbox" class="mail-qi" data-service="${esc(it.service)}" data-total="${it.total}" onchange="buildMailPreview()">
-        <span><b>${esc(it.service)}</b> — ${currency(it.total)}</span></label>`).join('');
+      const customerId=val('mail-customer'); if(!wrap||typeSel.value!=='quote'){ if(wrap) wrap.innerHTML=''; if(none) none.style.display='none'; return;}
+      const qs=quotesCache.filter(q=>q.customerId===customerId);
+      if(!qs.length){wrap.innerHTML=''; none.style.display='block'; return;}
+      none.style.display='none';
+
+      // group by quote, show header chip for title then items
+      const blocks = qs.map(q=>{
+        const titlePill = `<div class="pill" style="background:#e9f5ec;border-color:#cfe3d1;"><i class="fas fa-file-invoice-dollar"></i><b>${esc(q.title||'Quote')}</b> — <span>${currency(q.total||0)}</span></div>`;
+        const items = (q.items||[]).map((it,idx)=>{
+          const id = `qi-${q.id}-${idx}`;
+          return `<label class="pill" title="${esc(q.title||'Quote')}">
+            <input type="checkbox" class="mail-qi" id="${id}" data-service="${esc(it.service)}" data-total="${Number(it.total||0)}" onchange="buildMailPreview()">
+            <span><b>${esc(it.service)}</b> — ${currency(it.total)}</span>
+          </label>`;
+        }).join('');
+        return `<div style="grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 10px 0;">${titlePill}${items}</div>`;
+      }).join('');
+
+      wrap.innerHTML = blocks;
     }
     function buildMailPreview(){
       const type=val('mail-type'); const customerId=val('mail-customer'); const customer=customersCache.find(c=>c.id===customerId)||{};
