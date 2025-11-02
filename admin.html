@@ -248,7 +248,7 @@
 
       <div id="quote-lines" class="customer-grid"></div>
 
-      <div class="customer-card" style="margin-top:20px;">
+      <div class="customer-card" style="margin-top:20px%;">
         <div class="customer-header">
           <h3 class="customer-name">Totals</h3>
         </div>
@@ -376,7 +376,7 @@
       renderServicesLog();
       initCalendarState?.();
       renderCalendar?.();
-      updateServiceCustomerDropdown();
+      updateServiceCustomerDropdown?.();
       initQuotesUI?.();
       initMailUI();              // <— Mail UI başlat
     });
@@ -422,7 +422,7 @@
       await db.collection('musteriler').add(data);
       showMessage('Customer added successfully!','success');
       clearForm();
-      await loadCustomers(); updateQuoteCustomerDropdown(); updateMailDropdowns(); updateServiceCustomerDropdown();
+      await loadCustomers(); updateQuoteCustomerDropdown(); updateMailDropdowns(); updateServiceCustomerDropdown?.();
     }
     function clearForm(){document.getElementById('customer-form').reset();}
 
