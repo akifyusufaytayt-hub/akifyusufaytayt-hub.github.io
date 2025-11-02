@@ -358,7 +358,7 @@
         </div>
       </div>
 
-      <!-- QUOTE PICKER (all quotes of customer, group + check items) -->
+      <!-- QUOTE PICKER (filtered by selected customer) -->
       <div id="quote-pick" class="customer-card" style="display:none;margin-bottom:16px;">
         <div class="customer-header">
           <h3 class="customer-name">Select services & prices to include</h3>
@@ -453,14 +453,14 @@
       await loadServices();
       await loadQuotes();
 
-      updateDashboard();
+      updateDashboard?.();
       updateQuoteCustomerDropdown();
-      updateMailDropdowns();   // Mail müşteri listesi garanti dolsun
+      updateMailDropdowns();   // Mail sekmesi için garanti
       renderServicesLog();
-      initCalendarState();
-      renderCalendar();
+      initCalendarState?.();
+      renderCalendar?.();
       updateServiceCustomerDropdown();
-      initQuotesUI();
+      initQuotesUI?.();
       initMailUI();            // Mail UI başlat
     });
 
@@ -477,7 +477,7 @@
       document.getElementById(id).classList.add('active');
       document.querySelector(`.nav-btn[data-section="${id}"]`).classList.add('active');
       if(id==='quotes') initQuotesUI();
-      if(id==='mail'){ updateMailDropdowns(); initMailUI(); } // <— sekmeye gelince müşteri listesi dolsun
+      if(id==='mail'){ updateMailDropdowns(); initMailUI(); } // Mail’e gelince liste yenile
       if(id==='services'){ renderCalendar(); renderServicesLog(); updateServiceCustomerDropdown(); }
     }
     function showMessage(text,type){const el=document.getElementById('message');el.textContent=text;el.className=`message ${type}`;el.style.display='block';setTimeout(()=>el.style.display='none',3000);}
@@ -490,6 +490,8 @@
     function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
     function val(id){return (document.getElementById(id)?.value||'').trim();}
     function setV(id,v){const el=document.getElementById(id); if(el) el.value=v||'';}
+    function firstNameOf(full){const s=(full||'').trim(); return s? s.split(' ')[0] : '';}
+    function currency(n){return `$${Number(n||0).toFixed(2)}`;}
 
     // ===== Customers =====
     document.addEventListener('submit',e=>{
@@ -507,7 +509,7 @@
       await db.collection('musteriler').add(data);
       showMessage('Customer added successfully!','success');
       clearForm();
-      await loadCustomers(); updateDashboard(); updateQuoteCustomerDropdown(); updateMailDropdowns(); updateServiceCustomerDropdown();
+      await loadCustomers(); updateDashboard?.(); updateQuoteCustomerDropdown(); updateMailDropdowns(); updateServiceCustomerDropdown();
     }
     function clearForm(){document.getElementById('customer-form').reset();}
 
@@ -571,7 +573,7 @@
       openModal();
     }
 
-    function openEditCustomer(id){ viewCustomer(id); } // same modal (with edit enabled)
+    function openEditCustomer(id){ viewCustomer(id); }
 
     async function saveCustomerEdit(){
       if(!activeCustomerIdForEdit) return;
@@ -614,14 +616,14 @@
 
       await db.collection('hizmetler').doc(id).update({type, amount:Number(amountStr||0), date, notes});
       showMessage('Service updated.','success');
-      await loadServices(); renderCustomerServices(activeCustomerIdForEdit); renderCalendar(); renderServicesLog(); updateDashboard();
+      await loadServices(); renderCustomerServices(activeCustomerIdForEdit); renderCalendar(); renderServicesLog(); updateDashboard?.();
     }
 
     async function deleteService(id){
       if(!confirm('Delete this service?')) return;
       await db.collection('hizmetler').doc(id).delete();
       showMessage('Service deleted.','success');
-      await loadServices(); renderCustomerServices(activeCustomerIdForEdit); renderCalendar(); renderServicesLog(); updateDashboard();
+      await loadServices(); renderCustomerServices(activeCustomerIdForEdit); renderCalendar(); renderServicesLog(); updateDashboard?.();
     }
 
     // ---- Quotes Management in Customer Modal ----
@@ -704,11 +706,11 @@
       await db.collection('hizmetler').add({customerId,type,date,amount,notes,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
       showMessage('Booking added.','success');
       setV('svc-type',''); setV('svc-date',''); setV('svc-amount',''); setV('svc-notes','');
-      await loadServices(); renderCalendar(); renderServicesLog(); updateDashboard();
+      await loadServices(); renderCalendar(); renderServicesLog(); updateDashboard?.();
     }
 
     // ===== Calendar =====
-    let calYear, calMonth; // 0-based month
+    let calYear, calMonth;
     function initCalendarState(){const d=new Date(); calYear=d.getFullYear(); calMonth=d.getMonth();}
     function prevMonth(){calMonth--; if(calMonth<0){calMonth=11; calYear--;} renderCalendar();}
     function nextMonth(){calMonth++; if(calMonth>11){calMonth=0; calYear++;} renderCalendar();}
@@ -840,58 +842,98 @@
     function showQuoteMsg(text,type){const el=document.getElementById('quote-save-msg'); el.textContent=text; el.className=`message ${type}`; el.style.display='block'; setTimeout(()=>el.style.display='none',4000);}
     async function loadQuotes(){const snap=await db.collection('teklifler').orderBy('createdAt','desc').limit(200).get(); quotesCache=snap.docs.map(d=>({id:d.id,...d.data()}));}
 
-    // ===== Mail =====
-    function firstNameOf(full){const s=(full||'').trim(); return s? s.split(' ')[0] : '';}
-    function currency(n){return `$${Number(n||0).toFixed(2)}`;}
-    function updateMailDropdowns(){const sel=document.getElementById('mail-customer'); if(!sel) return; const prev=sel.value;
-      sel.innerHTML='<option value="">Select Customer</option>'+customersCache.map(c=>`<option value="${c.id}">${esc(c.name||'')}</option>`).join(''); if(prev) sel.value=prev;}
+    // ===== Mail (customer-filtered quotes -> mail body) =====
+    function updateMailDropdowns(){
+      const sel=document.getElementById('mail-customer'); if(!sel) return;
+      const prev=sel.value;
+      sel.innerHTML='<option value="">Select Customer</option>'+customersCache.map(c=>`<option value="${c.id}">${esc(c.name||'')}</option>`).join('');
+      if(prev) sel.value=prev;
+    }
+
     function initMailUI(){
-      const typeSel=document.getElementById('mail-type'); const custSel=document.getElementById('mail-customer'); const dateWrap=document.getElementById('mail-date-wrap');
+      const typeSel=document.getElementById('mail-type');
+      const custSel=document.getElementById('mail-customer');
+      const dateWrap=document.getElementById('mail-date-wrap');
       if(!typeSel) return;
 
-      updateMailDropdowns(); // <— dropdown garanti dolu
+      // dropdown’ı garanti doldur
+      updateMailDropdowns();
 
-      const onChange=()=>buildMailPreview();
-      typeSel.onchange=()=>{ const v=typeSel.value; dateWrap.style.display=(v==='booking'||v==='approve')?'flex':'none'; document.getElementById('quote-pick').style.display=(v==='quote')?'block':'none'; buildQuotePickList(); buildMailPreview(); };
-      custSel.onchange=()=>{ const c=customersCache.find(x=>x.id===custSel.value); if(c) setV('mail-greeting', `Hi ${firstNameOf(c.name)},`); buildQuotePickList(); buildMailPreview(); };
-      document.getElementById('mail-date').oninput=onChange; document.getElementById('mail-greeting').oninput=onChange;
-      document.getElementById('copy-subject').onclick=()=>navigator.clipboard.writeText(val('mail-subject')); document.getElementById('copy-body').onclick=()=>navigator.clipboard.writeText(val('mail-body'));
+      typeSel.onchange=()=>{
+        const v=typeSel.value;
+        dateWrap.style.display=(v==='booking'||v==='approve')?'flex':'none';
+        document.getElementById('quote-pick').style.display=(v==='quote')?'block':'none';
+        buildQuotePickList();
+        buildMailPreview();
+      };
+
+      custSel.onchange=()=>{
+        const c=customersCache.find(x=>x.id===custSel.value);
+        if(c) setV('mail-greeting', `Hi ${firstNameOf(c.name)},`);
+        buildQuotePickList();
+        buildMailPreview();
+      };
+
+      document.getElementById('mail-date').oninput=buildMailPreview;
+      document.getElementById('mail-greeting').oninput=buildMailPreview;
+      document.getElementById('copy-subject').onclick=()=>navigator.clipboard.writeText(val('mail-subject'));
+      document.getElementById('copy-body').onclick=()=>navigator.clipboard.writeText(val('mail-body'));
       document.getElementById('select-all-quote-items').onclick=()=>{document.querySelectorAll('.mail-qi').forEach(i=>i.checked=true);buildMailPreview();};
       document.getElementById('clear-quote-items').onclick=()=>{document.querySelectorAll('.mail-qi').forEach(i=>i.checked=false);buildMailPreview();};
-      buildQuotePickList(); buildMailPreview();
+
+      // ilk görünüm
+      typeSel.dispatchEvent(new Event('change'));
     }
-    // Build list of ALL saved quotes for selected customer (each item selectable)
+
+    // Müşteriye göre tüm kayıtlı teklifleri getir ve satırları checkbox yap
     function buildQuotePickList(){
-      const wrap=document.getElementById('quote-item-list'); const none=document.getElementById('quote-none'); const typeSel=document.getElementById('mail-type');
-      const customerId=val('mail-customer'); if(!wrap||typeSel.value!=='quote'){ if(wrap) wrap.innerHTML=''; if(none) none.style.display='none'; return;}
+      const wrap=document.getElementById('quote-item-list');
+      const none=document.getElementById('quote-none');
+      const typeSel=document.getElementById('mail-type');
+      const customerId=val('mail-customer');
+
+      if(!wrap || typeSel.value!=='quote'){
+        if(wrap) wrap.innerHTML='';
+        if(none) none.style.display='none';
+        return;
+      }
+
       const qs=quotesCache.filter(q=>q.customerId===customerId);
-      if(!qs.length){wrap.innerHTML=''; none.style.display='block'; return;}
+      if(!qs.length){
+        wrap.innerHTML='';
+        none.style.display='block';
+        return;
+      }
       none.style.display='none';
 
-      // group by quote, show header chip for title then items
-      const blocks = qs.map(q=>{
-        const titlePill = `<div class="pill" style="background:#e9f5ec;border-color:#cfe3d1;"><i class="fas fa-file-invoice-dollar"></i><b>${esc(q.title||'Quote')}</b> — <span>${currency(q.total||0)}</span></div>`;
-        const items = (q.items||[]).map((it,idx)=>{
-          const id = `qi-${q.id}-${idx}`;
-          return `<label class="pill" title="${esc(q.title||'Quote')}">
-            <input type="checkbox" class="mail-qi" id="${id}" data-service="${esc(it.service)}" data-total="${Number(it.total||0)}" onchange="buildMailPreview()">
+      // Her teklifi başlık + toplam "pill" ile göster, altına kalemlerini checkbox’la diz
+      wrap.innerHTML = qs.map(q=>{
+        const head = `<div class="pill" style="background:#e9f5ec;border-color:#cfe3d1;"><i class="fas fa-file-invoice-dollar"></i><b>${esc(q.title||'Quote')}</b> — ${currency(q.total||0)}</div>`;
+        const items = (q.items||[]).map((it,idx)=>`
+          <label class="pill" title="${esc(q.title||'Quote')}">
+            <input type="checkbox" class="mail-qi" data-service="${esc(it.service)}" data-total="${Number(it.total||0)}" onchange="buildMailPreview()">
             <span><b>${esc(it.service)}</b> — ${currency(it.total)}</span>
-          </label>`;
-        }).join('');
-        return `<div style="grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 10px 0;">${titlePill}${items}</div>`;
+          </label>`).join('');
+        return `<div style="grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 10px 0;">${head}${items}</div>`;
       }).join('');
-
-      wrap.innerHTML = blocks;
     }
+
+    // Seçilmiş kalemleri mail gövdesine ekle
     function buildMailPreview(){
-      const type=val('mail-type'); const customerId=val('mail-customer'); const customer=customersCache.find(c=>c.id===customerId)||{};
-      const fname=firstNameOf(customer.name); const greetDefault=fname?`Hi ${fname},`:'Hi,'; const greeting=(val('mail-greeting')||greetDefault);
+      const type=val('mail-type');
+      const customerId=val('mail-customer');
+      const customer=customersCache.find(c=>c.id===customerId)||{};
+      const fname=firstNameOf(customer.name);
+      const greetDefault=fname?`Hi ${fname},`:'Hi,';
+      const greeting=(val('mail-greeting')||greetDefault);
       const whenTxt=val('mail-date');
 
       let subject='', body='';
       if(type==='quote'){
         subject=`Service Quote — ${customer.name||'Customer'}`;
-        const selected=Array.from(document.querySelectorAll('.mail-qi')).filter(i=>i.checked).map(i=>({service:i.dataset.service,total:Number(i.dataset.total||0)}));
+        const selected=Array.from(document.querySelectorAll('.mail-qi'))
+          .filter(i=>i.checked)
+          .map(i=>({service:i.dataset.service,total:Number(i.dataset.total||0)}));
         const lines=selected.map(s=>`• ${s.service} — ${currency(s.total)}`).join('\n') || '• (please select services above)';
         body=
 `${greeting}
@@ -948,7 +990,7 @@ Melbourne Lawn & Garden Care
 
 We’d be happy to look after your lawn and garden on a regular schedule.
 If you choose a regular maintenance plan (weekly, fortnightly, or monthly),
-you’ll receive **10% off** all ongoing services.
+you’ll receive 10% off all ongoing services.
 
 This helps keep your garden consistently neat and healthy — and saves you money.
 If you’re interested, just reply and we’ll set up the plan that suits you best.
@@ -957,7 +999,10 @@ Kind regards,
 Melbourne Lawn & Garden Care
 +61 478 733 900`;
       }
-      setV('mail-subject',subject); setV('mail-body',body); if(!val('mail-greeting')) setV('mail-greeting',greeting);
+
+      setV('mail-subject',subject);
+      setV('mail-body',body);
+      if(!val('mail-greeting')) setV('mail-greeting',greeting);
     }
   </script>
 </body>
