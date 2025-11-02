@@ -455,13 +455,13 @@
 
       updateDashboard();
       updateQuoteCustomerDropdown();
-      updateMailDropdowns();
+      updateMailDropdowns();   // Mail müşteri listesi garanti dolsun
       renderServicesLog();
       initCalendarState();
       renderCalendar();
       updateServiceCustomerDropdown();
       initQuotesUI();
-      initMailUI();
+      initMailUI();            // Mail UI başlat
     });
 
     function logout(){
@@ -477,7 +477,7 @@
       document.getElementById(id).classList.add('active');
       document.querySelector(`.nav-btn[data-section="${id}"]`).classList.add('active');
       if(id==='quotes') initQuotesUI();
-      if(id==='mail') initMailUI();
+      if(id==='mail'){ updateMailDropdowns(); initMailUI(); } // <— sekmeye gelince müşteri listesi dolsun
       if(id==='services'){ renderCalendar(); renderServicesLog(); updateServiceCustomerDropdown(); }
     }
     function showMessage(text,type){const el=document.getElementById('message');el.textContent=text;el.className=`message ${type}`;el.style.display='block';setTimeout(()=>el.style.display='none',3000);}
@@ -848,9 +848,12 @@
     function initMailUI(){
       const typeSel=document.getElementById('mail-type'); const custSel=document.getElementById('mail-customer'); const dateWrap=document.getElementById('mail-date-wrap');
       if(!typeSel) return;
+
+      updateMailDropdowns(); // <— dropdown garanti dolu
+
       const onChange=()=>buildMailPreview();
       typeSel.onchange=()=>{ const v=typeSel.value; dateWrap.style.display=(v==='booking'||v==='approve')?'flex':'none'; document.getElementById('quote-pick').style.display=(v==='quote')?'block':'none'; buildQuotePickList(); buildMailPreview(); };
-      custSel.onchange=()=>{ buildQuotePickList(); buildMailPreview(); };
+      custSel.onchange=()=>{ const c=customersCache.find(x=>x.id===custSel.value); if(c) setV('mail-greeting', `Hi ${firstNameOf(c.name)},`); buildQuotePickList(); buildMailPreview(); };
       document.getElementById('mail-date').oninput=onChange; document.getElementById('mail-greeting').oninput=onChange;
       document.getElementById('copy-subject').onclick=()=>navigator.clipboard.writeText(val('mail-subject')); document.getElementById('copy-body').onclick=()=>navigator.clipboard.writeText(val('mail-body'));
       document.getElementById('select-all-quote-items').onclick=()=>{document.querySelectorAll('.mail-qi').forEach(i=>i.checked=true);buildMailPreview();};
