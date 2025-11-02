@@ -455,13 +455,13 @@
 
       updateDashboard?.();
       updateQuoteCustomerDropdown();
-      updateMailDropdowns();   // Mail sekmesi için garanti
+      updateMailDropdowns();
       renderServicesLog();
       initCalendarState?.();
       renderCalendar?.();
       updateServiceCustomerDropdown();
       initQuotesUI?.();
-      initMailUI();            // Mail UI başlat
+      initMailUI();
     });
 
     function logout(){
@@ -477,7 +477,7 @@
       document.getElementById(id).classList.add('active');
       document.querySelector(`.nav-btn[data-section="${id}"]`).classList.add('active');
       if(id==='quotes') initQuotesUI();
-      if(id==='mail'){ updateMailDropdowns(); initMailUI(); } // Mail’e gelince liste yenile
+      if(id==='mail'){ updateMailDropdowns(); initMailUI(); }
       if(id==='services'){ renderCalendar(); renderServicesLog(); updateServiceCustomerDropdown(); }
     }
     function showMessage(text,type){const el=document.getElementById('message');el.textContent=text;el.className=`message ${type}`;el.style.display='block';setTimeout(()=>el.style.display='none',3000);}
@@ -842,7 +842,7 @@
     function showQuoteMsg(text,type){const el=document.getElementById('quote-save-msg'); el.textContent=text; el.className=`message ${type}`; el.style.display='block'; setTimeout(()=>el.style.display='none',4000);}
     async function loadQuotes(){const snap=await db.collection('teklifler').orderBy('createdAt','desc').limit(200).get(); quotesCache=snap.docs.map(d=>({id:d.id,...d.data()}));}
 
-    // ===== Mail (customer-filtered quotes -> mail body) =====
+    // ===== Mail (customer-filtered quotes -> mail body, GST included) =====
     function updateMailDropdowns(){
       const sel=document.getElementById('mail-customer'); if(!sel) return;
       const prev=sel.value;
@@ -856,7 +856,6 @@
       const dateWrap=document.getElementById('mail-date-wrap');
       if(!typeSel) return;
 
-      // dropdown’ı garanti doldur
       updateMailDropdowns();
 
       typeSel.onchange=()=>{
@@ -881,11 +880,10 @@
       document.getElementById('select-all-quote-items').onclick=()=>{document.querySelectorAll('.mail-qi').forEach(i=>i.checked=true);buildMailPreview();};
       document.getElementById('clear-quote-items').onclick=()=>{document.querySelectorAll('.mail-qi').forEach(i=>i.checked=false);buildMailPreview();};
 
-      // ilk görünüm
       typeSel.dispatchEvent(new Event('change'));
     }
 
-    // Müşteriye göre tüm kayıtlı teklifleri getir ve satırları checkbox yap
+    // Build list by customer
     function buildQuotePickList(){
       const wrap=document.getElementById('quote-item-list');
       const none=document.getElementById('quote-none');
@@ -906,7 +904,6 @@
       }
       none.style.display='none';
 
-      // Her teklifi başlık + toplam "pill" ile göster, altına kalemlerini checkbox’la diz
       wrap.innerHTML = qs.map(q=>{
         const head = `<div class="pill" style="background:#e9f5ec;border-color:#cfe3d1;"><i class="fas fa-file-invoice-dollar"></i><b>${esc(q.title||'Quote')}</b> — ${currency(q.total||0)}</div>`;
         const items = (q.items||[]).map((it,idx)=>`
@@ -918,7 +915,7 @@
       }).join('');
     }
 
-    // Seçilmiş kalemleri mail gövdesine ekle
+    // Mail preview (GST included on lines and total)
     function buildMailPreview(){
       const type=val('mail-type');
       const customerId=val('mail-customer');
@@ -931,17 +928,28 @@
       let subject='', body='';
       if(type==='quote'){
         subject=`Service Quote — ${customer.name||'Customer'}`;
+
         const selected=Array.from(document.querySelectorAll('.mail-qi'))
           .filter(i=>i.checked)
           .map(i=>({service:i.dataset.service,total:Number(i.dataset.total||0)}));
-        const lines=selected.map(s=>`• ${s.service} — ${currency(s.total)}`).join('\n') || '• (please select services above)';
+
+        // GST (10%) dahil satırlar ve toplam
+        const linesIncl = selected.map(s=>{
+          const incl = s.total * 1.10;
+          return `• ${s.service} — ${currency(incl)} (incl. GST)`;
+        }).join('\n') || '• (please select services above)';
+
+        const sumIncl = selected.reduce((a,b)=>a + (b.total*1.10), 0);
+
         body=
 `${greeting}
 
 Thanks for getting in touch with Melbourne Lawn & Garden Care.
-Based on your request, here are the quote options for your property:
+Based on your request, here are the quote options for your property (prices include 10% GST):
 
-${lines}
+${linesIncl}
+
+Selected total (incl. GST): ${currency(sumIncl)}
 
 If you’d like to proceed, just reply “Approve” and we’ll arrange your booking right away.
 (Prices are for the listed services; we can adjust the scope or combine services as needed.)
