@@ -45,7 +45,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDewthZGtpSgLr3P4sRBkkMt6FyvVrlT4E",
   authDomain: "lawncare-crm-b3617.firebaseapp.com",
   projectId: "lawncare-crm-b3617",
-  storageBucket: "lawncare-crm-b3617.firebasestorage.app",
+  storageBucket: "lawncare-crm-b3617.appspot.com",   // <-- DÜZELTİLDİ
   messagingSenderId: "200959921459",
   appId: "1:200959921459:web:5161477d4193f96c7c0246",
   measurementId: "G-7VG6PH6N01"
@@ -67,8 +67,8 @@ const storage = firebase.storage();
   .crm-form-group input{width:100%;padding:10px;border:1px solid #ddd;border-radius:6px}
   .crm-login-btn{width:100%;padding:12px;border:none;border-radius:6px;background:#2e7d32;color:#fff;font-weight:700;cursor:pointer}
   .crm-error{display:none;background:#ffebee;color:#c62828;padding:10px;border-radius:6px;margin-bottom:10px;font-size:.92rem}
-  /* küçük durum metni */
   .hint{color:#555;font-size:.9rem;margin-top:6px}
+  .muted{color:#666}
 </style>
 </head>
 
@@ -194,15 +194,15 @@ const storage = firebase.storage();
 <section id="quote" class="section">
   <div class="container">
     <h2>Request a Free Quote</h2>
-    <form id="quote-form" action="https://formspree.io/f/mvgqjyqg" method="POST" enctype="multipart/form-data">
+    <form id="quote-form" action="https://formspree.io/f/mvgqjyqg" method="POST">
       <div class="form-group"><label>Full Name</label><input type="text" name="name" required></div>
       <div class="form-group"><label>Email</label><input type="email" name="email" required></div>
       <div class="form-group"><label>Phone</label><input type="tel" name="phone" required></div>
       <div class="form-group"><label>Address</label><input type="text" name="address" required></div>
 
       <div class="form-group">
-        <label>Photo (optional)</label>
-        <input type="file" id="quote-photo" name="photo" accept="image/*">
+        <label>Photos (up to 20, optional)</label>
+        <input type="file" id="quote-photo" accept="image/*" multiple>
         <div id="upload-status" class="hint" aria-live="polite"></div>
       </div>
 
@@ -211,13 +211,16 @@ const storage = firebase.storage();
         <textarea name="notes" rows="4" placeholder="Please describe the work you would like done (in English)"></textarea>
       </div>
 
-      <input type="hidden" name="photo_url" id="photo-url-hidden" />
+      <!-- Formspree'ye gidecek -->
+      <input type="hidden" name="photo_urls" id="photo-urls-hidden" />
 
       <div id="success-message" style="display:none;margin-top:20px;text-align:center;">
         <p><strong>✅ Your request has been sent successfully!</strong></p>
         <p>We will get back to you as soon as possible.</p>
       </div>
-      <div style="text-align:center;margin-top:10px"><button type="submit" class="btn" id="quote-submit">Get My Quote</button></div>
+      <div style="text-align:center;margin-top:10px">
+        <button type="submit" class="btn" id="quote-submit">Get My Quote</button>
+      </div>
     </form>
   </div>
 </section>
@@ -267,73 +270,74 @@ function showCRMLogin(){const m=document.getElementById('crm-login-modal');if(m)
 function closeCRMLogin(){const m=document.getElementById('crm-login-modal');if(m){m.style.display='none';document.body.style.overflow='auto';}}
 </script>
 
-<!-- Formspree + Firebase Storage upload -->
+<!-- Formspree + Firebase Storage upload (çoklu, timeout'lu) -->
 <script>
 document.addEventListener('DOMContentLoaded',()=>{
   const form=document.getElementById('quote-form');
   const msg=document.getElementById('success-message');
   const statusEl=document.getElementById('upload-status');
   const photoInput=document.getElementById('quote-photo');
-  const hiddenUrl=document.getElementById('photo-url-hidden');
+  const hiddenUrls=document.getElementById('photo-urls-hidden');
   const submitBtn=document.getElementById('quote-submit');
 
-  if(!form) return;
-
   async function ensureAnonAuth(){
-    try{
-      if(!auth.currentUser){
-        await auth.signInAnonymously();
-      }
-    }catch(e){
-      // Anonymous sign-in kapalı olabilir. Sessizce geç.
-      console.warn('Anonymous sign-in failed or disabled:', e.message);
-    }
+    if(auth.currentUser) return;
+    try{ await auth.signInAnonymously(); }
+    catch(e){ console.warn('Anonymous sign-in failed:', e.message); }
   }
 
-  async function uploadPhotoIfAny(){
-    const file = photoInput.files && photoInput.files[0];
-    if(!file) return null;
+  function withTimeout(promise, ms, onTimeoutMsg){
+    let t;
+    const timeout = new Promise((_,rej)=>{
+      t=setTimeout(()=>rej(new Error(onTimeoutMsg||'Timed out')), ms);
+    });
+    return Promise.race([promise.finally(()=>clearTimeout(t)), timeout]);
+  }
 
-    // Basit validasyon (opsiyonel)
-    if(file.size > 10 * 1024 * 1024){
-      throw new Error('File is too large (max 10MB).');
-    }
+  async function uploadAllPhotos(){
+    const files = Array.from(photoInput.files||[]);
+    if(!files.length) return [];
+    const MAX = 20;
+    const sel = files.slice(0, MAX);
 
-    statusEl.textContent = 'Uploading photo...';
+    statusEl.textContent = `Uploading ${sel.length} photo(s)...`;
     await ensureAnonAuth();
 
-    const safeName = file.name.replace(/[^\w.\-]+/g,'_');
-    const ts = new Date().toISOString().replace(/[:.]/g,'-');
-    const path = `quote_uploads/${ts}_${safeName}`;
-    const ref = storage.ref().child(path);
+    const uploads = sel.map(async (file, idx) => {
+      if(file.size > 10*1024*1024) throw new Error(`File ${file.name} is larger than 10MB`);
+      const safe = file.name.replace(/[^\w.\-]+/g,'_');
+      const ts = new Date().toISOString().replace(/[:.]/g,'-');
+      const path = `quote_uploads/${ts}_${idx+1}_${safe}`;
+      const ref = firebase.storage().ref().child(path);
 
-    const snap = await ref.put(file);
-    const url = await snap.ref.getDownloadURL();
+      const task = ref.put(file).then(snap=>snap.ref.getDownloadURL());
+      const url = await withTimeout(task, 10000, 'Upload took too long'); // 10s koruma
+      statusEl.textContent = `Uploaded ${idx+1}/${sel.length}`;
+      return url;
+    });
 
-    statusEl.textContent = 'Photo uploaded ✓';
-    return url;
+    try{
+      const urls = await Promise.all(uploads);
+      statusEl.textContent = `Uploaded ${urls.length} / ${sel.length} ✓`;
+      return urls;
+    }catch(e){
+      console.warn('Upload error, will continue without some/all photos:', e.message);
+      statusEl.textContent = 'Could not upload photos, sending form without photos.';
+      return []; // fotoğrafsız devam
+    }
   }
 
-  form.addEventListener('submit',async e=>{
+  form.addEventListener('submit', async (e)=>{
     e.preventDefault();
     submitBtn.disabled = true;
     statusEl.textContent = '';
 
     try{
-      // 1) Fotoğrafı (varsa) Storage’a yükle
-      const url = await uploadPhotoIfAny();
-      if(url){
-        hiddenUrl.value = url;
-      }else{
-        hiddenUrl.value = '';
-      }
+      const urls = await uploadAllPhotos();      // çoklu upload
+      hiddenUrls.value = urls.join('\n');        // Formspree'ye çok satırlı
 
-      // 2) Formspree’ye gönder
       const fd = new FormData(form);
-      // Orijinal dosyayı Formspree’ye göndermek istemiyorsak kaldırabiliriz:
-      fd.delete('photo');
-
-      const res=await fetch(form.action,{
+      const res = await fetch(form.action, {
         method:'POST',
         body:fd,
         headers:{'Accept':'application/json'}
@@ -342,7 +346,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       if(res.ok){
         msg.style.display='block';
         form.reset();
-        hiddenUrl.value = '';
+        hiddenUrls.value = '';
         statusEl.textContent = '';
         msg.scrollIntoView({behavior:'smooth'});
       }else{
