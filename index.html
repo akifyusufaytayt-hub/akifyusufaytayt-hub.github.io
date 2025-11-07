@@ -18,10 +18,10 @@
   "image":"https://www.melbournelawncare.com.au/logo.png",
   "address":{
     "@type":"PostalAddress",
-    "streetAddress":"Murray Ct, Greenvale",
+    "streetAddress":"Bamford Ave, Westmeadows",
     "addressLocality":"Melbourne",
     "addressRegion":"VIC",
-    "postalCode":"3059",
+    "postalCode":"3049",
     "addressCountry":"AU"
   },
   "telephone":"+61478733900",
@@ -190,12 +190,19 @@ const db = firebase.firestore();
 <section id="quote" class="section">
   <div class="container">
     <h2>Request a Free Quote</h2>
-    <form id="quote-form" action="https://formspree.io/f/mvgqjyqg" method="POST">
+    <form id="quote-form" action="https://formspree.io/f/mvgqjyqg" method="POST" enctype="multipart/form-data">
       <div class="form-group"><label>Full Name</label><input type="text" name="name" required></div>
       <div class="form-group"><label>Email</label><input type="email" name="email" required></div>
       <div class="form-group"><label>Phone</label><input type="tel" name="phone" required></div>
       <div class="form-group"><label>Address</label><input type="text" name="address" required></div>
-      <div class="form-group"><label>Additional Notes</label><textarea name="notes" rows="4"></textarea></div>
+      <div class="form-group">
+        <label>Photo (optional)</label>
+        <input type="file" name="photo" accept="image/*">
+      </div>
+      <div class="form-group">
+        <label>Additional Notes</label>
+        <textarea name="notes" rows="4" placeholder="Please describe the work you would like done (in English)"></textarea>
+      </div>
       <div id="success-message" style="display:none;margin-top:20px;text-align:center;">
         <p><strong>✅ Your request has been sent successfully!</strong></p>
         <p>We will get back to you as soon as possible.</p>
@@ -211,9 +218,11 @@ const db = firebase.firestore();
     <h2>Contact Us</h2>
     <p><strong>Phone:</strong> +61 478 733 900</p>
     <p><strong>Email:</strong> <a href="mailto:melbournelawncareau@gmail.com">melbournelawncareau@gmail.com</a></p>
-    <p><strong>Address:</strong> Murray Ct, Greenvale VIC 3059</p>
+    <p><strong>Address:</strong> Bamford Ave, Westmeadows VIC 3049</p>
     <div class="map-container">
-      <iframe title="Melbourne Lawn Care on Google Maps" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d59528.808760094435!2d144.92619921553668!3d-37.65244146241169!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xc6021f732e6171b%3A0x476220e2c6e6cd0f!2sMelbourne%20Lawn%20Care!5e0!3m2!1sen!2sau!4v1755915976310!5m2!1sen!2sau" allowfullscreen loading="lazy"></iframe>
+      <iframe title="Melbourne Lawn Care on Google Maps"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31214.494389807083!2d144.8561052750526!3d-37.68344142339905!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad6e555aaaaaaa%3A0xb36bde22c6e6cd0f!2sBamford%20Ave%2C%20Westmeadows%20VIC%203049!5e0!3m2!1sen!2sau!4v1755915976310!5m2!1sen!2sau"
+        allowfullscreen loading="lazy"></iframe>
     </div>
   </div>
 </section>
@@ -227,7 +236,6 @@ const db = firebase.firestore();
 <!-- Script -->
 <script>
 (function(){
-  // CRM modal açma
   const link=document.querySelector('.crm-toplink a');
   const modal=document.getElementById('crm-login-modal');
   const form=document.getElementById('crm-login-form');
