@@ -39,6 +39,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyDewthZGtpSgLr3P4sRBkkMt6FyvVrlT4E",
@@ -52,6 +53,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+const storage = firebase.storage();
 </script>
 
 <style id="crm-modal-css">
@@ -65,6 +67,8 @@ const db = firebase.firestore();
   .crm-form-group input{width:100%;padding:10px;border:1px solid #ddd;border-radius:6px}
   .crm-login-btn{width:100%;padding:12px;border:none;border-radius:6px;background:#2e7d32;color:#fff;font-weight:700;cursor:pointer}
   .crm-error{display:none;background:#ffebee;color:#c62828;padding:10px;border-radius:6px;margin-bottom:10px;font-size:.92rem}
+  /* küçük durum metni */
+  .hint{color:#555;font-size:.9rem;margin-top:6px}
 </style>
 </head>
 
@@ -195,19 +199,25 @@ const db = firebase.firestore();
       <div class="form-group"><label>Email</label><input type="email" name="email" required></div>
       <div class="form-group"><label>Phone</label><input type="tel" name="phone" required></div>
       <div class="form-group"><label>Address</label><input type="text" name="address" required></div>
+
       <div class="form-group">
         <label>Photo (optional)</label>
-        <input type="file" name="photo" accept="image/*">
+        <input type="file" id="quote-photo" name="photo" accept="image/*">
+        <div id="upload-status" class="hint" aria-live="polite"></div>
       </div>
+
       <div class="form-group">
         <label>Additional Notes</label>
         <textarea name="notes" rows="4" placeholder="Please describe the work you would like done (in English)"></textarea>
       </div>
+
+      <input type="hidden" name="photo_url" id="photo-url-hidden" />
+
       <div id="success-message" style="display:none;margin-top:20px;text-align:center;">
         <p><strong>✅ Your request has been sent successfully!</strong></p>
         <p>We will get back to you as soon as possible.</p>
       </div>
-      <div style="text-align:center;margin-top:10px"><button type="submit" class="btn">Get My Quote</button></div>
+      <div style="text-align:center;margin-top:10px"><button type="submit" class="btn" id="quote-submit">Get My Quote</button></div>
     </form>
   </div>
 </section>
@@ -257,18 +267,93 @@ function showCRMLogin(){const m=document.getElementById('crm-login-modal');if(m)
 function closeCRMLogin(){const m=document.getElementById('crm-login-modal');if(m){m.style.display='none';document.body.style.overflow='auto';}}
 </script>
 
-<!-- Formspree yönlendirme engelleme -->
+<!-- Formspree + Firebase Storage upload -->
 <script>
 document.addEventListener('DOMContentLoaded',()=>{
-  const form=document.getElementById('quote-form');const msg=document.getElementById('success-message');
-  if(!form)return;
+  const form=document.getElementById('quote-form');
+  const msg=document.getElementById('success-message');
+  const statusEl=document.getElementById('upload-status');
+  const photoInput=document.getElementById('quote-photo');
+  const hiddenUrl=document.getElementById('photo-url-hidden');
+  const submitBtn=document.getElementById('quote-submit');
+
+  if(!form) return;
+
+  async function ensureAnonAuth(){
+    try{
+      if(!auth.currentUser){
+        await auth.signInAnonymously();
+      }
+    }catch(e){
+      // Anonymous sign-in kapalı olabilir. Sessizce geç.
+      console.warn('Anonymous sign-in failed or disabled:', e.message);
+    }
+  }
+
+  async function uploadPhotoIfAny(){
+    const file = photoInput.files && photoInput.files[0];
+    if(!file) return null;
+
+    // Basit validasyon (opsiyonel)
+    if(file.size > 10 * 1024 * 1024){
+      throw new Error('File is too large (max 10MB).');
+    }
+
+    statusEl.textContent = 'Uploading photo...';
+    await ensureAnonAuth();
+
+    const safeName = file.name.replace(/[^\w.\-]+/g,'_');
+    const ts = new Date().toISOString().replace(/[:.]/g,'-');
+    const path = `quote_uploads/${ts}_${safeName}`;
+    const ref = storage.ref().child(path);
+
+    const snap = await ref.put(file);
+    const url = await snap.ref.getDownloadURL();
+
+    statusEl.textContent = 'Photo uploaded ✓';
+    return url;
+  }
+
   form.addEventListener('submit',async e=>{
     e.preventDefault();
+    submitBtn.disabled = true;
+    statusEl.textContent = '';
+
     try{
-      const res=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{'Accept':'application/json'}});
-      if(res.ok){msg.style.display='block';form.reset();msg.scrollIntoView({behavior:'smooth'});}
-      else alert('Form submission failed.');
-    }catch{alert('Network error.');}
+      // 1) Fotoğrafı (varsa) Storage’a yükle
+      const url = await uploadPhotoIfAny();
+      if(url){
+        hiddenUrl.value = url;
+      }else{
+        hiddenUrl.value = '';
+      }
+
+      // 2) Formspree’ye gönder
+      const fd = new FormData(form);
+      // Orijinal dosyayı Formspree’ye göndermek istemiyorsak kaldırabiliriz:
+      fd.delete('photo');
+
+      const res=await fetch(form.action,{
+        method:'POST',
+        body:fd,
+        headers:{'Accept':'application/json'}
+      });
+
+      if(res.ok){
+        msg.style.display='block';
+        form.reset();
+        hiddenUrl.value = '';
+        statusEl.textContent = '';
+        msg.scrollIntoView({behavior:'smooth'});
+      }else{
+        alert('Form submission failed.');
+      }
+    }catch(err){
+      console.error(err);
+      alert(err.message || 'Upload or submission error.');
+    }finally{
+      submitBtn.disabled = false;
+    }
   });
 });
 </script>
