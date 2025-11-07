@@ -45,7 +45,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDewthZGtpSgLr3P4sRBkkMt6FyvVrlT4E",
   authDomain: "lawncare-crm-b3617.firebaseapp.com",
   projectId: "lawncare-crm-b3617",
-  storageBucket: "lawncare-crm-b3617.appspot.com",   // <-- DÜZELTİLDİ
+  storageBucket: "lawncare-crm-b3617.appspot.com",
   messagingSenderId: "200959921459",
   appId: "1:200959921459:web:5161477d4193f96c7c0246",
   measurementId: "G-7VG6PH6N01"
@@ -194,7 +194,7 @@ const storage = firebase.storage();
 <section id="quote" class="section">
   <div class="container">
     <h2>Request a Free Quote</h2>
-    <form id="quote-form" action="https://formspree.io/f/mvgqjyqg" method="POST">
+    <form id="quote-form" action="https://formspree.io/f/mvgqjyqg" method="POST" novalidate>
       <div class="form-group"><label>Full Name</label><input type="text" name="name" required></div>
       <div class="form-group"><label>Email</label><input type="email" name="email" required></div>
       <div class="form-group"><label>Phone</label><input type="tel" name="phone" required></div>
@@ -202,7 +202,7 @@ const storage = firebase.storage();
 
       <div class="form-group">
         <label>Photos (up to 20, optional)</label>
-        <input type="file" id="quote-photo" accept="image/*" multiple>
+        <input type="file" id="quote-photo" accept="image/*" multiple data-formspree-ignore>
         <div id="upload-status" class="hint" aria-live="polite"></div>
       </div>
 
@@ -211,7 +211,7 @@ const storage = firebase.storage();
         <textarea name="notes" rows="4" placeholder="Please describe the work you would like done (in English)"></textarea>
       </div>
 
-      <!-- Formspree'ye gidecek -->
+      <!-- Formspree'ye gidecek URL listeleri -->
       <input type="hidden" name="photo_urls" id="photo-urls-hidden" />
 
       <div id="success-message" style="display:none;margin-top:20px;text-align:center;">
@@ -246,7 +246,7 @@ const storage = firebase.storage();
   </div>
 </footer>
 
-<!-- Script -->
+<!-- Script: CRM Modal -->
 <script>
 (function(){
   const link=document.querySelector('.crm-toplink a');
@@ -270,7 +270,7 @@ function showCRMLogin(){const m=document.getElementById('crm-login-modal');if(m)
 function closeCRMLogin(){const m=document.getElementById('crm-login-modal');if(m){m.style.display='none';document.body.style.overflow='auto';}}
 </script>
 
-<!-- Formspree + Firebase Storage upload (çoklu, timeout'lu) -->
+<!-- Script: Formspree + Firebase Storage (multi-upload, stay on page) -->
 <script>
 document.addEventListener('DOMContentLoaded',()=>{
   const form=document.getElementById('quote-form');
@@ -280,100 +280,75 @@ document.addEventListener('DOMContentLoaded',()=>{
   const hiddenUrls=document.getElementById('photo-urls-hidden');
   const submitBtn=document.getElementById('quote-submit');
 
+  // Anonymous auth (sağlamlık için)
   async function ensureAnonAuth(){
     if(auth.currentUser) return;
-    try{ await auth.signInAnonymously(); }
-    catch(e){ console.warn('Anonymous sign-in failed:', e.message); }
+    try{ await auth.signInAnonymously(); }catch(e){ console.warn('Anon auth failed:', e.message); }
   }
 
-  function withTimeout(promise, ms, onTimeoutMsg){
-    let t;
-    const timeout = new Promise((_,rej)=>{
-      t=setTimeout(()=>rej(new Error(onTimeoutMsg||'Timed out')), ms);
-    });
+  function withTimeout(promise, ms, label){
+    let t; const timeout=new Promise((_,rej)=>{ t=setTimeout(()=>rej(new Error(label||'Timed out')), ms); });
     return Promise.race([promise.finally(()=>clearTimeout(t)), timeout]);
   }
 
   async function uploadAllPhotos(){
-    const files = Array.from(photoInput.files||[]);
+    const files=Array.from(photoInput.files||[]);
     if(!files.length) return [];
-    const MAX = 20;
-    const sel = files.slice(0, MAX);
+    const MAX=20; const sel=files.slice(0,MAX);
 
-    statusEl.textContent = `Uploading ${sel.length} photo(s)...`;
+    statusEl.textContent=`Uploading ${sel.length} photo(s)...`;
     await ensureAnonAuth();
 
-    const uploads = sel.map(async (file, idx) => {
-      if(file.size > 10*1024*1024) throw new Error(`File ${file.name} is larger than 10MB`);
-      const safe = file.name.replace(/[^\w.\-]+/g,'_');
-      const ts = new Date().toISOString().replace(/[:.]/g,'-');
-      const path = `quote_uploads/${ts}_${idx+1}_${safe}`;
-      const ref = firebase.storage().ref().child(path);
-
-      const task = ref.put(file).then(snap=>snap.ref.getDownloadURL());
-      const url = await withTimeout(task, 10000, 'Upload took too long'); // 10s koruma
-      statusEl.textContent = `Uploaded ${idx+1}/${sel.length}`;
+    const uploads=sel.map(async (file,idx)=>{
+      if(file.size>10*1024*1024) throw new Error(`File ${file.name} > 10MB`);
+      const safe=file.name.replace(/[^\w.\-]+/g,'_');
+      const ts=Date.now();
+      const path=`quote_uploads/${ts}_${idx+1}_${safe}`;
+      const ref=storage.ref().child(path);
+      const meta={contentType:file.type, cacheControl:'public,max-age=31536000'};
+      const task=ref.put(file,meta).then(s=>s.ref.getDownloadURL());
+      const url=await withTimeout(task, 20000, 'Upload took too long'); // 20s
+      statusEl.textContent=`Uploaded ${idx+1}/${sel.length}`;
       return url;
     });
 
     try{
-      const urls = await Promise.all(uploads);
-      statusEl.textContent = `Uploaded ${urls.length} / ${sel.length} ✓`;
+      const urls=await Promise.all(uploads);
+      statusEl.textContent=`Uploaded ${urls.length} / ${sel.length} ✓`;
       return urls;
     }catch(e){
-      console.warn('Upload error, will continue without some/all photos:', e.message);
-      statusEl.textContent = 'Could not upload photos, sending form without photos.';
-      return []; // fotoğrafsız devam
+      console.warn(e);
+      statusEl.textContent='Could not upload photos, sending form without photos.';
+      return [];
     }
   }
 
- form.addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  submitBtn.disabled = true;
-  statusEl.textContent = '';
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();               // <-- Sayfada kal
+    submitBtn.disabled=true;
+    statusEl.textContent='';
 
-  try{
-    const urls = await uploadAllPhotos();      // çoklu upload
-    hiddenUrls.value = urls.join('\n');        // yedek olarak yine tek alanda da tut
+    try{
+      const urls=await uploadAllPhotos();
 
-    const fd = new FormData(form);
+      // URL’leri hem tek bir sahada hem de tek tek alanlarda gönder
+      hiddenUrls.value=urls.join('\n');
 
-    // ---- FOTOĞRAF URL’LERİNİ TEK TEK ALAN OLARAK EKLE ----
-    fd.append('photo_count', String(urls.length));
-    urls.forEach((u, i) => {
-      fd.append(`photo_url_${i+1}`, u);        // örn: photo_url_1, photo_url_2, ...
-    });
-    // ------------------------------------------------------
+      const fd=new FormData(form);
+      fd.append('photo_count', String(urls.length));
+      urls.forEach((u,i)=>fd.append(`photo_url_${i+1}`, u));
 
-    const res = await fetch(form.action, {
-      method:'POST',
-      body:fd,
-      headers:{'Accept':'application/json'}
-    });
-
-    if(res.ok){
-      msg.style.display='block';
-      form.reset();
-      hiddenUrls.value = '';
-      statusEl.textContent = '';
-      msg.scrollIntoView({behavior:'smooth'});
-    }else{
-      alert('Form submission failed.');
-    }
-  }catch(err){
-    console.error(err);
-    alert(err.message || 'Upload or submission error.');
-  }finally{
-    submitBtn.disabled = false;
-  }
-});
-
+      const res=await fetch(form.action,{
+        method:'POST',
+        body:fd,
+        headers:{'Accept':'application/json'}
+      });
 
       if(res.ok){
         msg.style.display='block';
         form.reset();
-        hiddenUrls.value = '';
-        statusEl.textContent = '';
+        hiddenUrls.value='';
+        statusEl.textContent='';
         msg.scrollIntoView({behavior:'smooth'});
       }else{
         alert('Form submission failed.');
@@ -382,7 +357,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       console.error(err);
       alert(err.message || 'Upload or submission error.');
     }finally{
-      submitBtn.disabled = false;
+      submitBtn.disabled=false;
     }
   });
 });
