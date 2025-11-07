@@ -327,21 +327,47 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   }
 
-  form.addEventListener('submit', async (e)=>{
-    e.preventDefault();
-    submitBtn.disabled = true;
-    statusEl.textContent = '';
+ form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  submitBtn.disabled = true;
+  statusEl.textContent = '';
 
-    try{
-      const urls = await uploadAllPhotos();      // çoklu upload
-      hiddenUrls.value = urls.join('\n');        // Formspree'ye çok satırlı
+  try{
+    const urls = await uploadAllPhotos();      // çoklu upload
+    hiddenUrls.value = urls.join('\n');        // yedek olarak yine tek alanda da tut
 
-      const fd = new FormData(form);
-      const res = await fetch(form.action, {
-        method:'POST',
-        body:fd,
-        headers:{'Accept':'application/json'}
-      });
+    const fd = new FormData(form);
+
+    // ---- FOTOĞRAF URL’LERİNİ TEK TEK ALAN OLARAK EKLE ----
+    fd.append('photo_count', String(urls.length));
+    urls.forEach((u, i) => {
+      fd.append(`photo_url_${i+1}`, u);        // örn: photo_url_1, photo_url_2, ...
+    });
+    // ------------------------------------------------------
+
+    const res = await fetch(form.action, {
+      method:'POST',
+      body:fd,
+      headers:{'Accept':'application/json'}
+    });
+
+    if(res.ok){
+      msg.style.display='block';
+      form.reset();
+      hiddenUrls.value = '';
+      statusEl.textContent = '';
+      msg.scrollIntoView({behavior:'smooth'});
+    }else{
+      alert('Form submission failed.');
+    }
+  }catch(err){
+    console.error(err);
+    alert(err.message || 'Upload or submission error.');
+  }finally{
+    submitBtn.disabled = false;
+  }
+});
+
 
       if(res.ok){
         msg.style.display='block';
