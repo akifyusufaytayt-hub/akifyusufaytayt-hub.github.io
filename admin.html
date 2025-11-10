@@ -47,6 +47,12 @@
     .customer-grid{display:grid;gap:20px;margin-top:20px}
     .customer-card{background:#f8f9fa;border:1px solid #ddd;border-radius:10px;padding:20px;transition:.3s}
     .customer-card:hover{box-shadow:0 4px 15px rgba(0,0,0,.1);transform:translateY(-2px)}
+    .form-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:12px}
+    .form-meta .info-item{align-items:flex-start}
+    .form-photos{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    .form-photos a{display:block;line-height:0;border-radius:8px;overflow:hidden;border:1px solid #d0e1d2}
+    .form-photos img{display:block;width:140px;height:140px;object-fit:cover;transition:transform .3s ease}
+    .form-photos a:hover img{transform:scale(1.05)}
     .customer-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
     .customer-name{font-size:1.2rem;font-weight:700;color:#2e7d32;margin:0}
     .customer-actions{display:flex;gap:10px}
@@ -98,6 +104,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDewthZGtpSgLr3P4sRBkkMt6FyvVrlT4E",
@@ -111,6 +118,10 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
+    const storage = firebase.storage();
+    const photoUrlCache = new Map();
+    const FORM_WRITER_EMAIL = 'website.forms@melbournelawncare.com.au';
+    const FORM_STORAGE_PREFIX = 'quote_requests';
   </script>
 </head>
 <body>
@@ -143,6 +154,7 @@
         <li><button class="nav-btn" data-section="add-customer"><i class="fas fa-user-plus"></i> Add Customer</button></li>
         <li><button class="nav-btn" data-section="services"><i class="fas fa-wrench"></i> Services</button></li>
         <li><button class="nav-btn" data-section="quotes"><i class="fas fa-file-invoice-dollar"></i> Quotes</button></li>
+        <li><button class="nav-btn" data-section="forms"><i class="fas fa-file-alt"></i> Forms</button></li>
         <li><button class="nav-btn" data-section="mail"><i class="fas fa-envelope"></i> Mail</button></li>
       </ul>
     </div>
@@ -157,6 +169,7 @@
         <div class="stat-card"><div class="stat-number" id="total-services">0</div><div class="stat-label">Total Services</div></div>
         <div class="stat-card"><div class="stat-number" id="monthly-revenue">$0</div><div class="stat-label">This Month Revenue</div></div>
         <div class="stat-card"><div class="stat-number" id="avg-service-value">$0</div><div class="stat-label">Avg Service Value</div></div>
+        <div class="stat-card"><div class="stat-number" id="total-forms">0</div><div class="stat-label">Form Requests</div></div>
       </div>
       <div style="background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);">
         <h3 style="color:#2e7d32;margin-bottom:15px;">Recent Activities</h3>
@@ -319,6 +332,27 @@
       </div>
     </div>
 
+    <!-- FORMS -->
+    <div id="forms" class="content-section">
+      <h2><i class="fas fa-file-alt"></i> Form Requests</h2>
+
+      <div class="customer-card" style="margin-bottom:16px;">
+        <div class="customer-header" style="align-items:flex-start;">
+          <h3 class="customer-name">Latest submissions</h3>
+          <div class="customer-actions">
+            <button class="btn btn-ghost" id="forms-refresh"><i class="fas fa-arrow-rotate-right"></i> Refresh</button>
+          </div>
+        </div>
+        <p class="muted" style="margin-bottom:0;">All quote form entries submitted from the website appear here with photos and notes.</p>
+      </div>
+
+      <div id="forms-empty" class="customer-card" style="display:none;text-align:center;">
+        <p class="muted">No form submissions yet.</p>
+      </div>
+
+      <div id="forms-list" class="customer-grid"></div>
+    </div>
+
     <!-- MAIL -->
     <div id="mail" class="content-section">
       <h2><i class="fas fa-envelope"></i> Mail Templates</h2>
@@ -447,11 +481,20 @@
     auth.onAuthStateChanged(async user=>{
       if(_redirectedOnce) return;
       if(!user){_redirectedOnce=true;window.location.replace('index.html');return;}
+      if(user.email && user.email.toLowerCase()===FORM_WRITER_EMAIL.toLowerCase()){
+        _redirectedOnce=true;
+        alert('This account cannot access the admin dashboard.');
+        await auth.signOut();
+        window.location.replace('index.html');
+        return;
+      }
       document.getElementById('current-user-display').textContent=user.email||'Admin';
 
       await loadCustomers();
       await loadServices();
       await loadQuotes();
+      try{ await loadForms(); }
+      catch(err){ console.error(err); showMessage('Form entries could not be loaded.','error'); formsCache=[]; renderForms(); }
 
       updateDashboard?.();
       updateQuoteCustomerDropdown();
@@ -462,6 +505,7 @@
       updateServiceCustomerDropdown();
       initQuotesUI?.();
       initMailUI();
+      renderForms();
     });
 
     function logout(){
@@ -471,6 +515,14 @@
 
     // ===== UI Tabs =====
     document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>showSection(b.dataset.section)));
+    document.getElementById('forms-refresh')?.addEventListener('click', async (e)=>{
+      const btn=e.currentTarget;
+      btn.disabled=true;
+      btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Refreshing';
+      try{ await loadForms(); }
+      catch(err){ console.error(err); showMessage('Could not refresh forms.','error'); }
+      finally{ btn.disabled=false; btn.innerHTML='<i class="fas fa-arrow-rotate-right"></i> Refresh'; }
+    });
     function showSection(id){
       document.querySelectorAll('.content-section').forEach(s=>s.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
@@ -478,12 +530,13 @@
       document.querySelector(`.nav-btn[data-section="${id}"]`).classList.add('active');
       if(id==='quotes') initQuotesUI();
       if(id==='mail'){ updateMailDropdowns(); initMailUI(); }
+      if(id==='forms'){ renderForms(); }
       if(id==='services'){ renderCalendar(); renderServicesLog(); updateServiceCustomerDropdown(); }
     }
     function showMessage(text,type){const el=document.getElementById('message');el.textContent=text;el.className=`message ${type}`;el.style.display='block';setTimeout(()=>el.style.display='none',3000);}
 
     // ===== Data caches =====
-    let customersCache=[]; let servicesCache=[]; let quotesCache=[];
+    let customersCache=[]; let servicesCache=[]; let quotesCache=[]; let formsCache=[];
     let activeCustomerIdForEdit=null;
 
     // ===== Helpers =====
@@ -492,6 +545,46 @@
     function setV(id,v){const el=document.getElementById(id); if(el) el.value=v||'';}
     function firstNameOf(full){const s=(full||'').trim(); return s? s.split(' ')[0] : '';}
     function currency(n){return `$${Number(n||0).toFixed(2)}`;}
+    function formatDateTime(ts){
+      if(!ts) return '';
+      try{
+        const d=ts.toDate ? ts.toDate() : (ts.seconds? new Date(ts.seconds*1000) : new Date(ts));
+        if(isNaN(d.getTime())) return '';
+        return d.toLocaleString();
+      }catch(e){ return ''; }
+    }
+
+    function updateDashboard(){
+      const totalCustomersEl=document.getElementById('total-customers');
+      const totalServicesEl=document.getElementById('total-services');
+      const monthlyRevenueEl=document.getElementById('monthly-revenue');
+      const avgServiceEl=document.getElementById('avg-service-value');
+      const formsEl=document.getElementById('total-forms');
+
+      const totalCustomers=customersCache.length;
+      const totalServices=servicesCache.length;
+      const totalRevenue=servicesCache.reduce((sum,s)=>sum+Number(s.amount||0),0);
+
+      const now=new Date();
+      const month=now.getMonth();
+      const year=now.getFullYear();
+      const monthlyRevenue=servicesCache.reduce((sum,s)=>{
+        if(!s.date) return sum;
+        const parsed=new Date(`${s.date}T00:00:00`);
+        if(!isNaN(parsed.getTime()) && parsed.getMonth()===month && parsed.getFullYear()===year){
+          return sum+Number(s.amount||0);
+        }
+        return sum;
+      },0);
+
+      const avgService=totalServices? totalRevenue/totalServices : 0;
+
+      if(totalCustomersEl) totalCustomersEl.textContent=totalCustomers;
+      if(totalServicesEl) totalServicesEl.textContent=totalServices;
+      if(monthlyRevenueEl) monthlyRevenueEl.textContent=currency(monthlyRevenue);
+      if(avgServiceEl) avgServiceEl.textContent=currency(avgService);
+      if(formsEl) formsEl.textContent=formsCache.length;
+    }
 
     // ===== Customers =====
     document.addEventListener('submit',e=>{
@@ -841,6 +934,281 @@
     }
     function showQuoteMsg(text,type){const el=document.getElementById('quote-save-msg'); el.textContent=text; el.className=`message ${type}`; el.style.display='block'; setTimeout(()=>el.style.display='none',4000);}
     async function loadQuotes(){const snap=await db.collection('teklifler').orderBy('createdAt','desc').limit(200).get(); quotesCache=snap.docs.map(d=>({id:d.id,...d.data()}));}
+
+    // ===== Forms (Quote requests) =====
+    function collectPhotoCandidates(entry){
+      const fields=['photoUrls','photo_urls','photos','images','attachments','photoUrl','photoURL','photo','photo1','photo2','photo3'];
+      const values=[];
+      const pushValue=value=>{
+        if(!value) return;
+        if(Array.isArray(value)){value.forEach(pushValue);return;}
+        if(typeof value==='string'){
+          value.split(/\s+/).forEach(v=>{if(v) values.push(v);});
+          return;
+        }
+        if(typeof value==='object'){
+          const keys=['downloadURL','downloadUrl','url','href','src','path'];
+          for(const key of keys){
+            if(value[key]) pushValue(value[key]);
+          }
+        }
+      };
+      for(const field of fields){
+        if(entry[field]!=null) pushValue(entry[field]);
+      }
+      return values;
+    }
+
+    function parsePhotoCount(entry){
+      const countFields=['photoCount','photo_count','photosCount'];
+      for(const field of countFields){
+        const raw=entry[field];
+        if(raw==null) continue;
+        const num=Number(raw);
+        if(Number.isFinite(num) && num>=0) return num;
+      }
+      const inline=collectPhotoCandidates(entry);
+      return inline.length||null;
+    }
+
+    async function resolvePhotoUrl(item){
+      if(!item) return null;
+      if(typeof item==='string'){
+        const trimmed=item.trim();
+        if(!trimmed) return null;
+        if(photoUrlCache.has(trimmed)) return photoUrlCache.get(trimmed);
+        let resolved=null;
+        try{
+          if(/^https?:\/\//i.test(trimmed)){
+            resolved=trimmed;
+          }else if(trimmed.startsWith('gs://')){
+            resolved=await firebase.storage().refFromURL(trimmed).getDownloadURL();
+          }else if(trimmed.startsWith('quote_uploads/')){
+            resolved=await storage.ref(trimmed).getDownloadURL();
+          }
+        }catch(err){
+          console.warn('Could not resolve photo URL', trimmed, err);
+        }
+        photoUrlCache.set(trimmed,resolved);
+        return resolved;
+      }
+      if(typeof item==='object'){
+        const keys=['downloadURL','downloadUrl','url','href','src','path'];
+        for(const key of keys){
+          if(item[key]){
+            const resolved=await resolvePhotoUrl(item[key]);
+            if(resolved) return resolved;
+          }
+        }
+      }
+      return null;
+    }
+
+    async function resolvePhotoUrls(entry){
+      const candidates=collectPhotoCandidates(entry);
+      if(!candidates.length) return [];
+      const resolved=(await Promise.all(candidates.map(resolvePhotoUrl))).filter(Boolean);
+      const unique=[];
+      for(const url of resolved){
+        if(!unique.includes(url)) unique.push(url);
+      }
+      return unique;
+    }
+
+    async function loadFirestoreForms(){
+      try{
+        const snap=await db.collection('quoteRequests').orderBy('createdAt','desc').limit(200).get();
+        const entries=await Promise.all(snap.docs.map(async d=>{
+          const data={id:d.id,_source:'firestore',...d.data()};
+          let photos=[];
+          try{
+            photos=await resolvePhotoUrls(data);
+          }catch(err){
+            console.warn('Photo resolution failed', d.id, err);
+          }
+          data._resolvedPhotos=photos;
+          const expected=parsePhotoCount(data);
+          data._resolvedPhotoCount=expected!=null?expected:photos.length;
+          return data;
+        }));
+        return entries;
+      }catch(err){
+        console.error('Could not load Firestore forms', err);
+        return [];
+      }
+    }
+
+    async function listAllStorageItems(prefixRef, pageToken){
+      const opts={maxResults:100};
+      if(pageToken) opts.pageToken=pageToken;
+      return prefixRef.list(opts);
+    }
+
+    async function loadStorageFallbackForms(){
+      const prefixRef=storage.ref().child(FORM_STORAGE_PREFIX);
+      const entries=[];
+      try{
+        let page=await listAllStorageItems(prefixRef);
+        while(page){
+          for(const item of page.items){
+            try{
+              const url=await item.getDownloadURL();
+              const res=await fetch(url,{cache:'no-store'});
+              if(!res.ok) throw new Error(`HTTP ${res.status}`);
+              const data=await res.json();
+              const entry={id:data.id||item.name,_source:'storage',...data};
+              entry._storagePath=item.fullPath;
+              entry._storageUpdated=item.updated||null;
+              let photos=[];
+              try{
+                photos=await resolvePhotoUrls(entry);
+              }catch(photoErr){
+                console.warn('Photo resolution failed', item.fullPath, photoErr);
+              }
+              entry._resolvedPhotos=photos;
+              const expected=parsePhotoCount(entry);
+              entry._resolvedPhotoCount=expected!=null?expected:photos.length;
+              entries.push(entry);
+            }catch(itemErr){
+              console.warn('Failed to load storage form entry', item.fullPath, itemErr);
+            }
+          }
+          if(page.nextPageToken){
+            page=await listAllStorageItems(prefixRef, page.nextPageToken);
+          }else{
+            page=null;
+          }
+        }
+      }catch(err){
+        console.warn('No storage-based form submissions loaded', err);
+      }
+      return entries;
+    }
+
+    function entryTimestampMs(entry){
+      if(!entry) return 0;
+      const created=entry.createdAt;
+      if(created){
+        if(typeof created.toDate==='function'){
+          const dt=created.toDate();
+          if(dt instanceof Date && !isNaN(dt)) return dt.getTime();
+        }
+        if(typeof created.seconds==='number'){
+          return (created.seconds*1000)+((created.nanoseconds||0)/1e6);
+        }
+        if(typeof created==='number' && Number.isFinite(created)) return created;
+        const parsed=Date.parse(created);
+        if(!Number.isNaN(parsed)) return parsed;
+      }
+      if(typeof entry.createdAtMs==='number' && Number.isFinite(entry.createdAtMs)) return entry.createdAtMs;
+      if(entry.createdAtLocal){
+        const parsed=Date.parse(entry.createdAtLocal);
+        if(!Number.isNaN(parsed)) return parsed;
+      }
+      if(entry._storageSavedAt){
+        const parsed=Date.parse(entry._storageSavedAt);
+        if(!Number.isNaN(parsed)) return parsed;
+      }
+      return 0;
+    }
+
+    async function loadForms(){
+      const firestoreEntries=await loadFirestoreForms();
+      const storageEntries=await loadStorageFallbackForms();
+      const map=new Map();
+      const mergeEntry=entry=>{
+        if(!entry) return;
+        const key=entry.submissionKey||entry.id||entry._storagePath||`storage:${entry._storageSavedAt||Math.random()}`;
+        if(!map.has(key)){
+          map.set(key, entry);
+          return;
+        }
+        const existing=map.get(key);
+        if(existing._source==='storage' && entry._source==='firestore'){
+          const merged={...entry};
+          if(!merged._resolvedPhotos?.length && existing._resolvedPhotos?.length){
+            merged._resolvedPhotos=existing._resolvedPhotos;
+            merged._resolvedPhotoCount=existing._resolvedPhotoCount;
+          }
+          map.set(key, merged);
+        }else if(!existing._resolvedPhotos?.length && entry._resolvedPhotos?.length){
+          existing._resolvedPhotos=entry._resolvedPhotos;
+          existing._resolvedPhotoCount=entry._resolvedPhotoCount;
+        }
+      };
+      firestoreEntries.forEach(mergeEntry);
+      storageEntries.forEach(mergeEntry);
+      formsCache=Array.from(map.values());
+      formsCache.sort((a,b)=>entryTimestampMs(b)-entryTimestampMs(a));
+      renderForms();
+      updateDashboard?.();
+    }
+
+    function normalisePhotos(entry){
+      if(Array.isArray(entry?._resolvedPhotos)) return entry._resolvedPhotos;
+      const inline=collectPhotoCandidates(entry||{}).filter(v=>typeof v==='string' && /^https?:\/\//i.test(v));
+      return inline;
+    }
+
+    function renderForms(){
+      const wrap=document.getElementById('forms-list');
+      const empty=document.getElementById('forms-empty');
+      if(!wrap || !empty) return;
+
+      if(!formsCache.length){
+        wrap.innerHTML='';
+        empty.style.display='block';
+        return;
+      }
+
+      empty.style.display='none';
+      wrap.innerHTML=formsCache.map(f=>{
+        const photos=normalisePhotos(f);
+        const expectedCount=typeof f._resolvedPhotoCount==='number'?f._resolvedPhotoCount:photos.length;
+        const notes=f.notes||f.additionalNotes||'';
+        const submitted=formatDateTime(f.createdAt||f.createdAtMs||f.createdAtLocal||'');
+        const photoSummary=expectedCount>photos.length
+          ? `${photos.length}/${expectedCount} photos`
+          : `${photos.length} photo${photos.length===1?'':'s'}`;
+        const loadedText=`${photos.length} of ${expectedCount} photo${expectedCount===1?'':'s'} loaded`;
+        const photoNotice=expectedCount>photos.length
+          ? `<div class="muted" style="margin-top:8px;">${esc(loadedText)}. ${esc('Some uploads may still be processing or restricted.')}</div>`
+          : '';
+        let backupExtra='';
+        if(f._firestoreDenied){
+          backupExtra=' — '+esc('Firestore rejected the write (permission denied).');
+        }else if(f._firestoreFailedCode||f._firestoreFailedMessage){
+          const codeText=f._firestoreFailedCode?`code ${f._firestoreFailedCode}`:'';
+          const msgText=f._firestoreFailedMessage?`${f._firestoreFailedMessage}`:'';
+          const combined=[codeText,msgText].filter(Boolean).join(' · ');
+          if(combined) backupExtra=' — '+esc(combined);
+        }
+        const backupNotice=f._source==='storage'
+          ? `<div class="muted" style="margin-top:8px;"><i class="fas fa-cloud-upload-alt"></i> ${esc('Saved via backup channel (Storage)')}${backupExtra}</div>`
+          : '';
+        return `
+          <div class="customer-card">
+            <div class="customer-header" style="margin-bottom:10px;">
+              <h3 class="customer-name" style="margin:0;">${esc(f.name||'Unnamed')}</h3>
+              <div class="muted" style="font-size:.9rem;">${submitted?`<i class=\"fas fa-clock\"></i> ${esc(submitted)}`:''}</div>
+            </div>
+            <div class="form-meta">
+              <div class="info-item"><i class="fas fa-envelope"></i><span>${esc(f.email||'—')}</span></div>
+              <div class="info-item"><i class="fas fa-phone"></i><span>${esc(f.phone||'—')}</span></div>
+              <div class="info-item"><i class="fas fa-map-marker-alt"></i><span>${esc(f.address||'—')}</span></div>
+              <div class="info-item"><i class="fas fa-image"></i><span>${esc(photoSummary)}</span></div>
+            </div>
+            ${notes?`<div class="muted" style="margin-top:12px;">`+
+              `<strong style="display:block;color:#2e7d32;margin-bottom:4px;">Notes</strong>`+
+              `<div style="white-space:pre-wrap;">${esc(notes)}</div>`+
+            `</div>`:''}
+            ${photoNotice}
+            ${backupNotice}
+            ${photos.length?`<div class="form-photos">${photos.map((url,idx)=>`<a href="${esc(url)}" target="_blank" rel="noopener" title="Photo ${idx+1}"><img src="${esc(url)}" alt="Form photo ${idx+1}"></a>`).join('')}</div>`:''}
+          </div>
+        `;
+      }).join('');
+    }
 
     // ===== Mail (customer-filtered quotes -> mail body, GST included) =====
     function updateMailDropdowns(){
