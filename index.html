@@ -317,12 +317,26 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   function isPermissionDenied(err){
     if(!err) return false;
-    const code=err.code || err.error || '';
-    if(typeof code==='string' && code.toLowerCase().includes('permission')){
-      return code.toLowerCase().includes('denied');
-    }
+    const code=(err.code || err.error || '').toString().toLowerCase();
+    if(code.includes('permission') && code.includes('denied')) return true;
     const msg=(err.message||'').toLowerCase();
     return msg.includes('missing or insufficient permissions') || msg.includes('permission denied');
+  }
+
+  function shouldFallbackToStorage(err){
+    if(!err) return false;
+    const code=(err.code||'').toString().toLowerCase();
+    if(!code){
+      const msg=(err.message||'').toLowerCase();
+      if(msg.includes('quota')||msg.includes('insufficient permissions')||msg.includes('permission denied')) return true;
+      if(msg.includes('unavailable')||msg.includes('deadline exceeded')||msg.includes('internal')) return true;
+      return false;
+    }
+    if(code.includes('permission-denied')||code.includes('unauthenticated')) return true;
+    if(code.includes('resource-exhausted')||code.includes('deadline-exceeded')) return true;
+    if(code.includes('unavailable')||code.includes('internal')||code.includes('failed-precondition')) return true;
+    if(code.includes('aborted')||code.includes('cancelled')) return true;
+    return false;
   }
 
   let formAuthReady=null;
@@ -479,13 +493,17 @@ document.addEventListener('DOMContentLoaded',()=>{
         const firestorePayload={...basePayload, createdAt: firebase.firestore.FieldValue.serverTimestamp()};
         await formDb.collection('quoteRequests').add(firestorePayload);
       }catch(err){
-        if(isPermissionDenied(err)){
-          console.warn('Firestore write denied, falling back to Storage', err);
+        if(shouldFallbackToStorage(err)){
+          console.warn('Firestore write failed, attempting storage fallback', err);
           try{
-            await saveSubmissionToStorage({...basePayload, _firestoreDenied:true});
+            const fallbackMeta=isPermissionDenied(err)?{_firestoreDenied:true}:{_firestoreFailedCode:(err.code||''), _firestoreFailedMessage:(err.message||'')};
+            await saveSubmissionToStorage({...basePayload, ...fallbackMeta});
             savedVia='storage';
           }catch(storageErr){
-            throw storageErr;
+            const combined=new Error(storageErr.message||'Storage fallback failed');
+            combined.originalFirestoreError=err;
+            combined.storageError=storageErr;
+            throw combined;
           }
         }else{
           throw err;

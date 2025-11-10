@@ -1174,8 +1174,17 @@
         const photoNotice=expectedCount>photos.length
           ? `<div class="muted" style="margin-top:8px;">${esc(loadedText)}. ${esc('Some uploads may still be processing or restricted.')}</div>`
           : '';
+        let backupExtra='';
+        if(f._firestoreDenied){
+          backupExtra=' — '+esc('Firestore rejected the write (permission denied).');
+        }else if(f._firestoreFailedCode||f._firestoreFailedMessage){
+          const codeText=f._firestoreFailedCode?`code ${f._firestoreFailedCode}`:'';
+          const msgText=f._firestoreFailedMessage?`${f._firestoreFailedMessage}`:'';
+          const combined=[codeText,msgText].filter(Boolean).join(' · ');
+          if(combined) backupExtra=' — '+esc(combined);
+        }
         const backupNotice=f._source==='storage'
-          ? `<div class="muted" style="margin-top:8px;"><i class="fas fa-cloud-upload-alt"></i> ${esc('Saved via backup channel (Storage)')}</div>`
+          ? `<div class="muted" style="margin-top:8px;"><i class="fas fa-cloud-upload-alt"></i> ${esc('Saved via backup channel (Storage)')}${backupExtra}</div>`
           : '';
         return `
           <div class="customer-card">
