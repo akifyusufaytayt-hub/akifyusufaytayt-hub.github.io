@@ -104,6 +104,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDewthZGtpSgLr3P4sRBkkMt6FyvVrlT4E",
@@ -117,6 +118,10 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
+    const storage = firebase.storage();
+    const photoUrlCache = new Map();
+    const FORM_WRITER_EMAIL = 'website.forms@melbournelawncare.com.au';
+    const FORM_STORAGE_PREFIX = 'quote_requests';
   </script>
 </head>
 <body>
@@ -476,6 +481,13 @@
     auth.onAuthStateChanged(async user=>{
       if(_redirectedOnce) return;
       if(!user){_redirectedOnce=true;window.location.replace('index.html');return;}
+      if(user.email && user.email.toLowerCase()===FORM_WRITER_EMAIL.toLowerCase()){
+        _redirectedOnce=true;
+        alert('This account cannot access the admin dashboard.');
+        await auth.signOut();
+        window.location.replace('index.html');
+        return;
+      }
       document.getElementById('current-user-display').textContent=user.email||'Admin';
 
       await loadCustomers();
@@ -924,19 +936,218 @@
     async function loadQuotes(){const snap=await db.collection('teklifler').orderBy('createdAt','desc').limit(200).get(); quotesCache=snap.docs.map(d=>({id:d.id,...d.data()}));}
 
     // ===== Forms (Quote requests) =====
+    function collectPhotoCandidates(entry){
+      const fields=['photoUrls','photo_urls','photos','images','attachments','photoUrl','photoURL','photo','photo1','photo2','photo3'];
+      const values=[];
+      const pushValue=value=>{
+        if(!value) return;
+        if(Array.isArray(value)){value.forEach(pushValue);return;}
+        if(typeof value==='string'){
+          value.split(/\s+/).forEach(v=>{if(v) values.push(v);});
+          return;
+        }
+        if(typeof value==='object'){
+          const keys=['downloadURL','downloadUrl','url','href','src','path'];
+          for(const key of keys){
+            if(value[key]) pushValue(value[key]);
+          }
+        }
+      };
+      for(const field of fields){
+        if(entry[field]!=null) pushValue(entry[field]);
+      }
+      return values;
+    }
+
+    function parsePhotoCount(entry){
+      const countFields=['photoCount','photo_count','photosCount'];
+      for(const field of countFields){
+        const raw=entry[field];
+        if(raw==null) continue;
+        const num=Number(raw);
+        if(Number.isFinite(num) && num>=0) return num;
+      }
+      const inline=collectPhotoCandidates(entry);
+      return inline.length||null;
+    }
+
+    async function resolvePhotoUrl(item){
+      if(!item) return null;
+      if(typeof item==='string'){
+        const trimmed=item.trim();
+        if(!trimmed) return null;
+        if(photoUrlCache.has(trimmed)) return photoUrlCache.get(trimmed);
+        let resolved=null;
+        try{
+          if(/^https?:\/\//i.test(trimmed)){
+            resolved=trimmed;
+          }else if(trimmed.startsWith('gs://')){
+            resolved=await firebase.storage().refFromURL(trimmed).getDownloadURL();
+          }else if(trimmed.startsWith('quote_uploads/')){
+            resolved=await storage.ref(trimmed).getDownloadURL();
+          }
+        }catch(err){
+          console.warn('Could not resolve photo URL', trimmed, err);
+        }
+        photoUrlCache.set(trimmed,resolved);
+        return resolved;
+      }
+      if(typeof item==='object'){
+        const keys=['downloadURL','downloadUrl','url','href','src','path'];
+        for(const key of keys){
+          if(item[key]){
+            const resolved=await resolvePhotoUrl(item[key]);
+            if(resolved) return resolved;
+          }
+        }
+      }
+      return null;
+    }
+
+    async function resolvePhotoUrls(entry){
+      const candidates=collectPhotoCandidates(entry);
+      if(!candidates.length) return [];
+      const resolved=(await Promise.all(candidates.map(resolvePhotoUrl))).filter(Boolean);
+      const unique=[];
+      for(const url of resolved){
+        if(!unique.includes(url)) unique.push(url);
+      }
+      return unique;
+    }
+
+    async function loadFirestoreForms(){
+      try{
+        const snap=await db.collection('quoteRequests').orderBy('createdAt','desc').limit(200).get();
+        const entries=await Promise.all(snap.docs.map(async d=>{
+          const data={id:d.id,_source:'firestore',...d.data()};
+          let photos=[];
+          try{
+            photos=await resolvePhotoUrls(data);
+          }catch(err){
+            console.warn('Photo resolution failed', d.id, err);
+          }
+          data._resolvedPhotos=photos;
+          const expected=parsePhotoCount(data);
+          data._resolvedPhotoCount=expected!=null?expected:photos.length;
+          return data;
+        }));
+        return entries;
+      }catch(err){
+        console.error('Could not load Firestore forms', err);
+        return [];
+      }
+    }
+
+    async function listAllStorageItems(prefixRef, pageToken){
+      const opts={maxResults:100};
+      if(pageToken) opts.pageToken=pageToken;
+      return prefixRef.list(opts);
+    }
+
+    async function loadStorageFallbackForms(){
+      const prefixRef=storage.ref().child(FORM_STORAGE_PREFIX);
+      const entries=[];
+      try{
+        let page=await listAllStorageItems(prefixRef);
+        while(page){
+          for(const item of page.items){
+            try{
+              const url=await item.getDownloadURL();
+              const res=await fetch(url,{cache:'no-store'});
+              if(!res.ok) throw new Error(`HTTP ${res.status}`);
+              const data=await res.json();
+              const entry={id:data.id||item.name,_source:'storage',...data};
+              entry._storagePath=item.fullPath;
+              entry._storageUpdated=item.updated||null;
+              let photos=[];
+              try{
+                photos=await resolvePhotoUrls(entry);
+              }catch(photoErr){
+                console.warn('Photo resolution failed', item.fullPath, photoErr);
+              }
+              entry._resolvedPhotos=photos;
+              const expected=parsePhotoCount(entry);
+              entry._resolvedPhotoCount=expected!=null?expected:photos.length;
+              entries.push(entry);
+            }catch(itemErr){
+              console.warn('Failed to load storage form entry', item.fullPath, itemErr);
+            }
+          }
+          if(page.nextPageToken){
+            page=await listAllStorageItems(prefixRef, page.nextPageToken);
+          }else{
+            page=null;
+          }
+        }
+      }catch(err){
+        console.warn('No storage-based form submissions loaded', err);
+      }
+      return entries;
+    }
+
+    function entryTimestampMs(entry){
+      if(!entry) return 0;
+      const created=entry.createdAt;
+      if(created){
+        if(typeof created.toDate==='function'){
+          const dt=created.toDate();
+          if(dt instanceof Date && !isNaN(dt)) return dt.getTime();
+        }
+        if(typeof created.seconds==='number'){
+          return (created.seconds*1000)+((created.nanoseconds||0)/1e6);
+        }
+        if(typeof created==='number' && Number.isFinite(created)) return created;
+        const parsed=Date.parse(created);
+        if(!Number.isNaN(parsed)) return parsed;
+      }
+      if(typeof entry.createdAtMs==='number' && Number.isFinite(entry.createdAtMs)) return entry.createdAtMs;
+      if(entry.createdAtLocal){
+        const parsed=Date.parse(entry.createdAtLocal);
+        if(!Number.isNaN(parsed)) return parsed;
+      }
+      if(entry._storageSavedAt){
+        const parsed=Date.parse(entry._storageSavedAt);
+        if(!Number.isNaN(parsed)) return parsed;
+      }
+      return 0;
+    }
+
     async function loadForms(){
-      const snap=await db.collection('quoteRequests').orderBy('createdAt','desc').limit(200).get();
-      formsCache=snap.docs.map(d=>({id:d.id,...d.data()}));
+      const firestoreEntries=await loadFirestoreForms();
+      const storageEntries=await loadStorageFallbackForms();
+      const map=new Map();
+      const mergeEntry=entry=>{
+        if(!entry) return;
+        const key=entry.submissionKey||entry.id||entry._storagePath||`storage:${entry._storageSavedAt||Math.random()}`;
+        if(!map.has(key)){
+          map.set(key, entry);
+          return;
+        }
+        const existing=map.get(key);
+        if(existing._source==='storage' && entry._source==='firestore'){
+          const merged={...entry};
+          if(!merged._resolvedPhotos?.length && existing._resolvedPhotos?.length){
+            merged._resolvedPhotos=existing._resolvedPhotos;
+            merged._resolvedPhotoCount=existing._resolvedPhotoCount;
+          }
+          map.set(key, merged);
+        }else if(!existing._resolvedPhotos?.length && entry._resolvedPhotos?.length){
+          existing._resolvedPhotos=entry._resolvedPhotos;
+          existing._resolvedPhotoCount=entry._resolvedPhotoCount;
+        }
+      };
+      firestoreEntries.forEach(mergeEntry);
+      storageEntries.forEach(mergeEntry);
+      formsCache=Array.from(map.values());
+      formsCache.sort((a,b)=>entryTimestampMs(b)-entryTimestampMs(a));
       renderForms();
       updateDashboard?.();
     }
 
     function normalisePhotos(entry){
-      const raw=entry.photoUrls ?? entry.photos ?? entry.photo_urls;
-      if(!raw) return [];
-      if(Array.isArray(raw)) return raw.filter(Boolean);
-      if(typeof raw==='string') return raw.split(/\s+/).filter(Boolean);
-      return [];
+      if(Array.isArray(entry?._resolvedPhotos)) return entry._resolvedPhotos;
+      const inline=collectPhotoCandidates(entry||{}).filter(v=>typeof v==='string' && /^https?:\/\//i.test(v));
+      return inline;
     }
 
     function renderForms(){
@@ -953,8 +1164,19 @@
       empty.style.display='none';
       wrap.innerHTML=formsCache.map(f=>{
         const photos=normalisePhotos(f);
+        const expectedCount=typeof f._resolvedPhotoCount==='number'?f._resolvedPhotoCount:photos.length;
         const notes=f.notes||f.additionalNotes||'';
-        const submitted=formatDateTime(f.createdAt||f.createdAtLocal||'');
+        const submitted=formatDateTime(f.createdAt||f.createdAtMs||f.createdAtLocal||'');
+        const photoSummary=expectedCount>photos.length
+          ? `${photos.length}/${expectedCount} photos`
+          : `${photos.length} photo${photos.length===1?'':'s'}`;
+        const loadedText=`${photos.length} of ${expectedCount} photo${expectedCount===1?'':'s'} loaded`;
+        const photoNotice=expectedCount>photos.length
+          ? `<div class="muted" style="margin-top:8px;">${esc(loadedText)}. ${esc('Some uploads may still be processing or restricted.')}</div>`
+          : '';
+        const backupNotice=f._source==='storage'
+          ? `<div class="muted" style="margin-top:8px;"><i class="fas fa-cloud-upload-alt"></i> ${esc('Saved via backup channel (Storage)')}</div>`
+          : '';
         return `
           <div class="customer-card">
             <div class="customer-header" style="margin-bottom:10px;">
@@ -965,12 +1187,14 @@
               <div class="info-item"><i class="fas fa-envelope"></i><span>${esc(f.email||'—')}</span></div>
               <div class="info-item"><i class="fas fa-phone"></i><span>${esc(f.phone||'—')}</span></div>
               <div class="info-item"><i class="fas fa-map-marker-alt"></i><span>${esc(f.address||'—')}</span></div>
-              <div class="info-item"><i class="fas fa-image"></i><span>${photos.length} photo${photos.length===1?'':'s'}</span></div>
+              <div class="info-item"><i class="fas fa-image"></i><span>${esc(photoSummary)}</span></div>
             </div>
             ${notes?`<div class="muted" style="margin-top:12px;">`+
               `<strong style="display:block;color:#2e7d32;margin-bottom:4px;">Notes</strong>`+
               `<div style="white-space:pre-wrap;">${esc(notes)}</div>`+
             `</div>`:''}
+            ${photoNotice}
+            ${backupNotice}
             ${photos.length?`<div class="form-photos">${photos.map((url,idx)=>`<a href="${esc(url)}" target="_blank" rel="noopener" title="Photo ${idx+1}"><img src="${esc(url)}" alt="Form photo ${idx+1}"></a>`).join('')}</div>`:''}
           </div>
         `;

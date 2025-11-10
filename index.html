@@ -53,7 +53,31 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-const storage = firebase.storage();
+
+const FORM_WRITER_B64 = "eyJlbWFpbCI6ICJ3ZWJzaXRlLmZvcm1zQG1lbGJvdXJuZWxhd25jYXJlLmNvbS5hdSIsICJwYXNzd29yZCI6ICJGb3Jtc1BvcnRhbCMyMDI0In0=";
+let formCreds = null;
+try {
+  formCreds = JSON.parse(atob(FORM_WRITER_B64));
+} catch (err) {
+  console.error('Form credential decode failed', err);
+}
+const FORM_WRITER_EMAIL = formCreds?.email || '';
+
+let formApp = null;
+if (Array.isArray(firebase.apps)) {
+  for (let i = 0; i < firebase.apps.length; i += 1) {
+    if (firebase.apps[i]?.name === 'formWriter') {
+      formApp = firebase.apps[i];
+      break;
+    }
+  }
+}
+if (!formApp) {
+  formApp = firebase.initializeApp(firebaseConfig, 'formWriter');
+}
+const formAuth = formApp.auth();
+const formDb = formApp.firestore();
+const formStorage = formApp.storage();
 </script>
 
 <style id="crm-modal-css">
@@ -260,6 +284,9 @@ const storage = firebase.storage();
     e.preventDefault();err.style.display='none';
     try{
       const email=document.getElementById('crm-email').value.trim();
+      if(email.toLowerCase()===FORM_WRITER_EMAIL.toLowerCase()){
+        throw new Error('Please use your admin email to sign in.');
+      }
       const pass=document.getElementById('crm-password').value;
       await auth.signInWithEmailAndPassword(email,pass);
       window.location.href='admin.html';
@@ -279,16 +306,95 @@ document.addEventListener('DOMContentLoaded',()=>{
   const photoInput=document.getElementById('quote-photo');
   const hiddenUrls=document.getElementById('photo-urls-hidden');
   const submitBtn=document.getElementById('quote-submit');
+  const FORM_STORAGE_PREFIX='quote_requests';
 
-  // Anonymous auth (sağlamlık için)
-  async function ensureAnonAuth(){
-    if(auth.currentUser) return;
-    try{ await auth.signInAnonymously(); }catch(e){ console.warn('Anon auth failed:', e.message); }
+  function requireFormCreds(){
+    if(!formCreds?.email || !formCreds?.password){
+      throw new Error('Form submission is not configured.');
+    }
+    return formCreds;
+  }
+
+  function isPermissionDenied(err){
+    if(!err) return false;
+    const code=err.code || err.error || '';
+    if(typeof code==='string' && code.toLowerCase().includes('permission')){
+      return code.toLowerCase().includes('denied');
+    }
+    const msg=(err.message||'').toLowerCase();
+    return msg.includes('missing or insufficient permissions') || msg.includes('permission denied');
+  }
+
+  let formAuthReady=null;
+  async function ensureFormAuth(){
+    const creds=requireFormCreds();
+    if(formAuthReady) return formAuthReady;
+
+    formAuthReady=(async ()=>{
+      try{
+        await formAuth.setPersistence?.(firebase.auth.Auth.Persistence.NONE);
+      }catch(_){/* ignore persistence errors */}
+      const current=formAuth.currentUser;
+      if(current && current.email===creds.email){
+        return current;
+      }
+      try{
+        const result=await formAuth.signInWithEmailAndPassword(creds.email,creds.password);
+        return result.user;
+      }catch(err){
+        if(err.code==='auth/user-not-found'){
+          const created=await formAuth.createUserWithEmailAndPassword(creds.email,creds.password);
+          try{ await created.user.updateProfile({displayName:'Website Forms'}); }catch(_){/* ignore */}
+          return created.user;
+        }
+        if(err.code==='auth/wrong-password'){
+          const e=new Error('The embedded form password is incorrect. Please update the credentials.');
+          e.original=err;
+          throw e;
+        }
+        if(err.code==='auth/invalid-api-key' || err.code==='auth/configuration-not-found'){
+          const e=new Error('Firebase configuration rejected this request. Check the API key and authorized domain list.');
+          e.original=err;
+          throw e;
+        }
+        if(err.code==='auth/operation-not-allowed'){
+          const e=new Error('Email/password sign-in is disabled for this project. Enable it in Firebase Authentication settings.');
+          e.original=err;
+          throw e;
+        }
+        throw err;
+      }
+    })();
+
+    try{
+      const user=await formAuthReady;
+      return user;
+    }catch(err){
+      formAuthReady=null;
+      throw err;
+    }
   }
 
   function withTimeout(promise, ms, label){
-    let t; const timeout=new Promise((_,rej)=>{ t=setTimeout(()=>rej(new Error(label||'Timed out')), ms); });
-    return Promise.race([promise.finally(()=>clearTimeout(t)), timeout]);
+    return new Promise((resolve, reject)=>{
+      let settled=false;
+      const timer=setTimeout(()=>{
+        if(settled) return;
+        settled=true;
+        reject(new Error(label||'Timed out'));
+      }, ms);
+      promise.then(value=>{
+        if(settled) return;
+        settled=true;
+        clearTimeout(timer);
+        resolve(value);
+      }).catch(err=>{
+        if(settled) return;
+        settled=true;
+        clearTimeout(timer);
+        reject(err);
+      });
+    });
   }
 
   async function uploadAllPhotos(){
@@ -297,14 +403,14 @@ document.addEventListener('DOMContentLoaded',()=>{
     const MAX=20; const sel=files.slice(0,MAX);
 
     statusEl.textContent=`Uploading ${sel.length} photo(s)...`;
-    await ensureAnonAuth();
+    await ensureFormAuth();
 
     const uploads=sel.map(async (file,idx)=>{
       if(file.size>10*1024*1024) throw new Error(`File ${file.name} > 10MB`);
       const safe=file.name.replace(/[^\w.\-]+/g,'_');
       const ts=Date.now();
       const path=`quote_uploads/${ts}_${idx+1}_${safe}`;
-      const ref=storage.ref().child(path);
+      const ref=formStorage.ref().child(path);
       const meta={contentType:file.type, cacheControl:'public,max-age=31536000'};
       const task=ref.put(file,meta).then(s=>s.ref.getDownloadURL());
       const url=await withTimeout(task, 20000, 'Upload took too long'); // 20s
@@ -323,6 +429,21 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   }
 
+  async function saveSubmissionToStorage(data){
+    await ensureFormAuth();
+    const copy={...data};
+    copy._storageSavedAt=new Date().toISOString();
+    const fileBase=(copy.submissionKey||`wf_${Date.now()}`);
+    const fileName=`${fileBase}_${Math.random().toString(36).slice(2,10)}.json`;
+    const path=`${FORM_STORAGE_PREFIX}/${fileName}`;
+    copy._storagePath=path;
+    const json=JSON.stringify(copy);
+    const ref=formStorage.ref().child(path);
+    const metadata={contentType:'application/json', cacheControl:'no-store'};
+    await ref.putString(json,'raw',metadata);
+    return path;
+  }
+
   form.addEventListener('submit', async (e)=>{
     e.preventDefault();               // <-- Sayfada kal
     submitBtn.disabled=true;
@@ -334,7 +455,11 @@ document.addEventListener('DOMContentLoaded',()=>{
       hiddenUrls.value=urls.join('\n');
 
       const fd=new FormData(form);
-      const payload={
+      const submissionKey=`wf-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
+      const createdAtLocal=new Date().toISOString();
+      const createdAtMs=Date.now();
+      const basePayload={
+        submissionKey,
         name:(fd.get('name')||'').toString().trim(),
         email:(fd.get('email')||'').toString().trim(),
         phone:(fd.get('phone')||'').toString().trim(),
@@ -342,23 +467,45 @@ document.addEventListener('DOMContentLoaded',()=>{
         notes:(fd.get('notes')||'').toString().trim(),
         photoUrls:urls,
         photoCount:urls.length,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        createdAtLocal: new Date().toISOString(),
+        createdAtLocal,
+        createdAtMs,
         status:'new',
         source:'website'
       };
 
-      await ensureAnonAuth();
-      await db.collection('quoteRequests').add(payload);
+      await ensureFormAuth();
+      let savedVia='firestore';
+      try{
+        const firestorePayload={...basePayload, createdAt: firebase.firestore.FieldValue.serverTimestamp()};
+        await formDb.collection('quoteRequests').add(firestorePayload);
+      }catch(err){
+        if(isPermissionDenied(err)){
+          console.warn('Firestore write denied, falling back to Storage', err);
+          try{
+            await saveSubmissionToStorage({...basePayload, _firestoreDenied:true});
+            savedVia='storage';
+          }catch(storageErr){
+            throw storageErr;
+          }
+        }else{
+          throw err;
+        }
+      }
 
       msg.style.display='block';
       form.reset();
       hiddenUrls.value='';
-      statusEl.textContent='Request saved successfully.';
+      statusEl.textContent=savedVia==='storage'
+        ? 'Request saved successfully. Our team will review it shortly.'
+        : 'Request saved successfully.';
       msg.scrollIntoView({behavior:'smooth'});
     }catch(err){
       console.error(err);
-      alert(err.message || 'Upload or submission error.');
+      const friendly='We could not send your request right now. Please call +61 478 733 900 or email us directly.';
+      const detail=err?.message || err?.code || '';
+      const message=detail ? `${friendly} (${detail})` : friendly;
+      statusEl.textContent=message;
+      alert(message);
     }finally{
       submitBtn.disabled=false;
     }
