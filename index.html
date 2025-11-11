@@ -41,15 +41,17 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
 <script>
+// Firebase Web App config (LIVE)
 const firebaseConfig = {
   apiKey: "AIzaSyDewthZGtpSgLr3P4sRBkkMt6FyvVrlT4E",
   authDomain: "lawncare-crm-b3617.firebaseapp.com",
   projectId: "lawncare-crm-b3617",
-  storageBucket: "lawncare-crm-b3617.appspot.com",
+  storageBucket: "lawncare-crm-b3617.appspot.com", // <-- düzeltildi
   messagingSenderId: "200959921459",
   appId: "1:200959921459:web:5161477d4193f96c7c0246",
   measurementId: "G-7VG6PH6N01"
 };
+
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
