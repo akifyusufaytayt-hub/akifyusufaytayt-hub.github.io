@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 <link rel="icon" type="image/png" href="logo.png" />
 
+<!-- SEO / Schema -->
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -35,38 +36,37 @@
 }
 </script>
 
-<!-- Firebase (compat) -->
+<!-- Firebase (compat) | Storage KALDIRILDI -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+
 <script>
-// Firebase Web App config (LIVE)
+/* === Firebase Config (LIVE) === */
 const firebaseConfig = {
   apiKey: "AIzaSyDewthZGtpSgLr3P4sRBkkMt6FyvVrlT4E",
   authDomain: "lawncare-crm-b3617.firebaseapp.com",
   projectId: "lawncare-crm-b3617",
-  storageBucket: "lawncare-crm-b3617.appspot.com", // ✅ doğru domain
+  storageBucket: "lawncare-crm-b3617.appspot.com",
   messagingSenderId: "200959921459",
   appId: "1:200959921459:web:5161477d4193f96c7c0246",
   measurementId: "G-7VG6PH6N01"
 };
 
-// Admin/CRM için default app
+/* --- Admin/CRM için default app (email/pass) --- */
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const db = firebase.firestore();
+const db   = firebase.firestore();
 
-// Form tarafı için ayrı bir app: ANONİM GİRİŞ
-let formApp = firebase.apps?.find(a => a.name === 'formApp') || firebase.initializeApp(firebaseConfig, 'formApp');
+/* --- Public form için ayrı app: ANONYMOUS AUTH --- */
+let formApp  = firebase.apps?.find(a => a.name === 'formApp') || firebase.initializeApp(firebaseConfig, 'formApp');
 const formAuth = formApp.auth();
-const formDb = formApp.firestore();
-const formStorage = formApp.storage();
+const formDb   = formApp.firestore();
 
 async function ensureFormAuth(){
   try { await formAuth.setPersistence(firebase.auth.Auth.Persistence.NONE); } catch(_){}
   if (formAuth.currentUser) return formAuth.currentUser;
-  const cred = await formAuth.signInAnonymously();
+  const cred = await formAuth.signInAnonymously();   // Authentication > Anonymous ENABLE olmalı
   return cred.user;
 }
 </script>
@@ -79,7 +79,7 @@ async function ensureFormAuth(){
   .crm-close{cursor:pointer;font-size:22px;opacity:.9}
   .crm-form-group{margin-bottom:12px}
   .crm-form-group label{display:block;font-size:.95rem;margin-bottom:6px}
-  .crm-form-group input{width:100%;padding:10px;border:1px solid #ddd;border-radius:6px}
+  .crm-form-group input, .crm-form-group textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:6px}
   .crm-login-btn{width:100%;padding:12px;border:none;border-radius:6px;background:#2e7d32;color:#fff;font-weight:700;cursor:pointer}
   .crm-error{display:none;background:#ffebee;color:#c62828;padding:10px;border-radius:6px;margin-bottom:10px;font-size:.92rem}
   .hint{color:#555;font-size:.9rem;margin-top:6px}
@@ -88,7 +88,7 @@ async function ensureFormAuth(){
 </head>
 
 <body>
-<!-- CRM link -->
+<!-- CRM badge -->
 <div class="crm-toplink" aria-hidden="false">
   <a href="#" aria-label="Open CRM login">
     <i class="fas fa-user-shield" aria-hidden="true"></i> CRM
@@ -119,7 +119,7 @@ async function ensureFormAuth(){
   </div>
 </div>
 
-<!-- Sabit telefon -->
+<!-- Fixed phone -->
 <a href="tel:+61478733900" class="fixed-phone-btn">
   <i class="fas fa-phone"></i> +61 478 733 900
 </a>
@@ -205,7 +205,7 @@ async function ensureFormAuth(){
   </div>
 </section>
 
-<!-- QUOTE -->
+<!-- QUOTE (no photos) -->
 <section id="quote" class="section">
   <div class="container">
     <h2>Request a Free Quote</h2>
@@ -214,19 +214,10 @@ async function ensureFormAuth(){
       <div class="form-group"><label>Email</label><input type="email" name="email" required></div>
       <div class="form-group"><label>Phone</label><input type="tel" name="phone" required></div>
       <div class="form-group"><label>Address</label><input type="text" name="address" required></div>
-
-      <div class="form-group">
-        <label>Photos (up to 20, optional)</label>
-        <input type="file" id="quote-photo" accept="image/*" multiple data-formspree-ignore>
-        <div id="upload-status" class="hint" aria-live="polite"></div>
-      </div>
-
       <div class="form-group">
         <label>Additional Notes</label>
         <textarea name="notes" rows="4" placeholder="Please describe the work you would like done (in English)"></textarea>
       </div>
-
-      <input type="hidden" name="photo_urls" id="photo-urls-hidden" />
 
       <div id="success-message" style="display:none;margin-top:20px;text-align:center;">
         <p><strong>✅ Your request has been sent successfully!</strong></p>
@@ -260,7 +251,7 @@ async function ensureFormAuth(){
   </div>
 </footer>
 
-<!-- Script: CRM Modal -->
+<!-- CRM modal JS -->
 <script>
 (function(){
   const link=document.querySelector('.crm-toplink a');
@@ -284,179 +275,50 @@ function showCRMLogin(){const m=document.getElementById('crm-login-modal');if(m)
 function closeCRMLogin(){const m=document.getElementById('crm-login-modal');if(m){m.style.display='none';document.body.style.overflow='auto';}}
 </script>
 
-<!-- Script: Formspree + Firebase Storage (multi-upload, stay on page) -->
+<!-- Quote form (Firestore only) -->
 <script>
-document.addEventListener('DOMContentLoaded',()=>{
-  const form=document.getElementById('quote-form');
-  const msg=document.getElementById('success-message');
-  const statusEl=document.getElementById('upload-status');
-  const photoInput=document.getElementById('quote-photo');
-  const hiddenUrls=document.getElementById('photo-urls-hidden');
-  const submitBtn=document.getElementById('quote-submit');
-  const FORM_STORAGE_PREFIX='quote_requests';
+document.addEventListener('DOMContentLoaded', () => {
+  const form      = document.getElementById('quote-form');
+  const msg       = document.getElementById('success-message');
+  const submitBtn = document.getElementById('quote-submit');
 
-  function isPermissionDenied(err){
-    if(!err) return false;
-    const code=(err.code || err.error || '').toString().toLowerCase();
-    if(code.includes('permission') && code.includes('denied')) return true;
-    const msg=(err.message||'').toLowerCase();
-    return msg.includes('missing or insufficient permissions') || msg.includes('permission denied');
-  }
-  function shouldFallbackToStorage(err){
-    if(!err) return false;
-    const code=(err.code||'').toString().toLowerCase();
-    if(!code){
-      const msg=(err.message||'').toLowerCase();
-      if(msg.includes('quota')||msg.includes('insufficient permissions')||msg.includes('permission denied')) return true;
-      if(msg.includes('unavailable')||msg.includes('deadline exceeded')||msg.includes('internal')) return true;
-      return false;
-    }
-    if(code.includes('permission-denied')||code.includes('unauthenticated')) return true;
-    if(code.includes('resource-exhausted')||code.includes('deadline-exceeded')) return true;
-    if(code.includes('unavailable')||code.includes('internal')||code.includes('failed-precondition')) return true;
-    if(code.includes('aborted')||code.includes('cancelled')) return true;
-    return false;
-  }
-  function isFirebaseError(err){
-    if(!err) return false;
-    const name=(err.name||'').toString().toLowerCase();
-    if(name.includes('firebase')) return true;
-    const msg=(err.message||'').toString().toLowerCase();
-    if(msg.includes('firebase:')) return true;
-    if(msg.includes('firestore')) return true;
-    return false;
-  }
-  function buildFirestoreFailureMeta(err){
-    const meta={_firestoreFallback:true};
-    if(isPermissionDenied(err)){ meta._firestoreDenied=true; }
-    const code=err?.code||err?.error; if(code) meta._firestoreFailedCode=code;
-    const message=err?.message;      if(message) meta._firestoreFailedMessage=message;
-    return meta;
-  }
-
-  function withTimeout(promise, ms, label){
-    return new Promise((resolve, reject)=>{
-      let settled=false;
-      const timer=setTimeout(()=>{ if(settled) return; settled=true; reject(new Error(label||'Timed out')); }, ms);
-      promise.then(v=>{ if(settled) return; settled=true; clearTimeout(timer); resolve(v); })
-             .catch(e=>{ if(settled) return; settled=true; clearTimeout(timer); reject(e); });
-    });
-  }
-
-  async function uploadAllPhotos(){
-    const files=Array.from(photoInput.files||[]);
-    if(!files.length) return [];
-    const MAX=20; const sel=files.slice(0,MAX);
-
-    statusEl.textContent=`Uploading ${sel.length} photo(s)...`;
-    await ensureFormAuth();
-
-    const uploads=sel.map(async (file,idx)=>{
-      if(file.size>10*1024*1024) throw new Error(`File ${file.name} > 10MB`);
-      const safe=file.name.replace(/[^\w.\-]+/g,'_');
-      const ts=Date.now();
-      const path=`quote_uploads/${ts}_${idx+1}_${safe}`;
-      const ref=formStorage.ref().child(path);
-      const meta={contentType:file.type, cacheControl:'public,max-age=31536000'};
-      const task=ref.put(file,meta).then(s=>s.ref.getDownloadURL());
-      const url=await withTimeout(task, 20000, 'Upload took too long');
-      statusEl.textContent=`Uploaded ${idx+1}/${sel.length}`;
-      return url;
-    });
-
-    try{
-      const urls=await Promise.all(uploads);
-      statusEl.textContent=`Uploaded ${urls.length} / ${sel.length} ✓`;
-      return urls;
-    }catch(e){
-      console.warn(e);
-      statusEl.textContent='Could not upload photos, sending form without photos.';
-      return [];
-    }
-  }
-
-  async function saveSubmissionToStorage(data){
-    await ensureFormAuth();
-    const copy={...data};
-    copy._storageSavedAt=new Date().toISOString();
-    const fileBase=(copy.submissionKey||`wf_${Date.now()}`);
-    const fileName=`${fileBase}_${Math.random().toString(36).slice(2,10)}.json`;
-    const path=`${FORM_STORAGE_PREFIX}/${fileName}`;
-    copy._storagePath=path;
-    const json=JSON.stringify(copy);
-    const ref=formStorage.ref().child(path);
-    const metadata={contentType:'application/json', cacheControl:'no-store'};
-    await ref.putString(json,'raw',metadata);
-    return path;
-  }
-
-  form.addEventListener('submit', async (e)=>{
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    submitBtn.disabled=true;
-    statusEl.textContent='';
+    submitBtn.disabled = true;
 
-    try{
-      const urls=await uploadAllPhotos();
-      hiddenUrls.value=urls.join('\n');
+    try {
+      await ensureFormAuth();
 
-      const fd=new FormData(form);
-      const submissionKey=`wf-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
-      const createdAtLocal=new Date().toISOString();
-      const createdAtMs=Date.now();
-      const basePayload={
-        submissionKey,
-        name:(fd.get('name')||'').toString().trim(),
-        email:(fd.get('email')||'').toString().trim(),
-        phone:(fd.get('phone')||'').toString().trim(),
-        address:(fd.get('address')||'').toString().trim(),
-        notes:(fd.get('notes')||'').toString().trim(),
-        photoUrls:urls,
-        photoCount:urls.length,
-        createdAtLocal,
-        createdAtMs,
-        status:'new',
-        source:'website'
+      const fd = new FormData(form);
+      const payload = {
+        submissionKey  : `wf-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+        name           : (fd.get('name')    || '').toString().trim(),
+        email          : (fd.get('email')   || '').toString().trim(),
+        phone          : (fd.get('phone')   || '').toString().trim(),
+        address        : (fd.get('address') || '').toString().trim(),
+        notes          : (fd.get('notes')   || '').toString().trim(),
+        createdAtLocal : new Date().toISOString(),
+        createdAtMs    : Date.now(),
+        status         : 'new',
+        source         : 'website'
       };
 
-      await ensureFormAuth();
-      let savedVia='firestore';
-      try{
-        const firestorePayload={...basePayload, createdAt: firebase.firestore.FieldValue.serverTimestamp()};
-        await formDb.collection('quoteRequests').add(firestorePayload);
-      }catch(err){
-        if(shouldFallbackToStorage(err)||isFirebaseError(err)){
-          console.warn('Firestore write failed, attempting storage fallback', err);
-          try{
-            const fallbackMeta=buildFirestoreFailureMeta(err);
-            await saveSubmissionToStorage({...basePayload, ...fallbackMeta});
-            savedVia='storage';
-          }catch(storageErr){
-            const combined=new Error(storageErr.message||'Storage fallback failed');
-            combined.originalFirestoreError=err;
-            combined.storageError=storageErr;
-            throw combined;
-          }
-        }else{
-          throw err;
-        }
-      }
+      const doc = {
+        ...payload,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      };
+      await formDb.collection('quoteRequests').add(doc);
 
-      msg.style.display='block';
+      msg.style.display = 'block';
       form.reset();
-      hiddenUrls.value='';
-      statusEl.textContent=savedVia==='storage'
-        ? 'Request saved successfully. Our team will review it shortly.'
-        : 'Request saved successfully.';
-      msg.scrollIntoView({behavior:'smooth'});
-    }catch(err){
+      msg.scrollIntoView({ behavior:'smooth' });
+
+    } catch (err) {
       console.error(err);
-      const friendly='We could not send your request right now. Please call +61 478 733 900 or email us directly.';
-      const detail=err?.message || err?.code || '';
-      const message=detail ? `${friendly} (${detail})` : friendly;
-      statusEl.textContent=message;
-      alert(message);
-    }finally{
-      submitBtn.disabled=false;
+      const friendly = 'We could not send your request right now. Please call +61 478 733 900 or email us directly.';
+      alert(`${friendly}${err?.message ? ' (' + err.message + ')' : ''}`);
+    } finally {
+      submitBtn.disabled = false;
     }
   });
 });
