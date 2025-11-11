@@ -339,6 +339,28 @@ document.addEventListener('DOMContentLoaded',()=>{
     return false;
   }
 
+  function isFirebaseError(err){
+    if(!err) return false;
+    const name=(err.name||'').toString().toLowerCase();
+    if(name.includes('firebase')) return true;
+    const msg=(err.message||'').toString().toLowerCase();
+    if(msg.includes('firebase:')) return true;
+    if(msg.includes('firestore')) return true;
+    return false;
+  }
+
+  function buildFirestoreFailureMeta(err){
+    const meta={_firestoreFallback:true};
+    if(isPermissionDenied(err)){
+      meta._firestoreDenied=true;
+    }
+    const code=err?.code||err?.error;
+    if(code) meta._firestoreFailedCode=code;
+    const message=err?.message;
+    if(message) meta._firestoreFailedMessage=message;
+    return meta;
+  }
+
   let formAuthReady=null;
   async function ensureFormAuth(){
     const creds=requireFormCreds();
@@ -493,10 +515,10 @@ document.addEventListener('DOMContentLoaded',()=>{
         const firestorePayload={...basePayload, createdAt: firebase.firestore.FieldValue.serverTimestamp()};
         await formDb.collection('quoteRequests').add(firestorePayload);
       }catch(err){
-        if(shouldFallbackToStorage(err)){
+        if(shouldFallbackToStorage(err)||isFirebaseError(err)){
           console.warn('Firestore write failed, attempting storage fallback', err);
           try{
-            const fallbackMeta=isPermissionDenied(err)?{_firestoreDenied:true}:{_firestoreFailedCode:(err.code||''), _firestoreFailedMessage:(err.message||'')};
+            const fallbackMeta=buildFirestoreFailureMeta(err);
             await saveSubmissionToStorage({...basePayload, ...fallbackMeta});
             savedVia='storage';
           }catch(storageErr){
