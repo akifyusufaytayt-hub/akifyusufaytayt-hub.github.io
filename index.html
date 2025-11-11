@@ -35,7 +35,7 @@
 }
 </script>
 
-<!-- Firebase -->
+<!-- Firebase (compat) -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
@@ -46,40 +46,29 @@ const firebaseConfig = {
   apiKey: "AIzaSyDewthZGtpSgLr3P4sRBkkMt6FyvVrlT4E",
   authDomain: "lawncare-crm-b3617.firebaseapp.com",
   projectId: "lawncare-crm-b3617",
-  storageBucket: "lawncare-crm-b3617.appspot.com", // <-- düzeltildi
+  storageBucket: "lawncare-crm-b3617.appspot.com", // ✅ doğru domain
   messagingSenderId: "200959921459",
   appId: "1:200959921459:web:5161477d4193f96c7c0246",
   measurementId: "G-7VG6PH6N01"
 };
 
+// Admin/CRM için default app
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-const FORM_WRITER_B64 = "eyJlbWFpbCI6ICJ3ZWJzaXRlLmZvcm1zQG1lbGJvdXJuZWxhd25jYXJlLmNvbS5hdSIsICJwYXNzd29yZCI6ICJGb3Jtc1BvcnRhbCMyMDI0In0=";
-let formCreds = null;
-try {
-  formCreds = JSON.parse(atob(FORM_WRITER_B64));
-} catch (err) {
-  console.error('Form credential decode failed', err);
-}
-const FORM_WRITER_EMAIL = formCreds?.email || '';
-
-let formApp = null;
-if (Array.isArray(firebase.apps)) {
-  for (let i = 0; i < firebase.apps.length; i += 1) {
-    if (firebase.apps[i]?.name === 'formWriter') {
-      formApp = firebase.apps[i];
-      break;
-    }
-  }
-}
-if (!formApp) {
-  formApp = firebase.initializeApp(firebaseConfig, 'formWriter');
-}
+// Form tarafı için ayrı bir app: ANONİM GİRİŞ
+let formApp = firebase.apps?.find(a => a.name === 'formApp') || firebase.initializeApp(firebaseConfig, 'formApp');
 const formAuth = formApp.auth();
 const formDb = formApp.firestore();
 const formStorage = formApp.storage();
+
+async function ensureFormAuth(){
+  try { await formAuth.setPersistence(firebase.auth.Auth.Persistence.NONE); } catch(_){}
+  if (formAuth.currentUser) return formAuth.currentUser;
+  const cred = await formAuth.signInAnonymously();
+  return cred.user;
+}
 </script>
 
 <style id="crm-modal-css">
@@ -237,7 +226,6 @@ const formStorage = formApp.storage();
         <textarea name="notes" rows="4" placeholder="Please describe the work you would like done (in English)"></textarea>
       </div>
 
-      <!-- Formspree'ye gidecek URL listeleri -->
       <input type="hidden" name="photo_urls" id="photo-urls-hidden" />
 
       <div id="success-message" style="display:none;margin-top:20px;text-align:center;">
@@ -286,9 +274,6 @@ const formStorage = formApp.storage();
     e.preventDefault();err.style.display='none';
     try{
       const email=document.getElementById('crm-email').value.trim();
-      if(email.toLowerCase()===FORM_WRITER_EMAIL.toLowerCase()){
-        throw new Error('Please use your admin email to sign in.');
-      }
       const pass=document.getElementById('crm-password').value;
       await auth.signInWithEmailAndPassword(email,pass);
       window.location.href='admin.html';
@@ -310,13 +295,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   const submitBtn=document.getElementById('quote-submit');
   const FORM_STORAGE_PREFIX='quote_requests';
 
-  function requireFormCreds(){
-    if(!formCreds?.email || !formCreds?.password){
-      throw new Error('Form submission is not configured.');
-    }
-    return formCreds;
-  }
-
   function isPermissionDenied(err){
     if(!err) return false;
     const code=(err.code || err.error || '').toString().toLowerCase();
@@ -324,7 +302,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     const msg=(err.message||'').toLowerCase();
     return msg.includes('missing or insufficient permissions') || msg.includes('permission denied');
   }
-
   function shouldFallbackToStorage(err){
     if(!err) return false;
     const code=(err.code||'').toString().toLowerCase();
@@ -340,7 +317,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(code.includes('aborted')||code.includes('cancelled')) return true;
     return false;
   }
-
   function isFirebaseError(err){
     if(!err) return false;
     const name=(err.name||'').toString().toLowerCase();
@@ -350,88 +326,20 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(msg.includes('firestore')) return true;
     return false;
   }
-
   function buildFirestoreFailureMeta(err){
     const meta={_firestoreFallback:true};
-    if(isPermissionDenied(err)){
-      meta._firestoreDenied=true;
-    }
-    const code=err?.code||err?.error;
-    if(code) meta._firestoreFailedCode=code;
-    const message=err?.message;
-    if(message) meta._firestoreFailedMessage=message;
+    if(isPermissionDenied(err)){ meta._firestoreDenied=true; }
+    const code=err?.code||err?.error; if(code) meta._firestoreFailedCode=code;
+    const message=err?.message;      if(message) meta._firestoreFailedMessage=message;
     return meta;
-  }
-
-  let formAuthReady=null;
-  async function ensureFormAuth(){
-    const creds=requireFormCreds();
-    if(formAuthReady) return formAuthReady;
-
-    formAuthReady=(async ()=>{
-      try{
-        await formAuth.setPersistence?.(firebase.auth.Auth.Persistence.NONE);
-      }catch(_){/* ignore persistence errors */}
-      const current=formAuth.currentUser;
-      if(current && current.email===creds.email){
-        return current;
-      }
-      try{
-        const result=await formAuth.signInWithEmailAndPassword(creds.email,creds.password);
-        return result.user;
-      }catch(err){
-        if(err.code==='auth/user-not-found'){
-          const created=await formAuth.createUserWithEmailAndPassword(creds.email,creds.password);
-          try{ await created.user.updateProfile({displayName:'Website Forms'}); }catch(_){/* ignore */}
-          return created.user;
-        }
-        if(err.code==='auth/wrong-password'){
-          const e=new Error('The embedded form password is incorrect. Please update the credentials.');
-          e.original=err;
-          throw e;
-        }
-        if(err.code==='auth/invalid-api-key' || err.code==='auth/configuration-not-found'){
-          const e=new Error('Firebase configuration rejected this request. Check the API key and authorized domain list.');
-          e.original=err;
-          throw e;
-        }
-        if(err.code==='auth/operation-not-allowed'){
-          const e=new Error('Email/password sign-in is disabled for this project. Enable it in Firebase Authentication settings.');
-          e.original=err;
-          throw e;
-        }
-        throw err;
-      }
-    })();
-
-    try{
-      const user=await formAuthReady;
-      return user;
-    }catch(err){
-      formAuthReady=null;
-      throw err;
-    }
   }
 
   function withTimeout(promise, ms, label){
     return new Promise((resolve, reject)=>{
       let settled=false;
-      const timer=setTimeout(()=>{
-        if(settled) return;
-        settled=true;
-        reject(new Error(label||'Timed out'));
-      }, ms);
-      promise.then(value=>{
-        if(settled) return;
-        settled=true;
-        clearTimeout(timer);
-        resolve(value);
-      }).catch(err=>{
-        if(settled) return;
-        settled=true;
-        clearTimeout(timer);
-        reject(err);
-      });
+      const timer=setTimeout(()=>{ if(settled) return; settled=true; reject(new Error(label||'Timed out')); }, ms);
+      promise.then(v=>{ if(settled) return; settled=true; clearTimeout(timer); resolve(v); })
+             .catch(e=>{ if(settled) return; settled=true; clearTimeout(timer); reject(e); });
     });
   }
 
@@ -451,7 +359,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       const ref=formStorage.ref().child(path);
       const meta={contentType:file.type, cacheControl:'public,max-age=31536000'};
       const task=ref.put(file,meta).then(s=>s.ref.getDownloadURL());
-      const url=await withTimeout(task, 20000, 'Upload took too long'); // 20s
+      const url=await withTimeout(task, 20000, 'Upload took too long');
       statusEl.textContent=`Uploaded ${idx+1}/${sel.length}`;
       return url;
     });
@@ -483,13 +391,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 
   form.addEventListener('submit', async (e)=>{
-    e.preventDefault();               // <-- Sayfada kal
+    e.preventDefault();
     submitBtn.disabled=true;
     statusEl.textContent='';
 
     try{
       const urls=await uploadAllPhotos();
-
       hiddenUrls.value=urls.join('\n');
 
       const fd=new FormData(form);
