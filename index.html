@@ -5,137 +5,138 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Melbourne Lawn Care</title>
 
+<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
 
+<!-- Font Awesome (iconlar için) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
-  body {
+/* ---- Global ---- */
+body {
     font-family: "Roboto", sans-serif;
     margin: 0;
     padding: 0;
-    background: #ffffff;
+    background: #eaf7ee; /* Açık Profesyonel Yeşil */
     color: #333;
     text-align: center;
-  }
+}
 
-  .container {
+.container {
     max-width: 900px;
     margin: 0 auto;
     padding: 0 15px;
-  }
+}
 
-  .section {
-    padding: 30px 0;
-  }
+.section {
+    padding: 40px 0;
+}
 
-  .section p {
-    font-size: 16px;
-  }
-
-  /* Header */
-  .site-header {
-    border-bottom: 1px solid #eee;
+/* ---- Header ---- */
+.site-header {
+    background: #ffffff;
     padding: 16px 0;
-    background: #f8f9fa;
-    margin-bottom: 10px;
-  }
+    border-bottom: 1px solid #dcdcdc;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+}
 
-  .header-inner {
+.header-inner {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 12px;
-  }
+}
 
-  .logo {
+.logo {
     width: 48px;
     height: auto;
-  }
+}
 
-  h1 {
+h1 {
     margin: 0;
     font-size: 26px;
-  }
+    font-weight: 700;
+}
 
-  h2 {
-    margin-top: 20px;
-    font-size: 24px;
-  }
+/* ---- About / Discount ---- */
+h2 {
+    font-size: 26px;
+    margin-bottom: 20px;
+}
 
-  /* About / Discount */
-  .discount-note {
+.discount-note {
     font-weight: bold;
-    font-size: 17px;
-  }
+    font-size: 18px;
+    color: #155724;
+}
 
-  /* Contact section */
-  #contact h2 {
-    margin-top: 40px;
-    font-size: 28px;
-  }
-
-  .contact-container {
-    max-width: 900px;
-    margin: 20px auto;
-    padding: 20px;
-  }
-
-  .contact-container p {
-    font-size: 16px;
-    margin: 8px 0;
-  }
-
-  .map-container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 30px auto;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-  }
-
-  .map-container iframe {
-    width: 100%;
-    height: 600px;
-    border: 0;
-  }
-
-  /* Request a Quote button */
-  .form-wrapper {
-    max-width: 900px;
-    margin: 20px auto 40px;
-  }
-
-  .quote-btn {
+/* ---- Quote Button ---- */
+.quote-btn {
     display: inline-block;
-    padding: 12px 28px;
+    padding: 12px 30px;
     background-color: #28a745;
     color: #fff;
     text-decoration: none;
     font-weight: 700;
     border-radius: 999px;
-    font-size: 16px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    transition: background-color 0.2s ease, transform 0.2s ease;
-  }
+    box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+    transition: 0.2s ease;
+}
 
-  .quote-btn:hover {
+.quote-btn:hover {
     background-color: #218838;
-    transform: translateY(-1px);
-  }
+    transform: translateY(-2px);
+}
 
-  @media (max-width: 768px) {
-    h1 {
-      font-size: 22px;
-    }
+/* ---- Social Icons ---- */
+.social-links {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
 
-    #contact h2 {
-      font-size: 24px;
-    }
+.social-icon {
+    font-size: 32px;
+    margin: 0 12px;
+    display: inline-block;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
 
-    .map-container iframe {
-      height: 400px;
-    }
-  }
+.social-icon.fb { color: #1877f2; }
+.social-icon.ig { color: #d62976; }
+
+.social-icon:hover {
+    transform: scale(1.15);
+}
+
+/* ---- Contact Info ---- */
+.contact-container p {
+    font-size: 16px;
+    margin: 8px 0;
+}
+
+/* ---- Map ---- */
+.map-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 35px auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.20);
+}
+
+.map-container iframe {
+    width: 100%;
+    height: 600px;
+    border: 0;
+}
+
+/* ---- Mobile ---- */
+@media (max-width: 768px) {
+    h1 { font-size: 22px; }
+    h2 { font-size: 22px; }
+    .map-container iframe { height: 400px; }
+}
 </style>
 </head>
 
@@ -160,64 +161,61 @@
   </div>
 </section>
 
-<!-- 10% Discount -->
+<!-- Discount Section -->
 <section class="section">
   <div class="container">
-    <p class="discount-note">
-      Get 10% off when you join our regular service plan.
-    </p>
+    <p class="discount-note">Get 10% off when you join our regular service plan.</p>
   </div>
 </section>
 
-<!-- Request a Quote (butonla Google Form sayfası açılır) -->
+<!-- Request a Quote -->
 <section id="quote-form" class="section">
   <div class="container">
     <h2>Request a Quote</h2>
 
     <p>
-      Click the button below to open our secure quote form.
-      Please provide your full name, address, phone number, the services you would like,
+      Click the button below to open our secure quote form.  
+      Please provide your full name, address, phone number, the services you would like,  
       and photos of your garden.
     </p>
 
-    <div class="form-wrapper">
-      <a
-        href="https://docs.google.com/forms/d/e/1FAIpQLSchblGaSPAQTFSrkKhYOpqgLdto1CkAi7nN1qTytmUd2Xe_HA/viewform?embedded=true"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="quote-btn"
-      >
-        Open Quote Form
-      </a>
-    </div>
+    <a
+      href="https://docs.google.com/forms/d/e/1FAIpQLSchblGaSPAQTFSrkKhYOpqgLdto1CkAi7nN1qTytmUd2Xe_HA/viewform"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="quote-btn"
+    >
+      Open Quote Form
+    </a>
   </div>
 </section>
 
-<!-- Contact -->
-<section id="contact">
+<!-- Contact Section -->
+<section id="contact" class="section">
   <h2>Contact Us</h2>
-  <div class="social-links">
-  <a href="https://www.facebook.com/profile.php?id=61579606565810" target="_blank" class="social-icon fb">
-    <i class="fab fa-facebook"></i>
-  </a>
 
-  <a href="https://www.instagram.com/melbournelawncare/" target="_blank" class="social-icon ig">
-    <i class="fab fa-instagram"></i>
-  </a>
-</div>
+  <!-- Social icons -->
+  <div class="social-links">
+    <a href="https://www.facebook.com/profile.php?id=61579606565810" target="_blank" class="social-icon fb">
+      <i class="fab fa-facebook"></i>
+    </a>
+
+    <a href="https://www.instagram.com/melbournelawncare/" target="_blank" class="social-icon ig">
+      <i class="fab fa-instagram"></i>
+    </a>
+  </div>
 
   <div class="contact-container">
-    <p>
-      You can reach us by phone, text message, email, our website contact form,
-      or through our Facebook and Instagram pages.
-    </p>
+    <p>You can reach us by phone, text message, email, our website contact form, or through our Facebook and Instagram pages.</p>
 
-    <p><strong>Phone:</strong> +61 478 733 900</p>
+    <p><strong>Phone:</strong> +61 433 120 544</p>
+
     <p><strong>Email:</strong>
       <a href="mailto:melbournelawncareau@gmail.com">
         melbournelawncareau@gmail.com
       </a>
     </p>
+
     <p><strong>Address:</strong> Bamford Ave, Westmeadows VIC 3049</p>
   </div>
 
