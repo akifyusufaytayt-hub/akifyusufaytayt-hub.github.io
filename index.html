@@ -8,20 +8,42 @@
 <!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
 
-<!-- Font Awesome (iconlar için) -->
+<!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-/* ---- Global ---- */
+
+/* ---- Background With Logo ---- */
 body {
     font-family: "Roboto", sans-serif;
     margin: 0;
     padding: 0;
-    background: #eaf7ee; /* Açık Profesyonel Yeşil */
+    background: #eaf7ee;
     color: #333;
     text-align: center;
+
+    /* LOGO BACKGROUND */
+    background-image: url('logo.png');
+    background-repeat: no-repeat;
+    background-position: center top 120px;
+    background-size: 380px; /* Logo büyüklüğü */
+    opacity: 1;
 }
 
+/* LOGO'YU SOLUK HALE GETİRMEK İÇİN OVERLAY */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(234, 247, 238, 0.75); /* Hafif yeşil perde */
+    backdrop-filter: blur(2px);
+    z-index: -1;
+}
+
+/* ---- Main Layout ---- */
 .container {
     max-width: 900px;
     margin: 0 auto;
@@ -32,12 +54,12 @@ body {
     padding: 40px 0;
 }
 
-/* ---- Header ---- */
 .site-header {
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.92);
     padding: 16px 0;
     border-bottom: 1px solid #dcdcdc;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    backdrop-filter: blur(5px);
 }
 
 .header-inner {
@@ -49,7 +71,6 @@ body {
 
 .logo {
     width: 48px;
-    height: auto;
 }
 
 h1 {
@@ -58,7 +79,6 @@ h1 {
     font-weight: 700;
 }
 
-/* ---- About / Discount ---- */
 h2 {
     font-size: 26px;
     margin-bottom: 20px;
@@ -109,7 +129,7 @@ h2 {
     transform: scale(1.15);
 }
 
-/* ---- Contact Info ---- */
+/* ---- Contact Section ---- */
 .contact-container p {
     font-size: 16px;
     margin: 8px 0;
@@ -136,7 +156,12 @@ h2 {
     h1 { font-size: 22px; }
     h2 { font-size: 22px; }
     .map-container iframe { height: 400px; }
+    body {
+        background-size: 250px;
+        background-position: center top 150px;
+    }
 }
+
 </style>
 </head>
 
@@ -161,10 +186,12 @@ h2 {
   </div>
 </section>
 
-<!-- Discount Section -->
+<!-- Discount -->
 <section class="section">
   <div class="container">
-    <p class="discount-note">Get 10% off when you join our regular service plan.</p>
+    <p class="discount-note">
+      Get 10% off when you join our regular service plan.
+    </p>
   </div>
 </section>
 
@@ -174,8 +201,8 @@ h2 {
     <h2>Request a Quote</h2>
 
     <p>
-      Click the button below to open our secure quote form.  
-      Please provide your full name, address, phone number, the services you would like,  
+      Click the button below to open our secure quote form.
+      Please provide your full name, address, phone number, the services you would like,
       and photos of your garden.
     </p>
 
@@ -194,7 +221,6 @@ h2 {
 <section id="contact" class="section">
   <h2>Contact Us</h2>
 
-  <!-- Social icons -->
   <div class="social-links">
     <a href="https://www.facebook.com/profile.php?id=61579606565810" target="_blank" class="social-icon fb">
       <i class="fab fa-facebook"></i>
