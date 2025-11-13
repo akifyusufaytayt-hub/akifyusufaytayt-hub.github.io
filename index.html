@@ -3,376 +3,75 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Melbourne Lawn Care - Professional Lawn & Garden Services</title>
+<title>Contact - Melbourne Lawn Care</title>
 
-<link rel="stylesheet" href="style.css" />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-<link rel="icon" type="image/png" href="logo.png" />
 
-<!-- SEO / Schema -->
-<script type="application/ld+json">
-{
-  "@context":"https://schema.org",
-  "@type":"LocalBusiness",
-  "name":"Melbourne Lawn Care",
-  "image":"https://www.melbournelawncare.com.au/logo.png",
-  "address":{
-    "@type":"PostalAddress",
-    "streetAddress":"Bamford Ave, Westmeadows",
-    "addressLocality":"Melbourne",
-    "addressRegion":"VIC",
-    "postalCode":"3049",
-    "addressCountry":"AU"
-  },
-  "telephone":"+61478733900",
-  "url":"https://www.melbournelawncare.com.au",
-  "openingHours":"Mo-Sa 09:00-18:00",
-  "priceRange":"$$",
-  "sameAs":[
-    "https://www.facebook.com/profile.php?id=61579606565810",
-    "https://www.instagram.com/melbournelawncare/"
-  ]
-}
-</script>
+<style>
+  body {
+    font-family: "Roboto", sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    color: #333;
+    text-align: center;
+  }
 
-<!-- Firebase (compat) -->
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+  h2 {
+    margin-top: 40px;
+    font-size: 28px;
+  }
 
-<script>
-/* === Firebase Config (LIVE) === */
-const firebaseConfig = {
-  apiKey: "AIzaSyDewthZGtpSgLr3P4sRBkkMt6FyvVrlT4E",
-  authDomain: "lawncare-crm-b3617.firebaseapp.com",
-  projectId: "lawncare-crm-b3617",
-  storageBucket: "lawncare-crm-b3617.appspot.com",
-  messagingSenderId: "200959921459",
-  appId: "1:200959921459:web:5161477d4193f96c7c0246",
-  measurementId: "G-7VG6PH6N01"
-};
+  .contact-container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+  }
 
-/* --- Admin/CRM için default app (email/pass) --- */
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db   = firebase.firestore();
+  .contact-container p {
+    font-size: 16px;
+    margin: 8px 0;
+  }
 
-/* --- Public form için ayrı app: ANONYMOUS AUTH --- */
-let formApp  = firebase.apps?.find(a => a.name === 'formApp') || firebase.initializeApp(firebaseConfig, 'formApp');
-const formAuth = formApp.auth();
-const formDb   = formApp.firestore();
-const formStorage = formApp.storage();
+  .map-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 30px auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  }
 
-async function ensureFormAuth(){
-  try { await formAuth.setPersistence(firebase.auth.Auth.Persistence.NONE); } catch(_){}
-  if (formAuth.currentUser) return formAuth.currentUser;
-  const cred = await formAuth.signInAnonymously();   // Authentication > Anonymous ENABLE olmalı
-  return cred.user;
-}
-</script>
-
-<style id="crm-modal-css">
-  .crm-modal{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.5)}
-  .crm-modal-content{background:#fff;margin:8% auto;max-width:420px;width:92%;border-radius:10px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.2)}
-  .crm-modal-header{background:#2e7d32;color:#fff;padding:14px 18px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
-  .crm-modal-body{padding:18px}
-  .crm-close{cursor:pointer;font-size:22px;opacity:.9}
-  .crm-form-group{margin-bottom:12px}
-  .crm-form-group label{display:block;font-size:.95rem;margin-bottom:6px}
-  .crm-form-group input, .crm-form-group textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:6px}
-  .crm-login-btn{width:100%;padding:12px;border:none;border-radius:6px;background:#2e7d32;color:#fff;font-weight:700;cursor:pointer}
-  .crm-error{display:none;background:#ffebee;color:#c62828;padding:10px;border-radius:6px;margin-bottom:10px;font-size:.92rem}
-  .hint{color:#555;font-size:.9rem;margin-top:6px}
-  .muted{color:#666}
+  iframe {
+    width: 100%;
+    height: 600px;
+    border: 0;
+  }
 </style>
 </head>
 
 <body>
-<!-- CRM badge -->
-<div class="crm-toplink" aria-hidden="false">
-  <a href="#" aria-label="Open CRM login">
-    <i class="fas fa-user-shield" aria-hidden="true"></i> CRM
-  </a>
-</div>
 
-<!-- CRM Modal -->
-<div id="crm-login-modal" class="crm-modal" aria-hidden="true">
-  <div class="crm-modal-content" role="dialog" aria-modal="true" aria-labelledby="crm-login-title">
-    <div class="crm-modal-header">
-      <span id="crm-login-title">CRM Login</span>
-      <span class="crm-close" onclick="closeCRMLogin()" aria-label="Close">×</span>
-    </div>
-    <div class="crm-modal-body">
-      <div id="crm-login-error" class="crm-error"></div>
-      <form id="crm-login-form">
-        <div class="crm-form-group">
-          <label for="crm-email">Email</label>
-          <input type="email" id="crm-email" required autocomplete="email" />
-        </div>
-        <div class="crm-form-group">
-          <label for="crm-password">Password</label>
-          <input type="password" id="crm-password" required autocomplete="current-password" />
-        </div>
-        <button type="submit" class="crm-login-btn">Sign In</button>
-      </form>
-    </div>
-  </div>
-</div>
+<section id="contact">
+  <h2>Contact Us</h2>
 
-<!-- Fixed phone -->
-<a href="tel:+61478733900" class="fixed-phone-btn">
-  <i class="fas fa-phone"></i> +61 478 733 900
-</a>
-
-<header>
-  <div class="container header-container">
-    <img src="logo.png" alt="Melbourne Lawn Care Logo" class="logo" />
-    <h1>Melbourne Lawn &amp; Gardening Care</h1>
-    <p class="tagline">Professional Lawn Care and Gardening Services</p>
-  </div>
-</header>
-
-<nav>
-  <div class="container">
-    <ul>
-      <li><a href="#about">About</a></li>
-      <li><a href="#services">Services</a></li>
-      <li><a href="#quote">Get Quote</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section id="hero-intro" class="section hero">
-  <div class="container">
-    <h2>Welcome to Melbourne's premier lawn &amp; gardening care service.<br>
-    We turn ordinary yards into clean, healthy outdoor spaces.</h2>
-    <p style="max-width:800px; margin:16px auto;">
-      Our team works with care and a clear, organised system from start to finish.<br>
-      We provide reliable, on-time service with a focus on quality and detail.
-    </p>
-    <p style="max-width:800px; margin:16px auto;">
-      Our quote system is fair and consistent.<br>
-      Prices are based on garden size, condition, and type of work — never random.<br>
-      No customer pays too much or too little. Every quote reflects honest and balanced pricing.
-    </p>
-    <p style="max-width:800px; margin:16px auto;">
-      For our regular maintenance members, we offer 10% off all ongoing services.<br>
-      We value loyalty and aim to keep your garden looking its best all year round.
-    </p>
-  </div>
-</section>
-
-<!-- ABOUT -->
-<section id="about" class="section light-bg">
-  <div class="container">
-    <h2>About Us</h2>
-    <p style="max-width:720px;margin:0 auto 16px;">
-      Melbourne Lawn & Garden Care is a trusted local business providing professional lawn mowing and garden maintenance services across Melbourne.
-      We take pride in delivering reliable, friendly, and high-quality results for every customer.
-    </p>
-    <p style="max-width:720px;margin:0 auto 16px;">
-      Our mission is simple — to keep your lawn and garden looking clean, healthy, and beautiful all year round.
-      From mowing and trimming to weeding, planting, and rubbish removal, we handle every job with care and attention to detail.
-    </p>
-    <p style="max-width:720px;margin:0 auto;">
-      No matter the size or condition of your garden, you can count on us for professional service and great results every time.
-    </p>
-  </div>
-</section>
-
-<!-- SERVICES -->
-<section id="services" class="section">
-  <div class="container">
-    <h2>Services</h2>
-    <p style="max-width:780px;margin:0 auto 12px;">
-      We provide a wide range of lawn care and garden maintenance solutions — from mowing and trimming to planting and rubbish removal.
-      Whatever your outdoor needs are, we’re here to help make your lawn and garden look their best.
-    </p>
-
-    <div class="services-grid">
-      <div class="service-card"><i class="fas fa-seedling"></i><div><h3>Lawn Mowing &amp; Edging</h3></div></div>
-      <div class="service-card"><i class="fas fa-scissors"></i><div><h3>Hedge Trimming</h3></div></div>
-      <div class="service-card"><i class="fas fa-cut"></i><div><h3>Bush Pruning</h3></div></div>
-      <div class="service-card"><i class="fas fa-broom"></i><div><h3>Weeding &amp; Garden Bed Maintenance</h3></div></div>
-      <div class="service-card"><i class="fas fa-leaf"></i><div><h3>Leaves Clearing</h3></div></div>
-      <div class="service-card"><i class="fas fa-spa"></i><div><h3>Ivy Trimming</h3></div></div>
-      <div class="service-card"><i class="fas fa-seedling"></i><div><h3>Planting Flowers</h3></div></div>
-      <div class="service-card"><i class="fas fa-trash-can"></i><div><h3>Rubbish Removal</h3></div></div>
-      <div class="service-card"><i class="fas fa-water"></i><div><h3>Gutter Cleaning</h3></div></div>
-    </div>
-  </div>
-</section>
-
-<!-- QUOTE (no photos) -->
-<section id="quote" class="section">
-  <div class="container">
-    <h2>Request a Free Quote</h2>
-    <form id="quote-form" novalidate>
-      <div class="form-group"><label>Full Name</label><input type="text" name="name" required></div>
-      <div class="form-group"><label>Email</label><input type="email" name="email" required></div>
-      <div class="form-group"><label>Phone</label><input type="tel" name="phone" required></div>
-      <div class="form-group"><label>Address</label><input type="text" name="address" required></div>
-      <div class="form-group">
-        <label>Additional Notes</label>
-        <textarea name="notes" rows="4" placeholder="Please describe the work you would like done (in English)"></textarea>
-      </div>
-
-      <div id="success-message" style="display:none;margin-top:20px;text-align:center;">
-        <p><strong>✅ Your request has been sent successfully!</strong></p>
-        <p>We will get back to you as soon as possible.</p>
-      </div>
-      <div style="text-align:center;margin-top:10px">
-        
-      </div>
-    </form>
-  </div>
-</section>
-
-<!-- CONTACT -->
-<section id="contact" class="section">
-  <div class="container">
-    <h2>Contact Us</h2>
+  <div class="contact-container">
     <p><strong>Phone:</strong> +61 478 733 900</p>
-    <p><strong>Email:</strong> <a href="mailto:melbournelawncareau@gmail.com">melbournelawncareau@gmail.com</a></p>
+    <p><strong>Email:</strong> 
+      <a href="mailto:melbournelawncareau@gmail.com">
+        melbournelawncareau@gmail.com
+      </a>
+    </p>
     <p><strong>Address:</strong> Bamford Ave, Westmeadows VIC 3049</p>
-    <div class="map-container">
-      <iframe title="Melbourne Lawn Care on Google Maps"
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31214.494389807083!2d144.8561052750526!3d-37.68344142339905!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad6e555aaaaaaa%3A0xb36bde22c6e6cd0f!2sBamford%20Ave%2C%20Westmeadows%20VIC%203049!5e0!3m2!1sen!2sau!4v1755915976310!5m2!1sen!2sau"
-        allowfullscreen loading="lazy"></iframe>
-    </div>
+  </div>
+
+  <div class="map-container">
+    <iframe title="Melbourne Lawn Care on Google Maps"
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31214.494389807083!2d144.8561052750526!3d-37.68344142339905!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad6e555aaaaaaa%3A0xb36bde22c6e6cd0f!2sBamford%20Ave%2C%20Westmeadows%20VIC%203049!5e0!3m2!1sen!2sau!4v1755915976310!5m2!1sen!2sau"
+      allowfullscreen loading="lazy">
+    </iframe>
   </div>
 </section>
 
-<footer>
-  <div class="container">
-    <p>© 2025 Melbourne Lawn Care. All rights reserved.</p>
-  </div>
-</footer>
-
-<!-- CRM modal JS -->
-<script>
-(function(){
-  const link=document.querySelector('.crm-toplink a');
-  const modal=document.getElementById('crm-login-modal');
-  const form=document.getElementById('crm-login-form');
-  const err=document.getElementById('crm-login-error');
-  if(link) link.addEventListener('click',e=>{e.preventDefault();showCRMLogin();});
-  if(modal) modal.addEventListener('click',e=>{if(e.target===modal)closeCRMLogin();});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCRMLogin();});
-  if(form) form.addEventListener('submit',async e=>{
-    e.preventDefault();err.style.display='none';
-    try{
-      const email=document.getElementById('crm-email').value.trim();
-      const pass=document.getElementById('crm-password').value;
-      await auth.signInWithEmailAndPassword(email,pass);
-      window.location.href='admin.html';
-    }catch(ex){err.textContent=ex.message;err.style.display='block';}
-  });
-})();
-function showCRMLogin(){const m=document.getElementById('crm-login-modal');if(m){m.style.display='block';document.body.style.overflow='hidden';}}
-function closeCRMLogin(){const m=document.getElementById('crm-login-modal');if(m){m.style.display='none';document.body.style.overflow='auto';}}
-</script>
-
-<!-- Quote form (Firestore only) -->
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const form      = document.getElementById('quote-form');
-  const msg       = document.getElementById('success-message');
-  const submitBtn = document.getElementById('quote-submit');
-  const FORM_STORAGE_PREFIX = 'quote_requests';
-
-  function shouldFallbackToStorage(err){
-    if(!err) return false;
-    const code=(err.code||err.error||'').toString().toLowerCase();
-    const message=(err.message||'').toLowerCase();
-    if(code.includes('permission')||message.includes('permission denied')||message.includes('insufficient permissions')) return true;
-    if(code.includes('unauthenticated')) return true;
-    if(code.includes('unavailable')||code.includes('deadline')||message.includes('deadline exceeded')) return true;
-    if(code.includes('resource-exhausted')||code.includes('internal')) return true;
-    return false;
-  }
-
-  function buildFirestoreFailureMeta(err){
-    const meta={_firestoreFallback:true};
-    if(!err) return meta;
-    if(err.code) meta._firestoreFailedCode=err.code;
-    if(err.message) meta._firestoreFailedMessage=err.message;
-    return meta;
-  }
-
-  async function saveSubmissionToStorage(data){
-    await ensureFormAuth();
-    const copy={...data};
-    copy._storageSavedAt=new Date().toISOString();
-    const fileBase=copy.submissionKey||`wf_${Date.now()}`;
-    const fileName=`${fileBase}_${Math.random().toString(36).slice(2,10)}.json`;
-    const path=`${FORM_STORAGE_PREFIX}/${fileName}`;
-    copy._storagePath=path;
-    const json=JSON.stringify(copy);
-    const ref=formStorage.ref().child(path);
-    const metadata={contentType:'application/json', cacheControl:'no-store'};
-    await ref.putString(json,'raw',metadata);
-    return path;
-  }
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    submitBtn.disabled = true;
-
-    try {
-      await ensureFormAuth();
-
-      const fd = new FormData(form);
-      const payload = {
-        submissionKey  : `wf-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
-        name           : (fd.get('name')    || '').toString().trim(),
-        email          : (fd.get('email')   || '').toString().trim(),
-        phone          : (fd.get('phone')   || '').toString().trim(),
-        address        : (fd.get('address') || '').toString().trim(),
-        notes          : (fd.get('notes')   || '').toString().trim(),
-        createdAtLocal : new Date().toISOString(),
-        createdAtMs    : Date.now(),
-        status         : 'new',
-        source         : 'website'
-      };
-
-      let savedVia='firestore';
-      try{
-        const doc = {
-          ...payload,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        };
-        await formDb.collection('quoteRequests').add(doc);
-      }catch(err){
-        if(shouldFallbackToStorage(err)){
-          console.warn('Firestore write failed, saving to storage instead.', err);
-          await saveSubmissionToStorage({...payload, ...buildFirestoreFailureMeta(err)});
-          savedVia='storage';
-        }else{
-          throw err;
-        }
-      }
-
-      msg.style.display = 'block';
-      form.reset();
-      msg.scrollIntoView({ behavior:'smooth' });
-      if(savedVia==='storage'){
-        console.info('Quote request saved via Storage fallback.');
-      }
-
-    } catch (err) {
-      console.error(err);
-      const friendly = 'We could not send your request right now. Please call +61 478 733 900 or email us directly.';
-      alert(`${friendly}${err?.message ? ' (' + err.message + ')' : ''}`);
-    } finally {
-      submitBtn.disabled = false;
-    }
-  });
-});
-</script>
 </body>
 </html>
