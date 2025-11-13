@@ -36,10 +36,11 @@
 }
 </script>
 
-<!-- Firebase (compat) | Storage KALDIRILDI -->
+<!-- Firebase (compat) -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
 
 <script>
 /* === Firebase Config (LIVE) === */
@@ -62,6 +63,7 @@ const db   = firebase.firestore();
 let formApp  = firebase.apps?.find(a => a.name === 'formApp') || firebase.initializeApp(firebaseConfig, 'formApp');
 const formAuth = formApp.auth();
 const formDb   = formApp.firestore();
+const formStorage = formApp.storage();
 
 async function ensureFormAuth(){
   try { await formAuth.setPersistence(firebase.auth.Auth.Persistence.NONE); } catch(_){}
@@ -281,6 +283,41 @@ document.addEventListener('DOMContentLoaded', () => {
   const form      = document.getElementById('quote-form');
   const msg       = document.getElementById('success-message');
   const submitBtn = document.getElementById('quote-submit');
+  const FORM_STORAGE_PREFIX = 'quote_requests';
+
+  function shouldFallbackToStorage(err){
+    if(!err) return false;
+    const code=(err.code||err.error||'').toString().toLowerCase();
+    const message=(err.message||'').toLowerCase();
+    if(code.includes('permission')||message.includes('permission denied')||message.includes('insufficient permissions')) return true;
+    if(code.includes('unauthenticated')) return true;
+    if(code.includes('unavailable')||code.includes('deadline')||message.includes('deadline exceeded')) return true;
+    if(code.includes('resource-exhausted')||code.includes('internal')) return true;
+    return false;
+  }
+
+  function buildFirestoreFailureMeta(err){
+    const meta={_firestoreFallback:true};
+    if(!err) return meta;
+    if(err.code) meta._firestoreFailedCode=err.code;
+    if(err.message) meta._firestoreFailedMessage=err.message;
+    return meta;
+  }
+
+  async function saveSubmissionToStorage(data){
+    await ensureFormAuth();
+    const copy={...data};
+    copy._storageSavedAt=new Date().toISOString();
+    const fileBase=copy.submissionKey||`wf_${Date.now()}`;
+    const fileName=`${fileBase}_${Math.random().toString(36).slice(2,10)}.json`;
+    const path=`${FORM_STORAGE_PREFIX}/${fileName}`;
+    copy._storagePath=path;
+    const json=JSON.stringify(copy);
+    const ref=formStorage.ref().child(path);
+    const metadata={contentType:'application/json', cacheControl:'no-store'};
+    await ref.putString(json,'raw',metadata);
+    return path;
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -303,15 +340,29 @@ document.addEventListener('DOMContentLoaded', () => {
         source         : 'website'
       };
 
-      const doc = {
-        ...payload,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      };
-      await formDb.collection('quoteRequests').add(doc);
+      let savedVia='firestore';
+      try{
+        const doc = {
+          ...payload,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        };
+        await formDb.collection('quoteRequests').add(doc);
+      }catch(err){
+        if(shouldFallbackToStorage(err)){
+          console.warn('Firestore write failed, saving to storage instead.', err);
+          await saveSubmissionToStorage({...payload, ...buildFirestoreFailureMeta(err)});
+          savedVia='storage';
+        }else{
+          throw err;
+        }
+      }
 
       msg.style.display = 'block';
       form.reset();
       msg.scrollIntoView({ behavior:'smooth' });
+      if(savedVia==='storage'){
+        console.info('Quote request saved via Storage fallback.');
+      }
 
     } catch (err) {
       console.error(err);
