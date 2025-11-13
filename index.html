@@ -67,7 +67,7 @@
     font-size: 17px;
   }
 
-  /* Contact section (mevcut yapı korunuyor) */
+  /* Contact section (existing preserved) */
   #contact h2 {
     margin-top: 40px;
     font-size: 28px;
@@ -133,7 +133,7 @@
 
 <body>
 
-<!-- Üst kısım: Logo + Şirket adı -->
+<!-- Header -->
 <header class="site-header">
   <div class="container header-inner">
     <img src="logo.png" alt="Melbourne Lawn Care Logo" class="logo" />
@@ -141,7 +141,7 @@
   </div>
 </header>
 
-<!-- About Us -->
+<!-- About -->
 <section id="about" class="section">
   <div class="container">
     <h2>About Us</h2>
@@ -152,7 +152,7 @@
   </div>
 </section>
 
-<!-- 10% indirim notu -->
+<!-- 10% Discount -->
 <section class="section">
   <div class="container">
     <p class="discount-note">
@@ -161,7 +161,30 @@
   </div>
 </section>
 
-<!-- MEVCUT CONTACT + MAP (yapıyı bozmadım) -->
+<!-- 🚀 Request a Quote (NOW ABOVE CONTACT US) -->
+<section id="quote-form" class="section">
+  <div class="container">
+    <h2>Request a Quote</h2>
+
+    <p>
+      Please fill in the form below with your full name, address, phone number,
+      the services you would like, and upload photos of your garden.
+    </p>
+
+    <div class="form-wrapper">
+      <!-- Replace this with your real Google Form embed link -->
+      <iframe
+        src="https://docs.google.com/forms/d/e/YOUR_GOOGLE_FORM_ID/viewform?embedded=true"
+        frameborder="0"
+        marginheight="0"
+        marginwidth="0">
+        Loading…
+      </iframe>
+    </div>
+  </div>
+</section>
+
+<!-- 📌 Contact (UNCHANGED) -->
 <section id="contact">
   <h2>Contact Us</h2>
 
@@ -185,28 +208,6 @@
       src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31214.494389807083!2d144.8561052750526!3d-37.68344142339905!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad6e555aaaaaaa%3A0xb36bde22c6e6cd0f!2sBamford%20Ave%2C%20Westmeadows%20VIC%203049!5e0!3m2!1sen!2sau!4v1755915976310!5m2!1sen!2sau"
       allowfullscreen loading="lazy">
     </iframe>
-  </div>
-</section>
-
-<!-- Google Form bölümü -->
-<section id="quote-form" class="section">
-  <div class="container">
-    <h2>Request a Quote</h2>
-    <p>
-      Please fill in the form below with your full name, address, phone number,
-      the services you would like, and upload photos of your garden.
-    </p>
-
-    <div class="form-wrapper">
-      <!-- Buradaki src değerini kendi Google Form embed linkinle değiştir -->
-      <iframe
-        src="https://docs.google.com/forms/d/e/YOUR_GOOGLE_FORM_ID/viewform?embedded=true"
-        frameborder="0"
-        marginheight="0"
-        marginwidth="0">
-        Loading…
-      </iframe>
-    </div>
   </div>
 </section>
 
